@@ -2,42 +2,37 @@ package io.github.sgosiaco.view
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import io.github.sgosiaco.library.Styles
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.geometry.Side
-import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
 import tornadofx.*
-import tornadofx.Stylesheet.Companion.contextMenu
-import tornadofx.Stylesheet.Companion.menuItem
 import java.io.File
 import kotlin.system.exitProcess
 
-data class BookImport (
+data class Book (
+        @SerializedName("checkedout") var checkedout: Boolean,
         @SerializedName("author") val author : String,
         @SerializedName("year") val year : Int,
         @SerializedName("pub") val pub : String,
         @SerializedName("title") val title : String
 )
 
-data class PeopleImport (
+data class Person (
         @SerializedName("name") val name : String,
         @SerializedName("email") val email : String,
         @SerializedName("phone") val phone : Int,
         @SerializedName("aff") val aff : String
 )
 
-data class Book(val title: String, val author: String, val publisher: String, val year: Int, var history: MutableList<Checkout> = mutableListOf())
-data class Person(val name: String, val email: String, var history : MutableList<Checkout> = mutableListOf())
 data class Checkout(val person: Person, val book: Book, val wDate: String, val rDate: String)
 
 class MyController: Controller() {
     private val bookjson = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
-    val bookList: ObservableList<BookImport> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<BookImport>::class.java).toList())
+    val bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
 
     private val peoplejson = File("people.json").readText(Charsets.UTF_8)
-    val peopleList: ObservableList<PeopleImport> = FXCollections.observableArrayList(Gson().fromJson(peoplejson, Array<PeopleImport>::class.java).toList())
+    val personList: ObservableList<Person> = FXCollections.observableArrayList(Gson().fromJson(peoplejson, Array<Person>::class.java).toList())
 }
 
 class MainView : View("Library") {
@@ -69,21 +64,25 @@ class MainView : View("Library") {
                 vGrow = Priority.ALWAYS
             }
             item("Books") {
-                tableview(controller.bookList) {
+                val data = SortedFilteredList(controller.bookList)
+                data.predicate = { !it.checkedout }
+                tableview(data) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
-                    readonlyColumn("Title", BookImport::title)
-                    readonlyColumn("Author", BookImport::author)
-                    readonlyColumn("Publisher", BookImport::pub)
-                    readonlyColumn("Year", BookImport::year)
-                    //columnResizePolicy = SmartResize.POLICY
+                    readonlyColumn("Title", Book::title)
+                    readonlyColumn("Author", Book::author)
+                    readonlyColumn("Publisher", Book::pub)
+                    readonlyColumn("Year", Book::year)
+                    //readonlyColumn("Checked Out", Book::checkedout)
+                    columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
                         item("Checkout").action {
                             selectedItem?.apply {
                                 println("Loaning $title $author $pub $year")
-                                val params = "items" to listOf(BookImport(author, year, pub, title)).observable()
+
+                                val params = "items" to listOf(controller.bookList[controller.bookList.indexOf(Book(checkedout, author, year, pub, title))]).observable()
                                 find<CheckoutFragment>(params).openModal()
                                 //openInternalWindow(CheckoutFragment::class)
                             }
@@ -99,15 +98,15 @@ class MainView : View("Library") {
                 }
             }
             item("People") {
-                tableview(controller.peopleList) {
+                tableview(controller.personList) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
-                    readonlyColumn("Name", PeopleImport::name)
-                    readonlyColumn("Email", PeopleImport::email)
-                    readonlyColumn("Phone number", PeopleImport::phone)
-                    readonlyColumn("Affiliation", PeopleImport::aff)
-                    //columnResizePolicy = SmartResize.POLICY
+                    readonlyColumn("Name", Person::name)
+                    readonlyColumn("Email", Person::email)
+                    readonlyColumn("Phone number", Person::phone)
+                    readonlyColumn("Affiliation", Person::aff)
+                    columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
                         item("Check History").action {
@@ -117,7 +116,30 @@ class MainView : View("Library") {
                             }
                         }
                     }
+                }
+            }
+            item("Checked Out") {
+                val data = SortedFilteredList(controller.bookList)
+                data.predicate = { it.checkedout }
+                tableview(data) {
+                    vboxConstraints {
+                        vGrow = Priority.ALWAYS
+                    }
+                    readonlyColumn("Title", Book::title)
+                    readonlyColumn("Author", Book::author)
+                    readonlyColumn("Publisher", Book::pub)
+                    readonlyColumn("Year", Book::year)
+                    columnResizePolicy = SmartResize.POLICY
 
+                    contextmenu {
+                        item("Return").action {
+                            selectedItem?.apply {
+                                println("Returning $title")
+                                val index = controller.bookList.indexOf(Book(checkedout, author, year, pub, title))
+                                controller.bookList[index] = Book(false, author, year, pub, title)
+                            }
+                        }
+                    }
                 }
             }
         }
