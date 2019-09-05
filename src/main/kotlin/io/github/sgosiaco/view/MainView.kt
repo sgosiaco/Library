@@ -20,13 +20,24 @@ data class BookImport (
         @SerializedName("pub") val pub : String,
         @SerializedName("title") val title : String
 )
+
+data class PeopleImport (
+        @SerializedName("name") val name : String,
+        @SerializedName("email") val email : String,
+        @SerializedName("phone") val phone : Int,
+        @SerializedName("aff") val aff : String
+)
+
 data class Book(val title: String, val author: String, val publisher: String, val year: Int, var history: MutableList<Checkout> = mutableListOf())
 data class Person(val name: String, val email: String, var history : MutableList<Checkout> = mutableListOf())
 data class Checkout(val person: Person, val book: Book, val wDate: String, val rDate: String)
 
 class MyController: Controller() {
-    private val json = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
-    val books: ObservableList<BookImport> = FXCollections.observableArrayList(Gson().fromJson(json, Array<BookImport>::class.java).toList())
+    private val bookjson = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
+    val bookList: ObservableList<BookImport> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<BookImport>::class.java).toList())
+
+    private val peoplejson = File("people.json").readText(Charsets.UTF_8)
+    val peopleList: ObservableList<PeopleImport> = FXCollections.observableArrayList(Gson().fromJson(peoplejson, Array<PeopleImport>::class.java).toList())
 }
 
 class MainView : View("Library") {
@@ -54,12 +65,11 @@ class MainView : View("Library") {
             }
         }
         drawer(side = Side.LEFT, multiselect = true) {
-
             vboxConstraints {
                 vGrow = Priority.ALWAYS
             }
             item("Books") {
-                tableview(controller.books) {
+                tableview(controller.bookList) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
@@ -73,7 +83,8 @@ class MainView : View("Library") {
                         item("Checkout").action {
                             selectedItem?.apply {
                                 println("Loaning $title")
-                                find<CheckoutFragment>().openWindow()
+                                //find<CheckoutFragment>().openWindow()
+                                openInternalWindow(CheckoutFragment::class)
                             }
                         }
                         item("Check History").action {
@@ -87,19 +98,19 @@ class MainView : View("Library") {
                 }
             }
             item("People") {
-                tableview(controller.books) {
+                tableview(controller.peopleList) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
-                    readonlyColumn("Name", BookImport::title)
-                    readonlyColumn("Email", BookImport::author)
-                    readonlyColumn("Phone number", BookImport::pub)
-                    readonlyColumn("Department", BookImport::year)
+                    readonlyColumn("Name", PeopleImport::name)
+                    readonlyColumn("Email", PeopleImport::email)
+                    readonlyColumn("Phone number", PeopleImport::phone)
+                    readonlyColumn("Affiliation", PeopleImport::aff)
                     //columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
                         item("Check History").action {
-                            selectedItem?.apply { 
+                            selectedItem?.apply {
                                 println("Checking $title")
                                 find<HistoryFragment>().openWindow()
                             }
@@ -109,29 +120,5 @@ class MainView : View("Library") {
                 }
             }
         }
-    }
-
-    private fun test() {
-        val sean = Person("Sean Gosiaco", "sgosiaco@me.com")
-        val ryan = Person("Ryan Gosiaco", "rgosiaco@me.com")
-        val tobira = Book("Tobira", "Ito", "JPN", 2011)
-        val took = Checkout(sean, tobira, "Today", "Tomorrow")
-        val took2 = Checkout(ryan, tobira, "9/5/2019", "9/24/2019")
-        sean.history.add(took)
-        tobira.history.add(took)
-        tobira.history.add(took2)
-
-        println(sean.name)
-
-        println("----------------------")
-        for(item in tobira.history)
-        {
-            println(item.book.author)
-            println(item.person.name)
-            println(item.wDate)
-            println(item.rDate)
-            println("----------------------")
-        }
-
     }
 }
