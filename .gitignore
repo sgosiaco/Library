@@ -57,3 +57,5 @@ gradle-app.setting
 
 people.json
 books.json
+checked.json
+*.log

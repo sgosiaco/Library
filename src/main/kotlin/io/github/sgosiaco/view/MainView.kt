@@ -8,6 +8,7 @@ import javafx.geometry.Side
 import javafx.scene.layout.Priority
 import tornadofx.*
 import java.io.File
+import java.time.LocalDate
 import kotlin.system.exitProcess
 
 data class Book (
@@ -25,7 +26,7 @@ data class Person (
         @SerializedName("aff") val aff : String
 )
 
-data class Checkout(val person: Person, val book: Book, val wDate: String, val rDate: String)
+data class Checkout(val person: Person, val book: Book, val wDate: LocalDate, val rDate: LocalDate)
 
 class MyController: Controller() {
     private val bookjson = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
@@ -33,6 +34,21 @@ class MyController: Controller() {
 
     private val peoplejson = File("people.json").readText(Charsets.UTF_8)
     val personList: ObservableList<Person> = FXCollections.observableArrayList(Gson().fromJson(peoplejson, Array<Person>::class.java).toList())
+
+    private val checkedjson = File("checked.json").readText(Charsets.UTF_8)
+    val checkedList: ObservableList<Checkout> = FXCollections.observableArrayList(Gson().fromJson(checkedjson, Array<Checkout>::class.java).toList())
+
+    fun savePeople() {
+        File("people.json").writeText(Gson().toJson(personList))
+    }
+
+    fun saveBooks() {
+        File("books.json").writeText(Gson().toJson(bookList))
+    }
+
+    fun saveChecked() {
+        File("checked.json").writeText(Gson().toJson(checkedList))
+    }
 }
 
 class MainView : View("Library") {
@@ -44,7 +60,12 @@ class MainView : View("Library") {
                     action { println("Open")}
                 }
                 item("Save", "Shortcut+S") {
-                    action { println("Save")}
+                    action {
+                        println("Save")
+                        controller.saveBooks()
+                        controller.savePeople()
+                        controller.saveChecked()
+                    }
                 }
                 item("Quit", "Shortcut+Q") {
                     action {
@@ -109,6 +130,9 @@ class MainView : View("Library") {
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
+                        item("Add").action {
+                            find<AddPersonFragment>().openModal()
+                        }
                         item("Check History").action {
                             selectedItem?.apply {
                                 println("Checking $title")
@@ -119,24 +143,36 @@ class MainView : View("Library") {
                 }
             }
             item("Checked Out") {
-                val data = SortedFilteredList(controller.bookList)
-                data.predicate = { it.checkedout }
-                tableview(data) {
+                //val data = SortedFilteredList(controller.bookList)
+                //data.predicate = { it.checkedout }
+                tableview(controller.checkedList) {//data
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
-                    readonlyColumn("Title", Book::title)
-                    readonlyColumn("Author", Book::author)
-                    readonlyColumn("Publisher", Book::pub)
-                    readonlyColumn("Year", Book::year)
+                    //readonlyColumn("Title", Book::title)
+                    //readonlyColumn("Author", Book::author)
+                    //readonlyColumn("Publisher", Book::pub)
+                    //readonlyColumn("Year", Book::year)
+
+                    //readonlyColumn("Name", Book::title)
+                    //readonlyColumn("Email", Book::title)
+                    //readonlyColumn("Phone number", Book::title)
+                    //readonlyColumn("Affiliation", Book::title)
+                    readonlyColumn("Book", Checkout::book)
+                    readonlyColumn("Person", Checkout::person)
+                    readonlyColumn("Withdrawal Date", Checkout::wDate)
+                    readonlyColumn("Return Date", Checkout::rDate)
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
                         item("Return").action {
                             selectedItem?.apply {
-                                println("Returning $title")
-                                val index = controller.bookList.indexOf(Book(checkedout, author, year, pub, title))
-                                controller.bookList[index] = Book(false, author, year, pub, title)
+                                println("Returning ${book.title}")
+                                val index = controller.bookList.indexOf(book)
+                                book.checkedout = false
+                                controller.bookList[index] = book
+
+                                controller.checkedList.remove(selectedItem)
                             }
                         }
                     }

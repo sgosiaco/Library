@@ -16,7 +16,7 @@ class PeopleConverter: StringConverter<Person>() {
 }
 class CheckoutFragment : Fragment("Checkout") {
     private val controller: MyController by inject()
-    private val name = SimpleObjectProperty<Person>()
+    private val person = SimpleObjectProperty<Person>()
     private val wDate = SimpleObjectProperty<LocalDate>()
     private val rDate = SimpleObjectProperty<LocalDate>()
 
@@ -25,7 +25,7 @@ class CheckoutFragment : Fragment("Checkout") {
     override val root = form {
         fieldset("Info") {
             field("Name") {
-                combobox(name, controller.personList) {
+                combobox(person, controller.personList) {
                     //items = controller.peopleList
                     converter = PeopleConverter()
                     makeAutocompletable()
@@ -47,7 +47,8 @@ class CheckoutFragment : Fragment("Checkout") {
                 items[0].checkedout = true
                 controller.bookList[index] = items[0]
                 println(items)
-                println("Checking out ${items[0]} to ${name.value} on ${wDate.value} and returning on ${rDate.value}")
+                println("Checking out ${items[0]} to ${person.value} on ${wDate.value} and returning on ${rDate.value}")
+                controller.checkedList.add(Checkout(person.value, items[0], wDate.value, rDate.value))
                 close()
             }
         }
