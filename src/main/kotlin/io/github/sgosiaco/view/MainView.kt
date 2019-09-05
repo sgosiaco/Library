@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import io.github.sgosiaco.library.Styles
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.geometry.Side
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
@@ -19,14 +20,17 @@ data class BookImport (
         @SerializedName("pub") val pub : String,
         @SerializedName("title") val title : String
 )
-data class Book(val title: String, val author: String, val publisher: String, val year: Int, var history: MutableList<Take> = mutableListOf())
-data class Person(val name: String, val email: String, var history : MutableList<Take> = mutableListOf())
-data class Take(val person: Person, val book: Book, val wDate: String, val rDate: String)
+data class Book(val title: String, val author: String, val publisher: String, val year: Int, var history: MutableList<Checkout> = mutableListOf())
+data class Person(val name: String, val email: String, var history : MutableList<Checkout> = mutableListOf())
+data class Checkout(val person: Person, val book: Book, val wDate: String, val rDate: String)
+
+class MyController: Controller() {
+    private val json = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
+    val books: ObservableList<BookImport> = FXCollections.observableArrayList(Gson().fromJson(json, Array<BookImport>::class.java).toList())
+}
 
 class MainView : View("Library") {
-    private val json = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
-    private val books = FXCollections.observableArrayList(Gson().fromJson(json, Array<BookImport>::class.java).toList())
-
+    private val controller: MyController by inject()
     override val root = vbox {
         menubar {
             menu("File") {
@@ -55,7 +59,7 @@ class MainView : View("Library") {
                 vGrow = Priority.ALWAYS
             }
             item("Books") {
-                tableview(books) {
+                tableview(controller.books) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
@@ -66,30 +70,39 @@ class MainView : View("Library") {
                     //columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
-                        item("Loan").action {
-                            selectedItem?.apply { println("Loaning $title")}
+                        item("Checkout").action {
+                            selectedItem?.apply {
+                                println("Loaning $title")
+                                find<CheckoutFragment>().openWindow()
+                            }
                         }
                         item("Check History").action {
-                            selectedItem?.apply { println("Checking $title")}
+                            selectedItem?.apply {
+                                println("Checking $title")
+                                find<HistoryFragment>().openWindow()
+                            }
                         }
                     }
 
                 }
             }
             item("People") {
-                tableview(books) {
+                tableview(controller.books) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
-                    readonlyColumn("Title", BookImport::title)
-                    readonlyColumn("Author", BookImport::author)
-                    readonlyColumn("Publisher", BookImport::pub)
-                    readonlyColumn("Year", BookImport::year)
+                    readonlyColumn("Name", BookImport::title)
+                    readonlyColumn("Email", BookImport::author)
+                    readonlyColumn("Phone number", BookImport::pub)
+                    readonlyColumn("Department", BookImport::year)
                     //columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
                         item("Check History").action {
-                            selectedItem?.apply { println("Checking $title")}
+                            selectedItem?.apply { 
+                                println("Checking $title")
+                                find<HistoryFragment>().openWindow()
+                            }
                         }
                     }
 
@@ -102,8 +115,8 @@ class MainView : View("Library") {
         val sean = Person("Sean Gosiaco", "sgosiaco@me.com")
         val ryan = Person("Ryan Gosiaco", "rgosiaco@me.com")
         val tobira = Book("Tobira", "Ito", "JPN", 2011)
-        val took = Take(sean, tobira, "Today", "Tomorrow")
-        val took2 = Take(ryan, tobira, "9/5/2019", "9/24/2019")
+        val took = Checkout(sean, tobira, "Today", "Tomorrow")
+        val took2 = Checkout(ryan, tobira, "9/5/2019", "9/24/2019")
         sean.history.add(took)
         tobira.history.add(took)
         tobira.history.add(took2)
@@ -122,4 +135,3 @@ class MainView : View("Library") {
 
     }
 }
-
