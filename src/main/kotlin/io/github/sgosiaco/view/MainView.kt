@@ -50,7 +50,7 @@ class MainView : View("Library") {
             }
         }
         drawer(side = Side.LEFT, multiselect = true) {
-            //tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+
             vboxConstraints {
                 vGrow = Priority.ALWAYS
             }
@@ -96,55 +96,6 @@ class MainView : View("Library") {
                 }
             }
         }
-        /*
-        tabpane {
-            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            vboxConstraints {
-                vGrow = Priority.ALWAYS
-            }
-            tab("Books") {
-                tableview(books) {
-                    vboxConstraints {
-                        vGrow = Priority.ALWAYS
-                    }
-                    readonlyColumn("Title", BookImport::title)
-                    readonlyColumn("Author", BookImport::author)
-                    readonlyColumn("Publisher", BookImport::pub)
-                    readonlyColumn("Year", BookImport::year)
-                    //columnResizePolicy = SmartResize.POLICY
-
-                    contextmenu {
-                        item("Loan").action {
-                            selectedItem?.apply { println("Loaning $title")}
-                        }
-                        item("Check History").action {
-                            selectedItem?.apply { println("Checking $title")}
-                        }
-                    }
-
-                }
-            }
-            tab("People") {
-                tableview(books) {
-                    vboxConstraints {
-                        vGrow = Priority.ALWAYS
-                    }
-                    readonlyColumn("Title", BookImport::title)
-                    readonlyColumn("Author", BookImport::author)
-                    readonlyColumn("Publisher", BookImport::pub)
-                    readonlyColumn("Year", BookImport::year)
-                    //columnResizePolicy = SmartResize.POLICY
-
-                    contextmenu {
-                        item("Check History").action {
-                            selectedItem?.apply { println("Checking $title")}
-                        }
-                    }
-
-                }
-            }
-        }
-        */
     }
 
     private fun test() {
