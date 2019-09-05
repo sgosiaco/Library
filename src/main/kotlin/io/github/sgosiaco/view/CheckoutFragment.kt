@@ -19,8 +19,7 @@ class CheckoutFragment : Fragment("Checkout") {
     private val person = SimpleObjectProperty<Person>()
     private val wDate = SimpleObjectProperty<LocalDate>()
     private val rDate = SimpleObjectProperty<LocalDate>()
-
-    private val items: ObservableList<Book> by param()
+    val book: Book by param()
 
     override val root = form {
         fieldset("Info") {
@@ -43,12 +42,12 @@ class CheckoutFragment : Fragment("Checkout") {
         }
         button ("Checkout") {
             action {
-                val index = controller.bookList.indexOf(items[0])
-                items[0].checkedout = true
-                controller.bookList[index] = items[0]
-                println(items)
-                println("Checking out ${items[0]} to ${person.value} on ${wDate.value} and returning on ${rDate.value}")
-                controller.checkedList.add(Checkout(person.value, items[0], wDate.value, rDate.value))
+                val index = controller.bookList.indexOf(book)
+                book.checkedout = true
+                controller.bookList[index] = book
+                println(book)
+                println("Checking out $book to ${person.value} on ${wDate.value} and returning on ${rDate.value}")
+                controller.checkedList.add(Checkout(person.value, book, wDate.value, rDate.value))
                 close()
             }
         }

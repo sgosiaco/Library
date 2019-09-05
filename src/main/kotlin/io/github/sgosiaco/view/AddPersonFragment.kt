@@ -31,6 +31,7 @@ class AddPersonFragment : Fragment("My View") {
             }
         }
         button("Add person") {
+            disableProperty().bind(name.isNull or email.isNull or aff.isNull)
             action {
                 controller.personList.add(Person(name.value, email.value, phone.value, aff.value))
                 close()
@@ -38,3 +39,5 @@ class AddPersonFragment : Fragment("My View") {
         }
     }
 }
+
+//TODO add input validation to fields. Also need to add checking to make sure fields are filled out before adding works

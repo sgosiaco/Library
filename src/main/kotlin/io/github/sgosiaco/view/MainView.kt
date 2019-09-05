@@ -102,10 +102,7 @@ class MainView : View("Library") {
                         item("Checkout").action {
                             selectedItem?.apply {
                                 println("Loaning $title $author $pub $year")
-
-                                val params = "items" to listOf(controller.bookList[controller.bookList.indexOf(Book(checkedout, author, year, pub, title))]).observable()
-                                find<CheckoutFragment>(params).openModal()
-                                //openInternalWindow(CheckoutFragment::class)
+                                find<CheckoutFragment>(mapOf(CheckoutFragment::book to this)).openModal()
                             }
                         }
                         item("Check History").action {
