@@ -82,9 +82,10 @@ class MainView : View("Library") {
                     contextmenu {
                         item("Checkout").action {
                             selectedItem?.apply {
-                                println("Loaning $title")
-                                //find<CheckoutFragment>().openWindow()
-                                openInternalWindow(CheckoutFragment::class)
+                                println("Loaning $title $author $pub $year")
+                                val params = "items" to listOf(BookImport(author, year, pub, title)).observable()
+                                find<CheckoutFragment>(params).openModal()
+                                //openInternalWindow(CheckoutFragment::class)
                             }
                         }
                         item("Check History").action {
