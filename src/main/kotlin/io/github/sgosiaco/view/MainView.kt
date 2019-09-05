@@ -6,6 +6,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.geometry.Side
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
@@ -26,7 +27,7 @@ data class Person (
         @SerializedName("aff") val aff : String
 )
 
-data class Checkout(val person: Person, val book: Book, val wDate: LocalDate, val rDate: LocalDate)
+data class Checkout(val person: Person, val book: Book, val wDate: LocalDate, val rDate: LocalDate, var returned: Boolean)
 
 class MyController: Controller() {
     private val bookjson = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
@@ -140,9 +141,9 @@ class MainView : View("Library") {
                 }
             }
             item("Checked Out") {
-                //val data = SortedFilteredList(controller.bookList)
-                //data.predicate = { it.checkedout }
-                tableview(controller.checkedList) {//data
+                val data = SortedFilteredList(controller.checkedList)
+                data.predicate = { !it.returned }
+                tableview(data) {//data
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
@@ -158,18 +159,32 @@ class MainView : View("Library") {
                     readonlyColumn("Book", Checkout::book)
                     readonlyColumn("Person", Checkout::person)
                     readonlyColumn("Withdrawal Date", Checkout::wDate)
-                    readonlyColumn("Return Date", Checkout::rDate)
+                    readonlyColumn("Return Date", Checkout::rDate).cellFormat {
+                        text = it.toString()
+                        style {
+                            if(it.isBefore(LocalDate.now())) {
+                                backgroundColor += c("#8b0000")
+                                textFill = Color.WHITE
+                            }
+                            else {
+                                backgroundColor += Color.WHITE
+                                textFill = Color.BLACK
+                            }
+                        }
+                    }
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
                         item("Return").action {
                             selectedItem?.apply {
                                 println("Returning ${book.title}")
-                                val index = controller.bookList.indexOf(book)
+                                var index = controller.bookList.indexOf(book)
                                 book.checkedout = false
                                 controller.bookList[index] = book
 
-                                controller.checkedList.remove(selectedItem)
+                                index = controller.checkedList.indexOf(selectedItem)
+                                returned = true
+                                controller.checkedList.set(index, selectedItem)
                             }
                         }
                     }

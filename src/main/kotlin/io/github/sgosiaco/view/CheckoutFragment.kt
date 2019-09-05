@@ -47,7 +47,7 @@ class CheckoutFragment : Fragment("Checkout") {
                 controller.bookList[index] = book
                 println(book)
                 println("Checking out $book to ${person.value} on ${wDate.value} and returning on ${rDate.value}")
-                controller.checkedList.add(Checkout(person.value, book, wDate.value, rDate.value))
+                controller.checkedList.add(Checkout(person.value, book, wDate.value, rDate.value, false))
                 close()
             }
         }
