@@ -144,7 +144,7 @@ class MainView : View("Library") {
                                 find<CheckoutFragment>(mapOf(CheckoutFragment::book to this)).openModal()
                             }
                         }
-                        item("Check History").action {
+                        item("Show History").action {
                             selectedItem?.apply {
                                 find<HistoryFragment>(mapOf(HistoryFragment::book to this)).openWindow()
                             }
@@ -168,7 +168,22 @@ class MainView : View("Library") {
                         item("Add person").action {
                             find<AddPersonFragment>().openModal()
                         }
-                        item("Check History").action {
+                        item("Edit person").action {
+                            selectedItem?.apply {
+                                find<EditPersonFragment>(mapOf(EditPersonFragment::person to this)).openModal()
+                            }
+                        }
+                        item("Delete person").action {
+                            selectedItem?.apply {
+                                confirm(
+                                        header = "Delete $name?",
+                                        actionFn = {
+                                            controller.peopleList.remove(selectedItem)
+                                        }
+                                )
+                            }
+                        }
+                        item("Show History").action {
                             selectedItem?.apply {
                                 find<HistoryFragment>(mapOf(HistoryFragment::person to this)).openWindow()
                             }
@@ -188,7 +203,18 @@ class MainView : View("Library") {
                     readonlyColumn("Email", Person::email)
                     readonlyColumn("Phone number", Person::phone)
                     columnResizePolicy = SmartResize.POLICY
+                    contextmenu {
+                        item("Return All").action {
+                            selectedItem?.apply {
 
+                            }
+                        }
+                        item("Show History").action {
+                            selectedItem?.apply {
+                                find<HistoryFragment>(mapOf(HistoryFragment::person to this)).openWindow()
+                            }
+                        }
+                    }
                     rowExpander(expandOnDoubleClick = true) { selected ->
                         paddingLeft = expanderColumn.width
                         val data = SortedFilteredList(controller.checkedList)
@@ -223,6 +249,11 @@ class MainView : View("Library") {
                                         index = controller.peopleList.indexOf(selected)
                                         selected.cNum -= 1
                                         controller.peopleList[index] = selected
+                                    }
+                                }
+                                item("Show History").action {
+                                    selectedItem?.apply {
+                                        find<HistoryFragment>(mapOf(HistoryFragment::book to this.book)).openWindow()
                                     }
                                 }
                             }
