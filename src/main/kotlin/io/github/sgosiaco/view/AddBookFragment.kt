@@ -35,3 +35,5 @@ class AddBookFragment : Fragment("Add new book") {
         }
     }
 }
+
+// TODO adding new book to bookList doesn't resort it alpha by title. need to add resort or insert sort by title.

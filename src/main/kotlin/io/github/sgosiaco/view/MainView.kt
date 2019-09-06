@@ -14,17 +14,17 @@ import kotlin.system.exitProcess
 
 data class Book (
         @SerializedName("checkedout") var checkedout: Boolean,
-        @SerializedName("author") val author : String,
-        @SerializedName("year") val year : Int,
-        @SerializedName("pub") val pub : String,
-        @SerializedName("title") val title : String
+        @SerializedName("author") var author : String,
+        @SerializedName("year") var year : Int,
+        @SerializedName("pub") var pub : String,
+        @SerializedName("title") var title : String
 )
 
 data class Person (
-        @SerializedName("name") val name : String,
-        @SerializedName("email") val email : String,
-        @SerializedName("phone") val phone : Int,
-        @SerializedName("aff") val aff : String
+        @SerializedName("name") var name : String,
+        @SerializedName("email") var email : String,
+        @SerializedName("phone") var phone : Int,
+        @SerializedName("aff") var aff : String
 )
 
 data class Checkout(val person: Person, val book: Book, val cDate: LocalDate, val dDate: LocalDate, var rDate: LocalDate?, var returned: Boolean)
@@ -89,10 +89,12 @@ class MainView : View("Library") {
             }
         }
         drawer(side = Side.LEFT, multiselect = true) {
+
             vboxConstraints {
                 vGrow = Priority.ALWAYS
             }
             item("Books") {
+                expanded = true
                 val data = SortedFilteredList(controller.bookList)
                 data.predicate = { !it.checkedout }
                 tableview(data) {
@@ -110,9 +112,20 @@ class MainView : View("Library") {
                         item("Add book").action {
                             find<AddBookFragment>().openModal()
                         }
+                        item("Edit book"). action {
+                            selectedItem?.apply {
+                                println("Editing $title")
+                                find<EditBookFragment>(mapOf(EditBookFragment::book to this)).openModal()
+                            }
+                        }
+                        item("Delete book"). action {
+                            selectedItem?.apply {
+                                println("Deleting $title")
+                            }
+                        }
                         item("Checkout").action {
                             selectedItem?.apply {
-                                println("Loaning $title $author $pub $year")
+                                println("Loaning $title")
                                 find<CheckoutFragment>(mapOf(CheckoutFragment::book to this)).openModal()
                             }
                         }
@@ -138,7 +151,7 @@ class MainView : View("Library") {
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
-                        item("Add").action {
+                        item("Add person").action {
                             find<AddPersonFragment>().openModal()
                         }
                         item("Check History").action {
