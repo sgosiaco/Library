@@ -23,7 +23,8 @@ data class Person (
         @SerializedName("name") var name : String,
         @SerializedName("email") var email : String,
         @SerializedName("phone") var phone : Int,
-        @SerializedName("aff") var aff : String
+        @SerializedName("aff") var aff : String,
+        @SerializedName("cNum") var cNum : Int
 ) {
     override fun toString(): String = "$name <$email>"
 }

@@ -34,7 +34,7 @@ class AddPersonFragment : Fragment("Add new person") {
         button("Add person") {
             disableProperty().bind(name.isNull or email.isNull or aff.isNull)
             action {
-                controller.peopleList.add(Person(name.value, email.value, phone.value, aff.value))
+                controller.peopleList.add(Person(name.value, email.value, phone.value, aff.value, 0))
                 close()
             }
         }

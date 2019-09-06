@@ -177,41 +177,55 @@ class MainView : View("Library") {
                 }
             }
             item("Checked Out") {
-                val data = SortedFilteredList(controller.checkedList)
-                data.predicate = { !it.returned }
+                val data = SortedFilteredList(controller.peopleList)
+                data.predicate = { it.cNum > 0 }
+
                 tableview(data) {//data
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
-                    readonlyColumn("Book", Checkout::book)
-                    readonlyColumn("Person", Checkout::person)
-                    readonlyColumn("Checked Out", Checkout::cDate)
-                    readonlyColumn("Due", Checkout::dDate).cellFormat {
-                        text = it.toString()
-                        style {
-                            if(it.isBefore(LocalDate.now())) {
-                                backgroundColor += c("#8b0000")
-                                textFill = Color.WHITE
-                            }
-                            else {
-                                backgroundColor += Color.WHITE
-                                textFill = Color.BLACK
-                            }
-                        }
-                    }
+                    readonlyColumn("Name", Person::name)
+                    readonlyColumn("Email", Person::email)
+                    readonlyColumn("Phone number", Person::phone)
                     columnResizePolicy = SmartResize.POLICY
 
-                    contextmenu {
-                        item("Return").action {
-                            selectedItem?.apply {
-                                var index = controller.bookList.indexOf(book)
-                                book.checkedout = false
-                                controller.bookList[index] = book
+                    rowExpander(expandOnDoubleClick = true) { selected ->
+                        paddingLeft = expanderColumn.width
+                        val data = SortedFilteredList(controller.checkedList)
+                        data.predicate = { it.person == selected && !it.returned }
+                        tableview(data) {
+                            readonlyColumn("Book", Checkout::book)
+                            readonlyColumn("Checked Out", Checkout::cDate)
+                            readonlyColumn("Due", Checkout::dDate).cellFormat {
+                                text = it.toString()
+                                style {
+                                    if(it.isBefore(LocalDate.now())) {
+                                        backgroundColor += c("#8b0000")
+                                        textFill = Color.WHITE
+                                    }
+                                    else {
+                                        backgroundColor += Color.WHITE
+                                        textFill = Color.BLACK
+                                    }
+                                }
+                            }
+                            contextmenu {
+                                item("Return").action {
+                                    selectedItem?.apply {
+                                        var index = controller.bookList.indexOf(book)
+                                        book.checkedout = false
+                                        controller.bookList[index] = book
 
-                                index = controller.checkedList.indexOf(selectedItem)
-                                returned = true
-                                rDate = LocalDate.now()
-                                controller.checkedList[index] = selectedItem
+                                        index = controller.checkedList.indexOf(selectedItem)
+                                        returned = true
+                                        rDate = LocalDate.now()
+                                        controller.checkedList[index] = selectedItem
+
+                                        index = controller.peopleList.indexOf(selected)
+                                        selected.cNum -= 1
+                                        controller.peopleList[index] = selected
+                                    }
+                                }
                             }
                         }
                     }

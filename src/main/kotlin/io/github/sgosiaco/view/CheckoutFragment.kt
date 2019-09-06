@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 class PeopleConverter: StringConverter<Person>() {
     override fun fromString(string: String): Person {
-        return Person(string, string, 0, string)
+        return Person(string, string, 0, string, 0)
     }
     override fun toString(person: Person): String {
         return person.name
@@ -50,9 +50,12 @@ class CheckoutFragment : Fragment("Checkout") {
                         header = "Checkout book?",
                         content = """Checkout "${book.title}" to ${person.value.name}?""",
                         actionFn = {
-                            val index = controller.bookList.indexOf(book)
+                            var index = controller.bookList.indexOf(book)
                             book.checkedout = true
                             controller.bookList[index] = book
+                            index = controller.peopleList.indexOf(person.value)
+                            person.value.cNum += 1
+                            controller.peopleList[index] = person.value
                             controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
                             close()
                         }
