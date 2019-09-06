@@ -124,12 +124,12 @@ class MainView : View("Library") {
                         item("Add book").action {
                             find<AddBookFragment>().openModal()
                         }
-                        item("Edit book"). action {
+                        item("Edit book").action {
                             selectedItem?.apply {
                                 find<EditBookFragment>(mapOf(EditBookFragment::book to this)).openModal()
                             }
                         }
-                        item("Delete book"). action {
+                        item("Delete book").action {
                             selectedItem?.apply {
                                 confirm(
                                         header = "Delete $title?",
@@ -146,7 +146,7 @@ class MainView : View("Library") {
                         }
                         item("Check History").action {
                             selectedItem?.apply {
-                                find<HistoryFragment>().openWindow()
+                                find<HistoryFragment>(mapOf(HistoryFragment::book to this)).openWindow()
                             }
                         }
                     }
@@ -170,7 +170,7 @@ class MainView : View("Library") {
                         }
                         item("Check History").action {
                             selectedItem?.apply {
-                                find<HistoryFragment>().openWindow()
+                                find<HistoryFragment>(mapOf(HistoryFragment::person to this)).openWindow()
                             }
                         }
                     }
@@ -180,7 +180,7 @@ class MainView : View("Library") {
                 val data = SortedFilteredList(controller.peopleList)
                 data.predicate = { it.cNum > 0 }
 
-                tableview(data) {//data
+                tableview(data) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
@@ -199,11 +199,10 @@ class MainView : View("Library") {
                             readonlyColumn("Due", Checkout::dDate).cellFormat {
                                 text = it.toString()
                                 style {
-                                    if(it.isBefore(LocalDate.now())) {
+                                    if (it.isBefore(LocalDate.now())) {
                                         backgroundColor += c("#8b0000")
                                         textFill = Color.WHITE
-                                    }
-                                    else {
+                                    } else {
                                         backgroundColor += Color.WHITE
                                         textFill = Color.BLACK
                                     }
