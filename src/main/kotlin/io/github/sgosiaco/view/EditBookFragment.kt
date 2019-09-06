@@ -6,31 +6,31 @@ import tornadofx.*
 
 class EditBookFragment : Fragment("Edit Book") {
     private val controller: MyController by inject()
-    private var bookTitle = SimpleStringProperty()
-    private var author = SimpleStringProperty()
-    private var pub = SimpleStringProperty()
-    private var year = SimpleIntegerProperty()
+    private var newTitle = SimpleStringProperty()
+    private var newAuthor = SimpleStringProperty()
+    private var newPub = SimpleStringProperty()
+    private var newYear = SimpleIntegerProperty()
     val book: Book by param()
 
     override val root = form {
         fieldset("Info") {
             field("Title") {
-                textfield(bookTitle) {
+                textfield(newTitle) {
                     textProperty().set(book.title)
                 }
             }
             field("Author(s)") {
-                textfield(author) {
+                textfield(newAuthor) {
                     textProperty().set(book.author)
                 }
             }
             field("Publisher(s)") {
-                textfield(pub) {
+                textfield(newPub) {
                     textProperty().set(book.pub)
                 }
             }
             field("Year") {
-                textfield(year) {
+                textfield(newYear) {
                     textProperty().set(book.year.toString())
                 }
             }
@@ -39,17 +39,25 @@ class EditBookFragment : Fragment("Edit Book") {
             //disableProperty().bind(bookTitle.isNull or author.isNull or pub.isNull)
             action {
                 confirm(
-                        header = "Save Changes?",
+                        header = "Apply Changes?",
                         actionFn = {
                             val index = controller.bookList.indexOf(book)
+                            /*
                             book.title = bookTitle.value
                             book.author = author.value
                             book.pub = pub.value
                             book.year = year.value.toInt()
+                             */
+                            book.apply {
+                                title = newTitle.value
+                                author = newAuthor.value
+                                pub = newPub.value
+                                year = newYear.value.toInt()
+                            }
                             controller.bookList[index] = book
+                            close()
                         }
                 )
-                close()
             }
         }
     }

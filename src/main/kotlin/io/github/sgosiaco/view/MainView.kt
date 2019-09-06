@@ -7,6 +7,7 @@ import javafx.collections.ObservableList
 import javafx.geometry.Side
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
@@ -30,17 +31,17 @@ data class Person (
 data class Checkout(val person: Person, val book: Book, val cDate: LocalDate, val dDate: LocalDate, var rDate: LocalDate?, var returned: Boolean)
 
 class MyController: Controller() {
-    private val bookjson = File("books.json").readText(Charsets.UTF_8)
-    val bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
+    private var bookjson = File("books.json").readText(Charsets.UTF_8)
+    var bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
 
-    private val peoplejson = File("people.json").readText(Charsets.UTF_8)
-    val personList: ObservableList<Person> = FXCollections.observableArrayList(Gson().fromJson(peoplejson, Array<Person>::class.java).toList())
+    private var peoplejson = File("people.json").readText(Charsets.UTF_8)
+    var peopleList: ObservableList<Person> = FXCollections.observableArrayList(Gson().fromJson(peoplejson, Array<Person>::class.java).toList())
 
-    private val checkedjson = File("checked.json").readText(Charsets.UTF_8)
-    val checkedList: ObservableList<Checkout> = FXCollections.observableArrayList(Gson().fromJson(checkedjson, Array<Checkout>::class.java).toList())
+    private var checkedjson = File("checked.json").readText(Charsets.UTF_8)
+    var checkedList: ObservableList<Checkout> = FXCollections.observableArrayList(Gson().fromJson(checkedjson, Array<Checkout>::class.java).toList())
 
     fun savePeople() {
-        File("people.json").writeText(Gson().toJson(personList))
+        File("people.json").writeText(Gson().toJson(peopleList))
     }
 
     fun saveBooks() {
@@ -50,6 +51,44 @@ class MyController: Controller() {
     fun saveChecked() {
         File("checked.json").writeText(Gson().toJson(checkedList))
     }
+
+    fun openDialog(type: String) {
+        val title = when(type) {
+            "book" -> "Open book list"
+            "person" -> "Open person list"
+            "checked" -> "Open checked list"
+            else -> "Error"
+        }
+        val chosenFile = chooseFile(
+                title = title,
+                filters = arrayOf(FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"))
+        )
+        if(chosenFile.size == 1) {
+            with(chosenFile[0]) {
+                val file = File(path)
+                when(type) {
+                    "book" -> {
+                        bookjson = file.readText(Charsets.UTF_8)
+                        bookList.setAll(FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList()))
+                    }
+                    "person" -> {
+                        peoplejson = file.readText(Charsets.UTF_8)
+                        peopleList.setAll(FXCollections.observableArrayList(Gson().fromJson(peoplejson, Array<Person>::class.java).toList()))
+                    }
+                    "checked" -> {
+                        checkedjson = file.readText(Charsets.UTF_8)
+                        checkedList.setAll(FXCollections.observableArrayList(Gson().fromJson(checkedjson, Array<Checkout>::class.java).toList()))
+                    }
+                    else -> {
+                        println("error")
+                    }
+                }
+            }
+        }
+        else {
+
+        }
+    }
 }
 
 class MainView : View("Library") {
@@ -57,21 +96,75 @@ class MainView : View("Library") {
     override val root = vbox {
         menubar {
             menu("File") {
-                item("Open") {
-                    action { println("Open")}
+                menu("Open") {
+                    item("Open book list") {
+                        action {
+                            controller.openDialog("book")
+                        }
+                    }
+                    item("Open person list") {
+                        action {
+                            controller.openDialog("person")
+                        }
+                    }
+                    item("Open checked list") {
+                        action {
+                            controller.openDialog("checked")
+                        }
+                    }
                 }
-                item("Save", "Shortcut+S") {
-                    action {
-                        println("Save")
-                        controller.saveBooks()
-                        controller.savePeople()
-                        controller.saveChecked()
+                menu("Save") {
+                    item("Save Books") {
+                        action {
+                            confirm(
+                                    header = "Save the book list?",
+                                    actionFn = {
+                                        controller.saveBooks()
+                                    }
+                            )
+                        }
+                    }
+                    item("Save People") {
+                        action {
+                            confirm(
+                                    header = "Save the people list?",
+                                    actionFn = {
+                                        controller.savePeople()
+                                    }
+                            )
+                        }
+                    }
+                    item("Save Checked Out") {
+                        action {
+                            confirm(
+                                    header = "Save the checked out list?",
+                                    actionFn = {
+                                        controller.saveChecked()
+                                    }
+                            )
+                        }
+                    }
+                    item("Save all", "Shortcut+S") {
+                        action {
+                            confirm(
+                                    header = "Save all lists?",
+                                    actionFn = {
+                                        controller.saveBooks()
+                                        controller.savePeople()
+                                        controller.saveChecked()
+                                    }
+                            )
+                        }
                     }
                 }
                 item("Quit", "Shortcut+Q") {
                     action {
-                        println("Quit")
-                        exitProcess(1)
+                        confirm(
+                                header = "Are you sure you want to quit?",
+                                actionFn = {
+                                    exitProcess(1)
+                                }
+                        )
                     }
                 }
             }
@@ -105,7 +198,6 @@ class MainView : View("Library") {
                     readonlyColumn("Author", Book::author)
                     readonlyColumn("Publisher", Book::pub)
                     readonlyColumn("Year", Book::year)
-                    //readonlyColumn("Checked Out", Book::checkedout)
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
@@ -114,24 +206,26 @@ class MainView : View("Library") {
                         }
                         item("Edit book"). action {
                             selectedItem?.apply {
-                                println("Editing $title")
                                 find<EditBookFragment>(mapOf(EditBookFragment::book to this)).openModal()
                             }
                         }
                         item("Delete book"). action {
                             selectedItem?.apply {
-                                println("Deleting $title")
+                                confirm(
+                                        header = "Delete $title?",
+                                        actionFn = {
+                                            controller.bookList.remove(selectedItem)
+                                        }
+                                )
                             }
                         }
                         item("Checkout").action {
                             selectedItem?.apply {
-                                println("Loaning $title")
                                 find<CheckoutFragment>(mapOf(CheckoutFragment::book to this)).openModal()
                             }
                         }
                         item("Check History").action {
                             selectedItem?.apply {
-                                println("Checking $title")
                                 find<HistoryFragment>().openWindow()
                             }
                         }
@@ -140,7 +234,7 @@ class MainView : View("Library") {
                 }
             }
             item("People") {
-                tableview(controller.personList) {
+                tableview(controller.peopleList) {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
@@ -156,7 +250,6 @@ class MainView : View("Library") {
                         }
                         item("Check History").action {
                             selectedItem?.apply {
-                                println("Checking $title")
                                 find<HistoryFragment>().openWindow()
                             }
                         }
@@ -170,15 +263,6 @@ class MainView : View("Library") {
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
-                    //readonlyColumn("Title", Book::title)
-                    //readonlyColumn("Author", Book::author)
-                    //readonlyColumn("Publisher", Book::pub)
-                    //readonlyColumn("Year", Book::year)
-
-                    //readonlyColumn("Name", Book::title)
-                    //readonlyColumn("Email", Book::title)
-                    //readonlyColumn("Phone number", Book::title)
-                    //readonlyColumn("Affiliation", Book::title)
                     readonlyColumn("Book", Checkout::book)
                     readonlyColumn("Person", Checkout::person)
                     readonlyColumn("Checked Out", Checkout::cDate)
@@ -200,7 +284,6 @@ class MainView : View("Library") {
                     contextmenu {
                         item("Return").action {
                             selectedItem?.apply {
-                                println("Returning ${book.title}")
                                 var index = controller.bookList.indexOf(book)
                                 book.checkedout = false
                                 controller.bookList[index] = book

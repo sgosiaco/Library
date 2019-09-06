@@ -23,8 +23,7 @@ class CheckoutFragment : Fragment("Checkout") {
     override val root = form {
         fieldset("Info") {
             field("Name") {
-                combobox(person, controller.personList) {
-                    //items = controller.peopleList
+                combobox(person, controller.peopleList) {
                     converter = PeopleConverter()
                     makeAutocompletable()
 
@@ -43,13 +42,18 @@ class CheckoutFragment : Fragment("Checkout") {
         }
         button ("Checkout") {
             action {
-                val index = controller.bookList.indexOf(book)
-                book.checkedout = true
-                controller.bookList[index] = book
-                println(book)
-                println("Checking out $book to ${person.value} on ${cDate.value} and returning on ${dDate.value}")
-                controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
-                close()
+                confirm(
+                        header = "Checkout book?",
+                        content = """Checkout "${book.title}" to ${person.value.name}?""",
+                        actionFn = {
+                            val index = controller.bookList.indexOf(book)
+                            book.checkedout = true
+                            controller.bookList[index] = book
+                            controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
+                            close()
+                        }
+                )
+
             }
         }
     }
