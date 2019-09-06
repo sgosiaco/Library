@@ -5,13 +5,13 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import tornadofx.*
 
-class AddPersonFragment : Fragment("My View") {
+class AddPersonFragment : Fragment("Add new person") {
     private val controller: MyController by inject()
-    private var name = SimpleStringProperty()
-    private var email = SimpleStringProperty()
-    private var phone = SimpleIntegerProperty()
-    private var aff = SimpleStringProperty()
-    private val affilliations = FXCollections.observableArrayList<String>("Alumni", "Faculty", "Staff", "Student")
+    private val name = SimpleStringProperty()
+    private val email = SimpleStringProperty()
+    private val phone = SimpleIntegerProperty()
+    private val aff = SimpleStringProperty()
+    private val affiliations = FXCollections.observableArrayList<String>("Alumni", "Faculty", "Staff", "Student")
 
     override val root = form {
         fieldset("Info") {
@@ -25,7 +25,7 @@ class AddPersonFragment : Fragment("My View") {
                 textfield(phone)
             }
             field("Affiliation") {
-                combobox(aff, affilliations) {
+                combobox(aff, affiliations) {
                 }
             }
         }

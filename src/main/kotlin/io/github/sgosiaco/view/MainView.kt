@@ -77,7 +77,14 @@ class MainView : View("Library") {
             }
             menu("Edit") {
                 item("Add new book") {
-                    action { println("Add")}
+                    action {
+                        find<AddBookFragment>().openModal()
+                    }
+                }
+                item("Add new person") {
+                    action {
+                        find<AddPersonFragment>().openModal()
+                    }
                 }
             }
         }
@@ -100,6 +107,9 @@ class MainView : View("Library") {
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
+                        item("Add book").action {
+                            find<AddBookFragment>().openModal()
+                        }
                         item("Checkout").action {
                             selectedItem?.apply {
                                 println("Loaning $title $author $pub $year")
