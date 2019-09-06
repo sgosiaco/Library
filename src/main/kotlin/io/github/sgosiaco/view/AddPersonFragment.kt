@@ -26,7 +26,6 @@ class AddPersonFragment : Fragment("My View") {
             }
             field("Affiliation") {
                 combobox(aff, affilliations) {
-                    //makeAutocompletable()
                 }
             }
         }

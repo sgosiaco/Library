@@ -27,10 +27,10 @@ data class Person (
         @SerializedName("aff") val aff : String
 )
 
-data class Checkout(val person: Person, val book: Book, val wDate: LocalDate, val rDate: LocalDate, var returned: Boolean)
+data class Checkout(val person: Person, val book: Book, val cDate: LocalDate, val dDate: LocalDate, var rDate: LocalDate?, var returned: Boolean)
 
 class MyController: Controller() {
-    private val bookjson = File("books.json").readText(Charsets.UTF_8) //System.getProperty("user.dir")+"""\books.json"""
+    private val bookjson = File("books.json").readText(Charsets.UTF_8)
     val bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
 
     private val peoplejson = File("people.json").readText(Charsets.UTF_8)
@@ -158,8 +158,8 @@ class MainView : View("Library") {
                     //readonlyColumn("Affiliation", Book::title)
                     readonlyColumn("Book", Checkout::book)
                     readonlyColumn("Person", Checkout::person)
-                    readonlyColumn("Withdrawal Date", Checkout::wDate)
-                    readonlyColumn("Return Date", Checkout::rDate).cellFormat {
+                    readonlyColumn("Checked Out", Checkout::cDate)
+                    readonlyColumn("Due", Checkout::dDate).cellFormat {
                         text = it.toString()
                         style {
                             if(it.isBefore(LocalDate.now())) {
@@ -184,7 +184,8 @@ class MainView : View("Library") {
 
                                 index = controller.checkedList.indexOf(selectedItem)
                                 returned = true
-                                controller.checkedList.set(index, selectedItem)
+                                rDate = LocalDate.now()
+                                controller.checkedList[index] = selectedItem
                             }
                         }
                     }

@@ -1,7 +1,6 @@
 package io.github.sgosiaco.view
 
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.ObservableList
 import javafx.util.StringConverter
 import tornadofx.*
 import java.time.LocalDate
@@ -17,8 +16,8 @@ class PeopleConverter: StringConverter<Person>() {
 class CheckoutFragment : Fragment("Checkout") {
     private val controller: MyController by inject()
     private val person = SimpleObjectProperty<Person>()
-    private val wDate = SimpleObjectProperty<LocalDate>()
-    private val rDate = SimpleObjectProperty<LocalDate>()
+    private val cDate = SimpleObjectProperty<LocalDate>()
+    private val dDate = SimpleObjectProperty<LocalDate>()
     val book: Book by param()
 
     override val root = form {
@@ -31,13 +30,15 @@ class CheckoutFragment : Fragment("Checkout") {
 
                 }
             }
-            field("Checkout") {
-                datepicker(wDate){
+            field("Checkout Date") {
+                datepicker(cDate){
                     value = LocalDate.now()
                 }
             }
-            field("Return") {
-                datepicker(rDate)
+            field("Due Date") {
+                datepicker(dDate) {
+                    value = LocalDate.now().plusWeeks(2)
+                }
             }
         }
         button ("Checkout") {
@@ -46,8 +47,8 @@ class CheckoutFragment : Fragment("Checkout") {
                 book.checkedout = true
                 controller.bookList[index] = book
                 println(book)
-                println("Checking out $book to ${person.value} on ${wDate.value} and returning on ${rDate.value}")
-                controller.checkedList.add(Checkout(person.value, book, wDate.value, rDate.value, false))
+                println("Checking out $book to ${person.value} on ${cDate.value} and returning on ${dDate.value}")
+                controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
                 close()
             }
         }
