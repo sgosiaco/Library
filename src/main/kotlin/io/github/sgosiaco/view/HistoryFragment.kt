@@ -1,5 +1,7 @@
 package io.github.sgosiaco.view
 
+import io.github.sgosiaco.library.Checkout
+import io.github.sgosiaco.library.MyController
 import javafx.scene.layout.Priority
 import tornadofx.*
 

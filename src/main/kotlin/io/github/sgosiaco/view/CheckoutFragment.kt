@@ -1,5 +1,9 @@
 package io.github.sgosiaco.view
 
+import io.github.sgosiaco.library.Book
+import io.github.sgosiaco.library.Checkout
+import io.github.sgosiaco.library.MyController
+import io.github.sgosiaco.library.Person
 import javafx.beans.property.SimpleObjectProperty
 import javafx.util.StringConverter
 import tornadofx.*

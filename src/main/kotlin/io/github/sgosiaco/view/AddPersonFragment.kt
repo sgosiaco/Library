@@ -1,5 +1,7 @@
 package io.github.sgosiaco.view
 
+import io.github.sgosiaco.library.MyController
+import io.github.sgosiaco.library.Person
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections

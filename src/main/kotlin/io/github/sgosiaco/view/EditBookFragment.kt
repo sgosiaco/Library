@@ -1,5 +1,7 @@
 package io.github.sgosiaco.view
 
+import io.github.sgosiaco.library.Book
+import io.github.sgosiaco.library.MyController
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
