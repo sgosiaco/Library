@@ -15,16 +15,27 @@ data class Book (
         @SerializedName("year") var year : Int,
         @SerializedName("pub") var pub : String,
         @SerializedName("title") var title : String
-)
+) {
+    override fun toString(): String = title
+}
 
 data class Person (
         @SerializedName("name") var name : String,
         @SerializedName("email") var email : String,
         @SerializedName("phone") var phone : Int,
         @SerializedName("aff") var aff : String
-)
+) {
+    override fun toString(): String = "$name <$email>"
+}
 
-data class Checkout(val person: Person, val book: Book, val cDate: LocalDate, val dDate: LocalDate, var rDate: LocalDate?, var returned: Boolean)
+data class Checkout(
+        val person: Person,
+        val book: Book,
+        val cDate: LocalDate,
+        val dDate: LocalDate,
+        var rDate: LocalDate?,
+        var returned: Boolean
+)
 
 class MyController: Controller() {
     private var bookjson = File("books.json").readText(Charsets.UTF_8)
@@ -80,9 +91,6 @@ class MyController: Controller() {
                     }
                 }
             }
-        }
-        else {
-
         }
     }
 }
