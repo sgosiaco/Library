@@ -206,7 +206,24 @@ class MainView : View("Library") {
                     contextmenu {
                         item("Return All").action {
                             selectedItem?.apply {
+                                confirm (
+                                        header = "Return all books borrowed by $name?",
+                                        actionFn = {
+                                            var index = controller.peopleList.indexOf(this)
+                                            cNum = 0
+                                            controller.peopleList[index] = this
+                                            controller.checkedList.filter{!it.returned}.forEach {
+                                                index = controller.bookList.indexOf(it.book)
+                                                it.book.checkedout = false
+                                                controller.bookList[index] = it.book
 
+                                                index = controller.checkedList.indexOf(it)
+                                                it.returned = true
+                                                it.rDate = LocalDate.now()
+                                                controller.checkedList[index] = it
+                                            }
+                                        }
+                                )
                             }
                         }
                         item("Show History").action {

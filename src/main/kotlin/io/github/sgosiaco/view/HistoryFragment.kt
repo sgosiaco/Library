@@ -11,20 +11,20 @@ class HistoryFragment : Fragment() {
     private val controller: MyController by inject()
     val book: Book? by param()
     val person: Person? by param()
-
-    override val root = vbox {
-        val data = SortedFilteredList(controller.checkedList)
+    private val data = SortedFilteredList(controller.checkedList)
+    init {
         data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
+    }
+
+    override val root = tableview(data) {
         title = """History of "${book?.title ?: person?.name}" """
-        tableview(data) {
-            vboxConstraints {
-                vGrow = Priority.ALWAYS
-            }
-            readonlyColumn("Book", Checkout::book)
-            readonlyColumn("Person", Checkout::person)
-            readonlyColumn("Checked Out Date", Checkout::cDate)
-            readonlyColumn("Return Date", Checkout::rDate)
-            columnResizePolicy = SmartResize.POLICY
+        vboxConstraints {
+            vGrow = Priority.ALWAYS
         }
+        readonlyColumn("Book", Checkout::book)
+        readonlyColumn("Person", Checkout::person)
+        readonlyColumn("Checked Out Date", Checkout::cDate)
+        readonlyColumn("Return Date", Checkout::rDate)
+        columnResizePolicy = SmartResize.POLICY
     }
 }
