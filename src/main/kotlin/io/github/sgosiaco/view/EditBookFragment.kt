@@ -1,9 +1,12 @@
 package io.github.sgosiaco.view
 
 import io.github.sgosiaco.library.Book
+import io.github.sgosiaco.library.BookModel
 import io.github.sgosiaco.library.MyController
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.util.converter.IntegerStringConverter
+import javafx.util.converter.NumberStringConverter
 import tornadofx.*
 
 class EditBookFragment : Fragment() {
@@ -16,6 +19,7 @@ class EditBookFragment : Fragment() {
 
     override val root = form {
         title = """Editing ${book.title}"""
+        /*
         fieldset("Info") {
             field("Title") {
                 textfield(newTitle) {
@@ -38,22 +42,41 @@ class EditBookFragment : Fragment() {
                 }
             }
         }
-        button("Save") {
-            action {
-                confirm(
-                        header = "Apply Changes?",
-                        actionFn = {
-                            val index = controller.bookList.indexOf(book)
-                            book.apply {
-                                title = newTitle.value
-                                author = newAuthor.value
-                                pub = newPub.value
-                                year = newYear.value.toInt()
+
+         */
+        fieldset("Info") {
+            field("Title") {
+                textfield(controller.bookModel.title)
+            }
+            field("Author(s)") {
+                textfield(controller.bookModel.author)
+            }
+            field("Publisher(s)") {
+                textfield(controller.bookModel.pub)
+            }
+            field("Year") {
+                textfield(controller.bookModel.year, NumberStringConverter())
+            }
+        }
+        hbox {
+            button("Save") {
+                enableWhen(controller.bookModel.dirty)
+                action {
+                    confirm(
+                            header = "Apply Changes?",
+                            actionFn = {
+                                controller.bookModel.commit()
+                                close()
                             }
-                            controller.bookList[index] = book
-                            close()
-                        }
-                )
+                    )
+                }
+            }
+            button("Cancel").action {
+                //add rollback here?
+                close()
+            }
+            button("Reset").action {
+                controller.bookModel.rollback()
             }
         }
     }

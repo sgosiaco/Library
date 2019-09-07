@@ -2,6 +2,9 @@ package io.github.sgosiaco.library
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.stage.FileChooser
@@ -10,13 +13,21 @@ import java.io.File
 import java.time.LocalDate
 
 data class Book (
-        @SerializedName("checkedout") var checkedout: Boolean,
-        @SerializedName("author") var author : String,
-        @SerializedName("year") var year : Int,
-        @SerializedName("pub") var pub : String,
-        @SerializedName("title") var title : String
+        @SerializedName("checkedout") var checkedout: Boolean = false,
+        @SerializedName("author") var author : String = "",
+        @SerializedName("year") var year : Int = -1,
+        @SerializedName("pub") var pub : String = "",
+        @SerializedName("title") var title : String = ""
 ) {
     override fun toString(): String = title
+}
+
+class BookModel : ItemViewModel<Book>() {
+    val checkedout = bind{ SimpleBooleanProperty(item?.checkedout ?: false) }
+    val author = bind { SimpleStringProperty(item?.author ?: "") }
+    val year = bind { SimpleIntegerProperty(item?.year ?: -1) }
+    val pub = bind { SimpleStringProperty(item?.pub ?: "") }
+    val title = bind { SimpleStringProperty(item?.title ?: "") }
 }
 
 data class Person (
@@ -39,6 +50,7 @@ data class Checkout(
 )
 
 class MyController: Controller() {
+    val bookModel = BookModel()
     private var bookjson = File("books.json").readText(Charsets.UTF_8)
     var bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
 

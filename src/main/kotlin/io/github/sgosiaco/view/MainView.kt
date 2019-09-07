@@ -1,9 +1,6 @@
 package io.github.sgosiaco.view
 
-import io.github.sgosiaco.library.Book
-import io.github.sgosiaco.library.Checkout
-import io.github.sgosiaco.library.MyController
-import io.github.sgosiaco.library.Person
+import io.github.sgosiaco.library.*
 import javafx.geometry.Side
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
@@ -72,6 +69,7 @@ class MainView : View("Library") {
                 val data = SortedFilteredList(controller.bookList)
                 data.predicate = { !it.checkedout }
                 tableview(data) {
+                    bindSelected(controller.bookModel)
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }
