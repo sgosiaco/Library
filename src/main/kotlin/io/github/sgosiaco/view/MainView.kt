@@ -17,92 +17,53 @@ class MainView : View("Library") {
         menubar {
             menu("File") {
                 menu("Open") {
-                    item("Open book list") {
-                        action {
-                            controller.openDialog("book")
-                        }
-                    }
-                    item("Open person list") {
-                        action {
-                            controller.openDialog("person")
-                        }
-                    }
-                    item("Open checked list") {
-                        action {
-                            controller.openDialog("checked")
-                        }
-                    }
+                    item("Open book list").action { controller.openDialog("book") }
+                    item("Open person list").action { controller.openDialog("person") }
+                    item("Open checked list").action { controller.openDialog("checked") }
                 }
                 menu("Save") {
-                    item("Save Books") {
-                        action {
-                            confirm(
-                                    header = "Save the book list?",
-                                    actionFn = {
-                                        controller.saveBooks()
-                                    }
-                            )
-                        }
-                    }
-                    item("Save People") {
-                        action {
-                            confirm(
-                                    header = "Save the people list?",
-                                    actionFn = {
-                                        controller.savePeople()
-                                    }
-                            )
-                        }
-                    }
-                    item("Save Checked Out") {
-                        action {
-                            confirm(
-                                    header = "Save the checked out list?",
-                                    actionFn = {
-                                        controller.saveChecked()
-                                    }
-                            )
-                        }
-                    }
-                    item("Save all", "Shortcut+S") {
-                        action {
-                            confirm(
-                                    header = "Save all lists?",
-                                    actionFn = {
-                                        controller.saveBooks()
-                                        controller.savePeople()
-                                        controller.saveChecked()
-                                    }
-                            )
-                        }
-                    }
-                }
-                item("Quit", "Shortcut+Q") {
-                    action {
+                    item("Save Books").action {
                         confirm(
-                                header = "Are you sure you want to quit?",
+                                header = "Save the book list?",
+                                actionFn = { controller.saveBooks() }
+                        )
+                    }
+                    item("Save People").action {
+                        confirm(
+                                header = "Save the people list?",
+                                actionFn = { controller.savePeople() }
+                        )
+                    }
+                    item("Save Checked Out").action {
+                        confirm(
+                                header = "Save the checked out list?",
+                                actionFn = { controller.saveChecked() }
+                        )
+                    }
+                    item("Save all", "Shortcut+S").action {
+                        confirm(
+                                header = "Save all lists?",
                                 actionFn = {
-                                    exitProcess(1)
+                                    controller.saveBooks()
+                                    controller.savePeople()
+                                    controller.saveChecked()
                                 }
                         )
                     }
                 }
+                item("Quit", "Shortcut+Q").action {
+                    confirm(
+                            header = "Are you sure you want to quit?",
+                            actionFn = { exitProcess(1) }
+                    )
+                }
             }
             menu("Edit") {
-                item("Add new book") {
-                    action {
-                        find<AddBookFragment>().openModal()
-                    }
-                }
-                item("Add new person") {
-                    action {
-                        find<AddPersonFragment>().openModal()
-                    }
-                }
+                item("Add new book").action { find<AddBookFragment>().openModal() }
+                item("Add new person").action { find<AddPersonFragment>().openModal() }
             }
         }
         drawer(side = Side.LEFT, multiselect = true) {
-
             vboxConstraints {
                 vGrow = Priority.ALWAYS
             }
@@ -121,9 +82,7 @@ class MainView : View("Library") {
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
-                        item("Add book").action {
-                            find<AddBookFragment>().openModal()
-                        }
+                        item("Add book").action { find<AddBookFragment>().openModal() }
                         item("Edit book").action {
                             selectedItem?.apply {
                                 find<EditBookFragment>(mapOf(EditBookFragment::book to this)).openModal()
@@ -133,9 +92,7 @@ class MainView : View("Library") {
                             selectedItem?.apply {
                                 confirm(
                                         header = "Delete $title?",
-                                        actionFn = {
-                                            controller.bookList.remove(selectedItem)
-                                        }
+                                        actionFn = { controller.bookList.remove(selectedItem) }
                                 )
                             }
                         }
@@ -165,9 +122,7 @@ class MainView : View("Library") {
                     columnResizePolicy = SmartResize.POLICY
 
                     contextmenu {
-                        item("Add person").action {
-                            find<AddPersonFragment>().openModal()
-                        }
+                        item("Add person").action { find<AddPersonFragment>().openModal() }
                         item("Edit person").action {
                             selectedItem?.apply {
                                 find<EditPersonFragment>(mapOf(EditPersonFragment::person to this)).openModal()
@@ -177,9 +132,7 @@ class MainView : View("Library") {
                             selectedItem?.apply {
                                 confirm(
                                         header = "Delete $name?",
-                                        actionFn = {
-                                            controller.peopleList.remove(selectedItem)
-                                        }
+                                        actionFn = { controller.peopleList.remove(selectedItem) }
                                 )
                             }
                         }
@@ -206,13 +159,13 @@ class MainView : View("Library") {
                     contextmenu {
                         item("Return All").action {
                             selectedItem?.apply {
-                                confirm (
+                                confirm(
                                         header = "Return all books borrowed by $name?",
                                         actionFn = {
                                             var index = controller.peopleList.indexOf(this)
                                             cNum = 0
                                             controller.peopleList[index] = this
-                                            controller.checkedList.filter{!it.returned}.forEach {
+                                            controller.checkedList.filter { !it.returned }.forEach {
                                                 index = controller.bookList.indexOf(it.book)
                                                 it.book.checkedout = false
                                                 controller.bookList[index] = it.book
