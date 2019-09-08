@@ -52,8 +52,11 @@ class EditBookFragment : Fragment() {
                 controller.sBook.rollback()
                 close()
             }
-            button("Reset").action {
-                controller.sBook.rollback()
+            button("Reset") {
+                enableWhen(controller.sBook.dirty)
+                action {
+                    controller.sBook.rollback()
+                }
             }
         }
     }

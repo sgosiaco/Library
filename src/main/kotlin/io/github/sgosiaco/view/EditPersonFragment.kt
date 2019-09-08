@@ -46,8 +46,11 @@ class EditPersonFragment : Fragment() {
                 controller.sPerson.rollback()
                 close()
             }
-            button("Reset").action {
-                controller.sPerson.rollback()
+            button("Reset") {
+                enableWhen(controller.sPerson.dirty)
+                action {
+                    controller.sPerson.rollback()
+                }
             }
         }
     }

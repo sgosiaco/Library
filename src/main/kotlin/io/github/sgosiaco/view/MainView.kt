@@ -13,6 +13,7 @@ import kotlin.system.exitProcess
 
 class MainView : View("Library") {
     private val controller: MyController by inject()
+    private var search = ""
 
     override fun onDock() {
         currentStage?.isMaximized = true
@@ -64,12 +65,18 @@ class MainView : View("Library") {
                 }
             }
             menu("Add") {
-                item("Add New book").action { find<AddBookFragment>().openModal() }
-                item("Add New person").action { find<AddPersonFragment>().openModal() }
+                item("Add New Book").action { find<AddBookFragment>().openModal() }
+                item("Add New Person").action { find<AddPersonFragment>().openModal() }
             }
             menu("Edit") {
-                item("Modify Selected").action {
-                    if(controller.sBook.isNotEmpty) {
+                item("Duplicate Book").action {
+                    if(controller.focus == "Books") {
+                        val index = controller.bookList.indexOf(controller.sBook.item)
+                        controller.bookList.add(controller.sBook.item.copy())
+                    }
+                }
+                item("Modify Selected", "Shortcut+E").action {
+                    if(controller.focus == "Books") {
                         find<EditBookFragment>().openModal()
                     }
                     else {
@@ -79,9 +86,10 @@ class MainView : View("Library") {
                 item("Show history", "Shortcut+H").action { find<HistoryFragment>().openWindow() }
             }
         }
+        textfield(search)
         drawer(side = Side.LEFT, multiselect = true) {
             vgrow = Priority.ALWAYS
-            item("Books/People") {
+            item("Books/People", showHeader = false) {
                 expanded = true
                 tabpane {
                     selectionModel.selectedItemProperty().onChange {
@@ -166,7 +174,7 @@ class MainView : View("Library") {
                 }
 
             }
-            item("Checked Out/History") {
+            item("Checked Out/History", showHeader = false) {
                 tabpane {
                     tab("Checked Out") {
                         val data = SortedFilteredList(controller.peopleList)
