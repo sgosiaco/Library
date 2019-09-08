@@ -1,5 +1,6 @@
 package io.github.sgosiaco.view
 
+import io.github.sgosiaco.library.Action
 import io.github.sgosiaco.library.MyController
 import io.github.sgosiaco.library.Person
 import javafx.beans.property.SimpleStringProperty
@@ -35,8 +36,10 @@ class EditPersonFragment : Fragment() {
                             header = "Apply Changes?",
                             actionFn = {
                                 val index = controller.peopleList.indexOf(controller.sPerson.item)
+                                val old = controller.sPerson.item.copy()
                                 controller.sPerson.commit()
                                 controller.peopleList[index] = controller.sPerson.item
+                                controller.actionList.add(Action("Edited", old, controller.sPerson.item.copy()))
                                 close()
                             }
                     )

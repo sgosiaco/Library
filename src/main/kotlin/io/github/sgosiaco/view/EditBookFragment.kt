@@ -1,5 +1,6 @@
 package io.github.sgosiaco.view
 
+import io.github.sgosiaco.library.Action
 import io.github.sgosiaco.library.MyController
 import javafx.util.converter.IntegerStringConverter
 import tornadofx.*
@@ -41,8 +42,10 @@ class EditBookFragment : Fragment() {
                             header = "Apply Changes?",
                             actionFn = {
                                 val index = controller.bookList.indexOf(controller.sBook.item)
+                                val old = controller.sBook.item.copy()
                                 controller.sBook.commit()
                                 controller.bookList[index] = controller.sBook.item
+                                controller.actionList.add(Action("Edited", old, controller.sBook.item.copy()))
                                 close()
                             }
                     )

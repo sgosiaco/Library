@@ -55,6 +55,8 @@ data class Checkout(
         var returned: Boolean
 )
 
+data class Action(var action: String, var obj: Any, var newObj: Any)
+
 class MyController: Controller() {
     val sBook = SelectedBook()
     val sPerson = SelectedPerson()
@@ -68,6 +70,8 @@ class MyController: Controller() {
 
     private var checkedjson = File("checked.json").readText(Charsets.UTF_8)
     var checkedList: ObservableList<Checkout> = FXCollections.observableArrayList(Gson().fromJson(checkedjson, Array<Checkout>::class.java).toList())
+
+    var actionList: ObservableList<Action> = FXCollections.observableArrayList()
 
     fun savePeople() {
         File("people.json").writeText(Gson().toJson(peopleList))

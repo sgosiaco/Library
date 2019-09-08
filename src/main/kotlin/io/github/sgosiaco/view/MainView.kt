@@ -1,10 +1,8 @@
 package io.github.sgosiaco.view
 
 import io.github.sgosiaco.library.*
-import javafx.application.Platform
 import javafx.geometry.Side
 import javafx.scene.control.TabPane
-import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
@@ -17,6 +15,30 @@ class MainView : View("Library") {
 
     override fun onDock() {
         currentStage?.isMaximized = true
+    }
+
+    private fun undo(act: Action) {
+        with(act) {
+            if(obj is Book) {
+                val index = controller.bookList.indexOf(newObj)
+                when(action) {
+                    "Added" -> controller.bookList.remove(obj as Book)
+                    "Edited" -> controller.bookList[index] = obj as Book
+                    "Deleted" -> controller.bookList.add(obj as Book)
+                    else -> println("Error with undo")
+                }
+            }
+            else {
+                val index = controller.peopleList.indexOf(newObj)
+                when(action) {
+                    "Added" -> controller.peopleList.remove(obj as Person)
+                    "Edited" -> controller.peopleList[index] = obj as Person
+                    "Deleted" -> controller.peopleList.add(obj as Person)
+                    else -> println("Error with undo")
+                }
+            }
+            controller.actionList.remove(act)
+        }
     }
 
     override val root = vbox {
@@ -84,6 +106,11 @@ class MainView : View("Library") {
                     }
                 }
                 item("Show history", "Shortcut+H").action { find<HistoryFragment>().openWindow() }
+                item("Undo", "Shortcut+Z").action {
+                    if(controller.actionList.isNotEmpty()) {
+                        undo(controller.actionList.last())
+                    }
+                }
             }
         }
         textfield(search)
@@ -120,7 +147,11 @@ class MainView : View("Library") {
                                     selectedItem?.apply {
                                         confirm(
                                                 header = "Delete $title?",
-                                                actionFn = { controller.bookList.remove(selectedItem) }
+                                                actionFn = {
+                                                    val index = controller.bookList.indexOf(selectedItem)
+                                                    controller.actionList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                                    controller.bookList.remove(selectedItem)
+                                                }
                                         )
                                     }
                                 }
@@ -159,7 +190,11 @@ class MainView : View("Library") {
                                     selectedItem?.apply {
                                         confirm(
                                                 header = "Delete $name?",
-                                                actionFn = { controller.peopleList.remove(selectedItem) }
+                                                actionFn = {
+                                                    val index = controller.peopleList.indexOf(selectedItem)
+                                                    controller.actionList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                                    controller.peopleList.remove(selectedItem)
+                                                }
                                         )
                                     }
                                 }
@@ -176,6 +211,7 @@ class MainView : View("Library") {
             }
             item("Checked Out/History", showHeader = false) {
                 tabpane {
+                    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                     tab("Checked Out") {
                         val data = SortedFilteredList(controller.peopleList)
                         data.predicate = { it.cNum > 0 }
@@ -270,6 +306,20 @@ class MainView : View("Library") {
                         }
                     }
                     tab<HistoryFragment>()
+                    tab("Actions") {
+                        tableview(controller.actionList) {
+                            readonlyColumn("Action", Action::action)
+                            readonlyColumn("Object", Action::obj).prefWidth(200.0)
+                            readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
+                            contextmenu {
+                                item("Undo").action {
+                                    selectedItem?.apply {
+                                        undo(this)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
