@@ -27,7 +27,7 @@ class EditPersonFragment : Fragment() {
                 combobox(controller.sPerson.aff, affiliations)
             }
         }
-        hbox {
+        hbox(10.0) {
             button("Save") {
                 enableWhen(controller.sPerson.dirty)
                 action {

@@ -30,12 +30,15 @@ class AddPersonFragment : Fragment("Add new person") {
                 combobox(aff, affiliations)
             }
         }
-        button("Add person") {
-            disableProperty().bind(name.isNull or email.isNull or aff.isNull)
-            action {
-                controller.peopleList.add(Person(name.value, email.value, phone.value, aff.value, 0))
-                close()
+        hbox(10.0) {
+            button("Add person") {
+                disableProperty().bind(name.isNull or email.isNull or aff.isNull)
+                action {
+                    controller.peopleList.add(Person(name.value, email.value, phone.value, aff.value, 0))
+                    close()
+                }
             }
+            button("Cancel").action { close() }
         }
     }
 }

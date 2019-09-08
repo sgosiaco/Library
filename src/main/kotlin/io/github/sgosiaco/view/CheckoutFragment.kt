@@ -25,7 +25,8 @@ class CheckoutFragment : Fragment() {
     private val book = controller.sBook.item
 
     override fun onDock() {
-        currentStage?.height = currentStage?.height?.plus(15.0) ?: 0.0
+        currentStage?.height = currentStage?.height?.plus(5.0) ?: 0.0
+        currentStage?.isResizable = false
     }
 
     override val root = form {
@@ -44,7 +45,7 @@ class CheckoutFragment : Fragment() {
                 datepicker(dDate).value = LocalDate.now().plusWeeks(2)
             }
         }
-        hbox {
+        hbox(10.0) {
             button ("Checkout") {
                 enableWhen( person.isNotNull)
                 action {

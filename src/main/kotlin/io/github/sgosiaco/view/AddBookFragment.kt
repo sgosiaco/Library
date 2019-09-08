@@ -28,12 +28,15 @@ class AddBookFragment : Fragment("Add new book") {
                 textfield(year)
             }
         }
-        button("Add book") {
-            disableProperty().bind(bookTitle.isNull or author.isNull or pub.isNull)
-            action {
-                controller.bookList.add(Book(false, author.value, year.value, pub.value, bookTitle.value))
-                close()
+        hbox(10.0) {
+            button("Add book") {
+                disableProperty().bind(bookTitle.isNull or author.isNull or pub.isNull)
+                action {
+                    controller.bookList.add(Book(false, author.value, year.value, pub.value, bookTitle.value))
+                    close()
+                }
             }
+            button("Cancel").action { close() }
         }
     }
 }

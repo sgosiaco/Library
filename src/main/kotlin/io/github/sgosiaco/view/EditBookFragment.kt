@@ -33,7 +33,7 @@ class EditBookFragment : Fragment() {
             }
 
         }
-        hbox {
+        hbox(10.0) {
             button("Save") {
                 enableWhen(controller.sBook.dirty)
                 action {
