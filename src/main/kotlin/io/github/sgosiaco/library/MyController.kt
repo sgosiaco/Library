@@ -2,9 +2,6 @@ package io.github.sgosiaco.library
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.stage.FileChooser
@@ -23,11 +20,11 @@ data class Book (
 }
 
 class BookModel : ItemViewModel<Book>() {
-    val checkedout = bind{ SimpleBooleanProperty(item?.checkedout ?: false) }
-    val author = bind { SimpleStringProperty(item?.author ?: "") }
-    val year = bind { SimpleIntegerProperty(item?.year ?: -1) }
-    val pub = bind { SimpleStringProperty(item?.pub ?: "") }
-    val title = bind { SimpleStringProperty(item?.title ?: "") }
+    val checkedout = bind(Book::checkedout)
+    val author = bind(Book::author)
+    val year = bind(Book::year)
+    val pub = bind(Book::pub)
+    val title = bind(Book::title)
 }
 
 data class Person (

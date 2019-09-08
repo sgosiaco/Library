@@ -10,6 +10,11 @@ import kotlin.system.exitProcess
 
 class MainView : View("Library") {
     private val controller: MyController by inject()
+
+    override fun onDock() {
+        currentStage?.isMaximized = true
+    }
+
     override val root = vbox {
         menubar {
             menu("File") {
