@@ -60,9 +60,13 @@ class MainView : View("Library") {
                     )
                 }
             }
-            menu("Edit") {
+            menu("Add") {
                 item("Add new book").action { find<AddBookFragment>().openModal() }
                 item("Add new person").action { find<AddPersonFragment>().openModal() }
+            }
+            menu("Edit") {
+                item("Edit book").action { find<EditBookFragment>().openModal() }
+                item("Edit person").action { find<EditPersonFragment>().openModal() }
             }
         }
         drawer(side = Side.LEFT, multiselect = true) {
@@ -84,7 +88,7 @@ class MainView : View("Library") {
                         item("Add book").action { find<AddBookFragment>().openModal() }
                         item("Edit book").action {
                             selectedItem?.apply {
-                                find<EditBookFragment>().openModal()
+                                find<EditBookFragment>().openModal() //use openWindow to allow selecting dif book while window open
                             }
                         }
                         item("Delete book").action {

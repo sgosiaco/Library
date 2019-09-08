@@ -27,8 +27,7 @@ class AddPersonFragment : Fragment("Add new person") {
                 textfield(phone)
             }
             field("Affiliation") {
-                combobox(aff, affiliations) {
-                }
+                combobox(aff, affiliations)
             }
         }
         button("Add person") {

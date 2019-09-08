@@ -34,7 +34,9 @@ class EditPersonFragment : Fragment() {
                     confirm(
                             header = "Apply Changes?",
                             actionFn = {
+                                val index = controller.peopleList.indexOf(controller.sPerson.item)
                                 controller.sPerson.commit()
+                                controller.peopleList[index] = controller.sPerson.item
                                 close()
                             }
                     )

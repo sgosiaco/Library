@@ -1,6 +1,5 @@
 package io.github.sgosiaco.view
 
-import io.github.sgosiaco.library.Book
 import io.github.sgosiaco.library.MyController
 import javafx.util.converter.IntegerStringConverter
 import tornadofx.*
@@ -41,9 +40,9 @@ class EditBookFragment : Fragment() {
                     confirm(
                             header = "Apply Changes?",
                             actionFn = {
+                                val index = controller.bookList.indexOf(controller.sBook.item)
                                 controller.sBook.commit()
-                                controller.bookList.add(Book())
-                                controller.bookList.remove(Book())
+                                controller.bookList[index] = controller.sBook.item
                                 close()
                             }
                     )
