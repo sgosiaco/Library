@@ -58,6 +58,7 @@ data class Checkout(
 class MyController: Controller() {
     val sBook = SelectedBook()
     val sPerson = SelectedPerson()
+    var focus = ""
 
     private var bookjson = File("books.json").readText(Charsets.UTF_8)
     var bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())

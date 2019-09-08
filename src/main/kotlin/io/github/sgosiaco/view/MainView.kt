@@ -1,7 +1,10 @@
 package io.github.sgosiaco.view
 
 import io.github.sgosiaco.library.*
+import javafx.application.Platform
 import javafx.geometry.Side
+import javafx.scene.control.TabPane
+import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
@@ -19,26 +22,26 @@ class MainView : View("Library") {
         menubar {
             menu("File") {
                 menu("Open") {
-                    item("Open book list").action { controller.openDialog("book") }
-                    item("Open person list").action { controller.openDialog("person") }
-                    item("Open checked list").action { controller.openDialog("checked") }
+                    item("Open Book List").action { controller.openDialog("book") }
+                    item("Open Person List").action { controller.openDialog("person") }
+                    item("Open Checkout List").action { controller.openDialog("checked") }
                 }
                 menu("Save") {
-                    item("Save Books").action {
+                    item("Save Book List").action {
                         confirm(
                                 header = "Save the book list?",
                                 actionFn = { controller.saveBooks() }
                         )
                     }
-                    item("Save People").action {
+                    item("Save People List").action {
                         confirm(
                                 header = "Save the people list?",
                                 actionFn = { controller.savePeople() }
                         )
                     }
-                    item("Save Checked Out").action {
+                    item("Save Checkout List").action {
                         confirm(
-                                header = "Save the checked out list?",
+                                header = "Save the checkout list?",
                                 actionFn = { controller.saveChecked() }
                         )
                     }
@@ -61,181 +64,204 @@ class MainView : View("Library") {
                 }
             }
             menu("Add") {
-                item("Add new book").action { find<AddBookFragment>().openModal() }
-                item("Add new person").action { find<AddPersonFragment>().openModal() }
+                item("Add New book").action { find<AddBookFragment>().openModal() }
+                item("Add New person").action { find<AddPersonFragment>().openModal() }
             }
             menu("Edit") {
-                item("Edit book").action { find<EditBookFragment>().openModal() }
-                item("Edit person").action { find<EditPersonFragment>().openModal() }
+                item("Modify Selected").action {
+                    if(controller.sBook.isNotEmpty) {
+                        find<EditBookFragment>().openModal()
+                    }
+                    else {
+                        find<EditPersonFragment>().openModal()
+                    }
+                }
+                item("Show history", "Shortcut+H").action { find<HistoryFragment>().openWindow() }
             }
         }
         drawer(side = Side.LEFT, multiselect = true) {
             vgrow = Priority.ALWAYS
-            item("Books") {
+            item("Books/People") {
                 expanded = true
-                val data = SortedFilteredList(controller.bookList)
-                data.predicate = { !it.checkedout }
-                tableview(data) {
-                    bindSelected(controller.sBook)
-                    vgrow = Priority.ALWAYS
-                    readonlyColumn("Title", Book::title)
-                    readonlyColumn("Author", Book::author)
-                    readonlyColumn("Publisher", Book::pub)
-                    readonlyColumn("Year", Book::year)
-                    columnResizePolicy = SmartResize.POLICY
-
-                    contextmenu {
-                        item("Add book").action { find<AddBookFragment>().openModal() }
-                        item("Edit book").action {
-                            selectedItem?.apply {
-                                find<EditBookFragment>().openModal() //use openWindow to allow selecting dif book while window open
-                            }
-                        }
-                        item("Delete book").action {
-                            selectedItem?.apply {
-                                confirm(
-                                        header = "Delete $title?",
-                                        actionFn = { controller.bookList.remove(selectedItem) }
-                                )
-                            }
-                        }
-                        item("Checkout").action {
-                            selectedItem?.apply {
-                                find<CheckoutFragment>().openModal()
-                            }
-                        }
-                        item("Show History").action {
-                            selectedItem?.apply {
-                                controller.sPerson.item = null
-                                find<HistoryFragment>().openWindow()
-                            }
-                        }
+                tabpane {
+                    selectionModel.selectedItemProperty().onChange {
+                        controller.focus = selectionModel.selectedItem.text
+                        println(controller.focus)
                     }
-
-                }
-            }
-            item("People") {
-                tableview(controller.peopleList) {
-                    bindSelected(controller.sPerson)
-                    vgrow = Priority.ALWAYS
-                    readonlyColumn("Name", Person::name)
-                    readonlyColumn("Email", Person::email)
-                    readonlyColumn("Phone number", Person::phone)
-                    readonlyColumn("Affiliation", Person::aff)
-                    columnResizePolicy = SmartResize.POLICY
-
-                    contextmenu {
-                        item("Add person").action { find<AddPersonFragment>().openModal() }
-                        item("Edit person").action {
-                            selectedItem?.apply {
-                                find<EditPersonFragment>().openModal()
-                            }
-                        }
-                        item("Delete person").action {
-                            selectedItem?.apply {
-                                confirm(
-                                        header = "Delete $name?",
-                                        actionFn = { controller.peopleList.remove(selectedItem) }
-                                )
-                            }
-                        }
-                        item("Show History").action {
-                            selectedItem?.apply {
-                                controller.sBook.item = null
-                                find<HistoryFragment>().openWindow()
-                            }
-                        }
-                    }
-                }
-            }
-            item("Checked Out") {
-                val data = SortedFilteredList(controller.peopleList)
-                data.predicate = { it.cNum > 0 }
-
-                tableview(data) {
-                    bindSelected(controller.sPerson)
-                    vgrow = Priority.ALWAYS
-                    readonlyColumn("Name", Person::name)
-                    readonlyColumn("Email", Person::email)
-                    readonlyColumn("Phone number", Person::phone)
-                    columnResizePolicy = SmartResize.POLICY
-                    contextmenu {
-                        item("Return All").action {
-                            selectedItem?.apply {
-                                confirm(
-                                        header = "Return all books borrowed by $name?",
-                                        actionFn = {
-                                            var index = controller.peopleList.indexOf(this)
-                                            cNum = 0
-                                            controller.peopleList[index] = this
-                                            controller.checkedList.filter { !it.returned }.forEach {
-                                                index = controller.bookList.indexOf(it.book)
-                                                it.book.checkedout = false
-                                                controller.bookList[index] = it.book
-
-                                                index = controller.checkedList.indexOf(it)
-                                                it.returned = true
-                                                it.rDate = LocalDate.now()
-                                                controller.checkedList[index] = it
-                                            }
-                                        }
-                                )
-                            }
-                        }
-                        item("Show History").action {
-                            selectedItem?.apply {
-                                controller.sBook.item = null
-                                find<HistoryFragment>().openWindow()
-                            }
-                        }
-                    }
-                    rowExpander(expandOnDoubleClick = true) { selected ->
-                        paddingLeft = expanderColumn.width
-                        val data = SortedFilteredList(controller.checkedList)
-                        data.predicate = { it.person == selected && !it.returned }
+                    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                    tab("Books") {
+                        val data = SortedFilteredList(controller.bookList)
+                        data.predicate = { !it.checkedout }
                         tableview(data) {
+                            bindSelected(controller.sBook)
                             vgrow = Priority.ALWAYS
-                            readonlyColumn("Book", Checkout::book)
-                            readonlyColumn("Checked Out", Checkout::cDate)
-                            readonlyColumn("Due", Checkout::dDate).cellFormat {
-                                text = it.toString()
-                                style {
-                                    if (it.isBefore(LocalDate.now())) {
-                                        backgroundColor += c("#8b0000")
-                                        textFill = Color.WHITE
-                                    } else {
-                                        backgroundColor += Color.WHITE
-                                        textFill = Color.BLACK
+                            readonlyColumn("Title", Book::title)
+                            readonlyColumn("Author", Book::author)
+                            readonlyColumn("Publisher", Book::pub)
+                            readonlyColumn("Year", Book::year)
+                            columnResizePolicy = SmartResize.POLICY
+
+                            contextmenu {
+                                item("Add book").action { find<AddBookFragment>().openModal() }
+                                item("Edit book").action {
+                                    selectedItem?.apply {
+                                        find<EditBookFragment>().openModal() //use openWindow to allow selecting dif book while window open
                                     }
                                 }
-                            }
-                            contextmenu {
-                                item("Return").action {
+                                item("Delete book").action {
                                     selectedItem?.apply {
-                                        var index = controller.bookList.indexOf(book)
-                                        book.checkedout = false
-                                        controller.bookList[index] = book
-
-                                        index = controller.checkedList.indexOf(selectedItem)
-                                        returned = true
-                                        rDate = LocalDate.now()
-                                        controller.checkedList[index] = selectedItem
-
-                                        index = controller.peopleList.indexOf(selected)
-                                        selected.cNum -= 1
-                                        controller.peopleList[index] = selected
+                                        confirm(
+                                                header = "Delete $title?",
+                                                actionFn = { controller.bookList.remove(selectedItem) }
+                                        )
+                                    }
+                                }
+                                item("Checkout").action {
+                                    selectedItem?.apply {
+                                        find<CheckoutFragment>().openModal()
                                     }
                                 }
                                 item("Show History").action {
                                     selectedItem?.apply {
-                                        controller.sBook.item = book
-                                        controller.sPerson.item = null
+                                        find<HistoryFragment>().openWindow()
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    tab("People") {
+                        tableview(controller.peopleList) {
+                            bindSelected(controller.sPerson)
+                            vgrow = Priority.ALWAYS
+                            readonlyColumn("Name", Person::name)
+                            readonlyColumn("Email", Person::email)
+                            readonlyColumn("Phone number", Person::phone)
+                            readonlyColumn("Affiliation", Person::aff)
+                            columnResizePolicy = SmartResize.POLICY
+
+                            contextmenu {
+                                item("Add person").action { find<AddPersonFragment>().openModal() }
+                                item("Edit person").action {
+                                    selectedItem?.apply {
+                                        find<EditPersonFragment>().openModal()
+                                    }
+                                }
+                                item("Delete person").action {
+                                    selectedItem?.apply {
+                                        confirm(
+                                                header = "Delete $name?",
+                                                actionFn = { controller.peopleList.remove(selectedItem) }
+                                        )
+                                    }
+                                }
+                                item("Show History").action {
+                                    selectedItem?.apply {
                                         find<HistoryFragment>().openWindow()
                                     }
                                 }
                             }
                         }
                     }
+                }
+
+            }
+            item("Checked Out/History") {
+                tabpane {
+                    tab("Checked Out") {
+                        val data = SortedFilteredList(controller.peopleList)
+                        data.predicate = { it.cNum > 0 }
+                        tableview(data) {
+                            bindSelected(controller.sPerson)
+                            vgrow = Priority.ALWAYS
+                            readonlyColumn("Name", Person::name)
+                            readonlyColumn("Email", Person::email)
+                            readonlyColumn("Phone number", Person::phone)
+                            columnResizePolicy = SmartResize.POLICY
+                            contextmenu {
+                                item("Return All").action {
+                                    selectedItem?.apply {
+                                        confirm(
+                                                header = "Return all books borrowed by $name?",
+                                                actionFn = {
+                                                    var index = controller.peopleList.indexOf(this)
+                                                    controller.checkedList.filter { !it.returned && it.person == this }.forEach {
+                                                        index = controller.bookList.indexOf(it.book)
+                                                        it.book.checkedout = false
+                                                        controller.bookList[index] = it.book
+
+                                                        index = controller.checkedList.indexOf(it)
+                                                        it.returned = true
+                                                        it.rDate = LocalDate.now()
+                                                        controller.checkedList[index] = it
+                                                    }
+                                                    cNum = 0
+                                                    controller.peopleList[index] = this
+                                                }
+                                        )
+                                    }
+                                }
+                                item("Show History").action {
+                                    selectedItem?.apply {
+                                        find<HistoryFragment>().openWindow()
+                                    }
+                                }
+                            }
+                            rowExpander(expandOnDoubleClick = true) { selected ->
+                                paddingLeft = expanderColumn.width
+                                val data = SortedFilteredList(controller.checkedList)
+                                data.predicate = { it.person == selected && !it.returned }
+                                tableview(data) {
+                                    vgrow = Priority.ALWAYS
+                                    readonlyColumn("Book", Checkout::book)
+                                    readonlyColumn("Checked Out", Checkout::cDate)
+                                    readonlyColumn("Due", Checkout::dDate).cellFormat {
+                                        text = it.toString()
+                                        style {
+                                            if (it.isBefore(LocalDate.now())) {
+                                                backgroundColor += c("#8b0000")
+                                                textFill = Color.WHITE
+                                            } else {
+                                                backgroundColor += Color.WHITE
+                                                textFill = Color.BLACK
+                                            }
+                                        }
+                                    }
+                                    contextmenu {
+                                        item("Return").action {
+                                            selectedItem?.apply {
+                                                confirm(
+                                                        header = "Return ${book.title}?",
+                                                        content = "Borrowed by ${person.name} <${person.email}>",
+                                                        actionFn = {
+                                                            var index = controller.bookList.indexOf(book)
+                                                            book.checkedout = false
+                                                            controller.bookList[index] = book
+
+                                                            index = controller.checkedList.indexOf(selectedItem)
+                                                            returned = true
+                                                            rDate = LocalDate.now()
+                                                            controller.checkedList[index] = selectedItem
+
+                                                            index = controller.peopleList.indexOf(selected)
+                                                            selected.cNum -= 1
+                                                            controller.peopleList[index] = selected
+                                                        }
+                                                )
+                                            }
+                                        }
+                                        item("Show History").action {
+                                            selectedItem?.apply {
+                                                controller.sBook.item = book
+                                                find<HistoryFragment>().openWindow()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    tab<HistoryFragment>()
                 }
             }
         }

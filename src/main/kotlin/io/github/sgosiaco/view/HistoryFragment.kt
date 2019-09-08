@@ -13,15 +13,25 @@ class HistoryFragment : Fragment() {
     val person: Person? = controller.sPerson.item
     private val data = SortedFilteredList(controller.checkedList)
     init {
-        data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
+        when(controller.focus) {
+            "Books" -> {
+                data.predicate = { it.returned && (book?.equals(it.book) ?: false) }
+                title = """History of "${book?.title}" """
+            }
+            "People" -> {
+                data.predicate = { it.returned && (person?.equals(it.person) ?: false) }
+                title = """History of "${person?.name}" """
+            }
+            else -> data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
+        }
+        //data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
     }
 
     override val root = vbox {
         tableview(data) {
-            title = """History of "${book?.title ?: person?.name}" """
             vgrow = Priority.ALWAYS
-            readonlyColumn("Book", Checkout::book).isVisible = controller.sPerson.isNotEmpty
-            readonlyColumn("Person", Checkout::person).isVisible = controller.sBook.isNotEmpty
+            readonlyColumn("Book", Checkout::book).isVisible = controller.focus == "People" //controller.sPerson.isNotEmpty
+            readonlyColumn("Person", Checkout::person).isVisible = controller.focus == "Books"//controller.sBook.isNotEmpty
             readonlyColumn("Checked Out Date", Checkout::cDate).prefWidth(300.0)
             readonlyColumn("Return Date", Checkout::rDate).prefWidth(300.0)
             columnResizePolicy = SmartResize.POLICY
