@@ -7,7 +7,6 @@ import tornadofx.*
 
 class EditBookFragment : Fragment() {
     private val controller: MyController by inject()
-    val book: Book by param()
     private val widthList = mutableListOf<Double>()
 
     override fun onDock() {
@@ -15,7 +14,7 @@ class EditBookFragment : Fragment() {
     }
 
     override val root = form {
-        title = """Editing ${book.title}"""
+        title = """Editing ${controller.sBook.title.value}"""
         fieldset("Info") {
             field("Title") {
                 textfield(controller.sBook.title)

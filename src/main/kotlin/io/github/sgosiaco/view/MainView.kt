@@ -66,18 +66,14 @@ class MainView : View("Library") {
             }
         }
         drawer(side = Side.LEFT, multiselect = true) {
-            vboxConstraints {
-                vGrow = Priority.ALWAYS
-            }
+            vgrow = Priority.ALWAYS
             item("Books") {
                 expanded = true
                 val data = SortedFilteredList(controller.bookList)
                 data.predicate = { !it.checkedout }
                 tableview(data) {
                     bindSelected(controller.sBook)
-                    vboxConstraints {
-                        vGrow = Priority.ALWAYS
-                    }
+                    vgrow = Priority.ALWAYS
                     readonlyColumn("Title", Book::title)
                     readonlyColumn("Author", Book::author)
                     readonlyColumn("Publisher", Book::pub)
@@ -88,7 +84,7 @@ class MainView : View("Library") {
                         item("Add book").action { find<AddBookFragment>().openModal() }
                         item("Edit book").action {
                             selectedItem?.apply {
-                                find<EditBookFragment>(mapOf(EditBookFragment::book to this)).openModal()
+                                find<EditBookFragment>().openModal()
                             }
                         }
                         item("Delete book").action {
@@ -115,9 +111,8 @@ class MainView : View("Library") {
             }
             item("People") {
                 tableview(controller.peopleList) {
-                    vboxConstraints {
-                        vGrow = Priority.ALWAYS
-                    }
+                    bindSelected(controller.sPerson)
+                    vgrow = Priority.ALWAYS
                     readonlyColumn("Name", Person::name)
                     readonlyColumn("Email", Person::email)
                     readonlyColumn("Phone number", Person::phone)
@@ -128,7 +123,7 @@ class MainView : View("Library") {
                         item("Add person").action { find<AddPersonFragment>().openModal() }
                         item("Edit person").action {
                             selectedItem?.apply {
-                                find<EditPersonFragment>(mapOf(EditPersonFragment::person to this)).openModal()
+                                find<EditPersonFragment>().openModal()
                             }
                         }
                         item("Delete person").action {
@@ -152,9 +147,7 @@ class MainView : View("Library") {
                 data.predicate = { it.cNum > 0 }
 
                 tableview(data) {
-                    vboxConstraints {
-                        vGrow = Priority.ALWAYS
-                    }
+                    vgrow = Priority.ALWAYS
                     readonlyColumn("Name", Person::name)
                     readonlyColumn("Email", Person::email)
                     readonlyColumn("Phone number", Person::phone)
@@ -193,6 +186,7 @@ class MainView : View("Library") {
                         val data = SortedFilteredList(controller.checkedList)
                         data.predicate = { it.person == selected && !it.returned }
                         tableview(data) {
+                            vgrow = Priority.ALWAYS
                             readonlyColumn("Book", Checkout::book)
                             readonlyColumn("Checked Out", Checkout::cDate)
                             readonlyColumn("Due", Checkout::dDate).cellFormat {

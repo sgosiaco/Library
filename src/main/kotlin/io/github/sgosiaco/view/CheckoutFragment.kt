@@ -17,20 +17,24 @@ class PeopleConverter: StringConverter<Person>() {
         return person.name
     }
 }
-class CheckoutFragment : Fragment("Checkout") {
+class CheckoutFragment : Fragment() {
     private val controller: MyController by inject()
     private val person = SimpleObjectProperty<Person>()
     private val cDate = SimpleObjectProperty<LocalDate>()
     private val dDate = SimpleObjectProperty<LocalDate>()
     val book: Book by param()
 
+    override fun onDock() {
+        currentStage?.height = currentStage?.height?.plus(15.0) ?: 0.0
+    }
+
     override val root = form {
+        title = "Checkout"
         fieldset("Info") {
             field("Name") {
                 combobox(person, controller.peopleList) {
                     converter = PeopleConverter()
                     makeAutocompletable()
-
                 }
             }
             field("Checkout Date") {
@@ -44,23 +48,29 @@ class CheckoutFragment : Fragment("Checkout") {
                 }
             }
         }
-        button ("Checkout") {
-            action {
-                confirm(
-                        header = "Checkout book?",
-                        content = """Checkout "${book.title}" to ${person.value.name}?""",
-                        actionFn = {
-                            var index = controller.bookList.indexOf(book)
-                            book.checkedout = true
-                            controller.bookList[index] = book
-                            index = controller.peopleList.indexOf(person.value)
-                            person.value.cNum += 1
-                            controller.peopleList[index] = person.value
-                            controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
-                            close()
-                        }
-                )
+        hbox {
+            button ("Checkout") {
+                enableWhen( person.isNotNull)
+                action {
+                    confirm(
+                            header = "Checkout book?",
+                            content = """Checkout "${book.title}" to ${person.value.name}?""",
+                            actionFn = {
+                                var index = controller.bookList.indexOf(book)
+                                book.checkedout = true
+                                controller.bookList[index] = book
+                                index = controller.peopleList.indexOf(person.value)
+                                person.value.cNum += 1
+                                controller.peopleList[index] = person.value
+                                controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
+                                close()
+                            }
+                    )
 
+                }
+            }
+            button("Cancel").action {
+                close()
             }
         }
     }

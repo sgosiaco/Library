@@ -4,56 +4,48 @@ import io.github.sgosiaco.library.MyController
 import io.github.sgosiaco.library.Person
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
+import javafx.util.converter.IntegerStringConverter
 import tornadofx.*
 
 class EditPersonFragment : Fragment() {
     private val controller: MyController by inject()
-    private var newName = SimpleStringProperty()
-    private var newEmail = SimpleStringProperty()
-    private var newPhone = SimpleStringProperty()
-    private var newAff = SimpleStringProperty()
     private val affiliations = FXCollections.observableArrayList<String>("Alumni", "Faculty", "Staff", "Student")
-    val person: Person by param()
 
     override val root = form {
+        title = """Editing ${controller.sPerson.name.value}"""
         fieldset("Info") {
             field("Name") {
-                textfield(newName) {
-                    textProperty().set(person.name)
-                }
+                textfield(controller.sPerson.name)
             }
             field("Email") {
-                textfield(newEmail) {
-                    textProperty().set(person.email)
-                }
+                textfield(controller.sPerson.email)
             }
             field("Phone number") {
-                textfield(newPhone) {
-                    textProperty().set(person.phone.toString())
-                }
+                textfield(controller.sPerson.phone, IntegerStringConverter())
             }
             field("Affiliation") {
-                combobox(newAff, affiliations) {
-                    this.value = person.aff
-                }
+                combobox(controller.sPerson.aff, affiliations)
             }
         }
-        button("Save") {
-            action {
-                confirm(
-                        header = "Apply Changes?",
-                        actionFn = {
-                            val index = controller.peopleList.indexOf(person)
-                            person.apply {
-                                name = newName.value
-                                email = newEmail.value
-                                phone = newPhone.value.toInt()
-                                aff = newAff.value
+        hbox {
+            button("Save") {
+                enableWhen(controller.sPerson.dirty)
+                action {
+                    confirm(
+                            header = "Apply Changes?",
+                            actionFn = {
+                                controller.sPerson.commit()
+                                close()
                             }
-                            controller.peopleList[index] = person
-                            close()
-                        }
-                )
+                    )
+                }
+            }
+            button("Cancel").action {
+                controller.sPerson.rollback()
+                close()
+            }
+            button("Reset").action {
+                controller.sPerson.rollback()
             }
         }
     }
