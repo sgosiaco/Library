@@ -19,7 +19,7 @@ data class Book (
     override fun toString(): String = title
 }
 
-class BookModel : ItemViewModel<Book>() {
+class selectedBook : ItemViewModel<Book>() {
     val checkedout = bind(Book::checkedout)
     val author = bind(Book::author)
     val year = bind(Book::year)
@@ -47,7 +47,7 @@ data class Checkout(
 )
 
 class MyController: Controller() {
-    val bookModel = BookModel()
+    val sBook = selectedBook()
     private var bookjson = File("books.json").readText(Charsets.UTF_8)
     var bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
 

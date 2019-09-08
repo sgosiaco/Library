@@ -74,7 +74,7 @@ class MainView : View("Library") {
                 val data = SortedFilteredList(controller.bookList)
                 data.predicate = { !it.checkedout }
                 tableview(data) {
-                    bindSelected(controller.bookModel)
+                    bindSelected(controller.sBook)
                     vboxConstraints {
                         vGrow = Priority.ALWAYS
                     }

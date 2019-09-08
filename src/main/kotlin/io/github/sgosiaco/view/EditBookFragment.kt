@@ -18,31 +18,31 @@ class EditBookFragment : Fragment() {
         title = """Editing ${book.title}"""
         fieldset("Info") {
             field("Title") {
-                textfield(controller.bookModel.title)
+                textfield(controller.sBook.title)
                 widthList.add(text.length * 47.0)
             }
             field("Author(s)") {
-                textfield(controller.bookModel.author)
+                textfield(controller.sBook.author)
                 widthList.add(text.length * 47.0)
             }
             field("Publisher(s)") {
-                textfield(controller.bookModel.pub)
+                textfield(controller.sBook.pub)
                 widthList.add(text.length * 47.0)
             }
             field("Year") {
-                textfield(controller.bookModel.year, IntegerStringConverter())
+                textfield(controller.sBook.year, IntegerStringConverter())
                 widthList.add(text.length * 47.0)
             }
 
         }
         hbox {
             button("Save") {
-                enableWhen(controller.bookModel.dirty)
+                enableWhen(controller.sBook.dirty)
                 action {
                     confirm(
                             header = "Apply Changes?",
                             actionFn = {
-                                controller.bookModel.commit()
+                                controller.sBook.commit()
                                 controller.bookList.add(Book())
                                 controller.bookList.remove(Book())
                                 close()
@@ -51,11 +51,11 @@ class EditBookFragment : Fragment() {
                 }
             }
             button("Cancel").action {
-                controller.bookModel.rollback()
+                controller.sBook.rollback()
                 close()
             }
             button("Reset").action {
-                controller.bookModel.rollback()
+                controller.sBook.rollback()
             }
         }
     }
