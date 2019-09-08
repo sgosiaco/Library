@@ -101,12 +101,13 @@ class MainView : View("Library") {
                         }
                         item("Checkout").action {
                             selectedItem?.apply {
-                                find<CheckoutFragment>(mapOf(CheckoutFragment::book to this)).openModal()
+                                find<CheckoutFragment>().openModal()
                             }
                         }
                         item("Show History").action {
                             selectedItem?.apply {
-                                find<HistoryFragment>(mapOf(HistoryFragment::book to this)).openWindow()
+                                controller.sPerson.item = null
+                                find<HistoryFragment>().openWindow()
                             }
                         }
                     }
@@ -140,7 +141,8 @@ class MainView : View("Library") {
                         }
                         item("Show History").action {
                             selectedItem?.apply {
-                                find<HistoryFragment>(mapOf(HistoryFragment::person to this)).openWindow()
+                                controller.sBook.item = null
+                                find<HistoryFragment>().openWindow()
                             }
                         }
                     }
@@ -151,6 +153,7 @@ class MainView : View("Library") {
                 data.predicate = { it.cNum > 0 }
 
                 tableview(data) {
+                    bindSelected(controller.sPerson)
                     vgrow = Priority.ALWAYS
                     readonlyColumn("Name", Person::name)
                     readonlyColumn("Email", Person::email)
@@ -181,7 +184,8 @@ class MainView : View("Library") {
                         }
                         item("Show History").action {
                             selectedItem?.apply {
-                                find<HistoryFragment>(mapOf(HistoryFragment::person to this)).openWindow()
+                                controller.sBook.item = null
+                                find<HistoryFragment>().openWindow()
                             }
                         }
                     }
@@ -224,7 +228,9 @@ class MainView : View("Library") {
                                 }
                                 item("Show History").action {
                                     selectedItem?.apply {
-                                        find<HistoryFragment>(mapOf(HistoryFragment::book to this.book)).openWindow()
+                                        controller.sBook.item = book
+                                        controller.sPerson.item = null
+                                        find<HistoryFragment>().openWindow()
                                     }
                                 }
                             }

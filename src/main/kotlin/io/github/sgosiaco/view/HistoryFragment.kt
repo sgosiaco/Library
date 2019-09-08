@@ -9,22 +9,23 @@ import tornadofx.*
 
 class HistoryFragment : Fragment() {
     private val controller: MyController by inject()
-    val book: Book? by param()
-    val person: Person? by param()
+    val book: Book? = controller.sBook.item
+    val person: Person? = controller.sPerson.item
     private val data = SortedFilteredList(controller.checkedList)
     init {
         data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
     }
 
-    override val root = tableview(data) {
-        title = """History of "${book?.title ?: person?.name}" """
-        vboxConstraints {
-            vGrow = Priority.ALWAYS
+    override val root = vbox {
+        tableview(data) {
+            title = """History of "${book?.title ?: person?.name}" """
+            vgrow = Priority.ALWAYS
+            readonlyColumn("Book", Checkout::book).isVisible = controller.sPerson.isNotEmpty
+            readonlyColumn("Person", Checkout::person).isVisible = controller.sBook.isNotEmpty
+            readonlyColumn("Checked Out Date", Checkout::cDate).prefWidth(300.0)
+            readonlyColumn("Return Date", Checkout::rDate).prefWidth(300.0)
+            columnResizePolicy = SmartResize.POLICY
+            smartResize()
         }
-        readonlyColumn("Book", Checkout::book)
-        readonlyColumn("Person", Checkout::person)
-        readonlyColumn("Checked Out Date", Checkout::cDate)
-        readonlyColumn("Return Date", Checkout::rDate)
-        columnResizePolicy = SmartResize.POLICY
     }
 }

@@ -1,6 +1,5 @@
 package io.github.sgosiaco.view
 
-import io.github.sgosiaco.library.Book
 import io.github.sgosiaco.library.Checkout
 import io.github.sgosiaco.library.MyController
 import io.github.sgosiaco.library.Person
@@ -11,18 +10,19 @@ import java.time.LocalDate
 
 class PeopleConverter: StringConverter<Person>() {
     override fun fromString(string: String): Person {
-        return Person(string, string, 0, string, 0)
+        return Person()
     }
     override fun toString(person: Person): String {
         return person.name
     }
 }
+
 class CheckoutFragment : Fragment() {
     private val controller: MyController by inject()
     private val person = SimpleObjectProperty<Person>()
     private val cDate = SimpleObjectProperty<LocalDate>()
     private val dDate = SimpleObjectProperty<LocalDate>()
-    val book: Book by param()
+    private val book = controller.sBook.item
 
     override fun onDock() {
         currentStage?.height = currentStage?.height?.plus(15.0) ?: 0.0
@@ -38,14 +38,10 @@ class CheckoutFragment : Fragment() {
                 }
             }
             field("Checkout Date") {
-                datepicker(cDate){
-                    value = LocalDate.now()
-                }
+                datepicker(cDate).value = LocalDate.now()
             }
             field("Due Date") {
-                datepicker(dDate) {
-                    value = LocalDate.now().plusWeeks(2)
-                }
+                datepicker(dDate).value = LocalDate.now().plusWeeks(2)
             }
         }
         hbox {
