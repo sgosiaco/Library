@@ -301,10 +301,10 @@ class MainView : View("Library") {
                 }
 
             }
-            item("Checked Out/Actions", showHeader = false) {
+            item("Checked Out/Log", showHeader = false) {
                 tabpane {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                    tab("Checked Out") {
+                    tab("Checked Out (Person)") {
                         val data = SortedFilteredList(controller.peopleList)
                         data.predicate = { it.cNum > 0 }
                         tableview(data) {
@@ -381,33 +381,92 @@ class MainView : View("Library") {
                             }
                         }
                     }
+                    tab("Checked Out (Book") {
+                        val data = SortedFilteredList(controller.bookList)
+                        data.predicate = { it.checkedout }
+                        tableview(data) {
+                            focusedProperty().onChange {
+                                controller.focus = "Books"
+                            }
+                            bindSelected(controller.sBook)
+                            vgrow = Priority.ALWAYS
+                            readonlyColumn("Title", Book::title)
+                            readonlyColumn("Author", Book::author)
+                            readonlyColumn("Publisher", Book::pub)
+                            readonlyColumn("Year", Book::year)
+                            columnResizePolicy = SmartResize.POLICY
+                            /*
+                            contextmenu {
+                                item("Return All").action {
+                                    selectedItem?.apply {
+                                        confirm(
+                                                header = "Return all books borrowed by $name?",
+                                                actionFn = {
+                                                    controller.checkedList.filter { !it.returned && it.person == this }.forEach {
+                                                        returnBook(it)
+                                                        controller.undoList.add(Action("Returned", it, "Nothing"))
+                                                    }
+                                                }
+                                        )
+                                    }
+                                }
+                                item("Show History").action {
+                                    selectedItem?.apply {
+                                        find<HistoryFragment>().openWindow()
+                                    }
+                                }
+                            }
+                             */
+                            rowExpander(expandOnDoubleClick = true) { selected ->
+                                paddingLeft = expanderColumn.width
+                                val data = SortedFilteredList(controller.checkedList)
+                                data.predicate = { it.book == selected && !it.returned }
+                                tableview(data) {
+                                    vgrow = Priority.ALWAYS
+                                    readonlyColumn("Person", Checkout::person)
+                                    readonlyColumn("Checked Out", Checkout::cDate)
+                                    readonlyColumn("Due", Checkout::dDate).cellFormat {
+                                        text = it.toString()
+                                        style {
+                                            if (it.isBefore(LocalDate.now())) {
+                                                backgroundColor += c("#8b0000")
+                                                textFill = Color.WHITE
+                                            } else {
+                                                backgroundColor += Color.WHITE
+                                                textFill = Color.BLACK
+                                            }
+                                        }
+                                    }
+                                    contextmenu {
+                                        item("Return").action {
+                                            selectedItem?.apply {
+                                                confirm(
+                                                        header = "Return ${book.title}?",
+                                                        content = "Borrowed by ${person.name} <${person.email}>",
+                                                        actionFn = {
+                                                            returnBook(this)
+                                                            controller.undoList.add(Action("Returned", this, "Nothing"))
+                                                        }
+                                                )
+                                            }
+                                        }
+                                        item("Show History").action {
+                                            selectedItem?.apply {
+                                                controller.sBook.item = book
+                                                find<HistoryFragment>().openWindow()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     //tab<HistoryFragment>()
-                    tab("Actions") {
-                        hbox {
-                            tableview(controller.undoList) {
-                                readonlyColumn("Action", Action::action)
-                                readonlyColumn("Object", Action::obj).prefWidth(200.0)
-                                readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
-                                contextmenu {
-                                    item("Undo").action {
-                                        selectedItem?.apply {
-                                            undo(this)
-                                        }
-                                    }
-                                }
-                            }
-                            tableview(controller.redoList) {
-                                readonlyColumn("Action", Action::action)
-                                readonlyColumn("Object", Action::obj).prefWidth(200.0)
-                                readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
-                                contextmenu {
-                                    item("Redo").action {
-                                        selectedItem?.apply {
-                                            redo(this)
-                                        }
-                                    }
-                                }
-                            }
+                    tab("Log") {
+                        tableview(controller.undoList) {
+                            readonlyColumn("Action", Action::action)
+                            readonlyColumn("Object", Action::obj).prefWidth(1000.0)
+                            readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
                         }
                     }
                 }
