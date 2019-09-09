@@ -39,7 +39,7 @@ class EditPersonFragment : Fragment() {
                                 val old = controller.sPerson.item.copy()
                                 controller.sPerson.commit()
                                 controller.peopleList[index] = controller.sPerson.item
-                                controller.actionList.add(Action("Edited", old, controller.sPerson.item.copy()))
+                                controller.actionList.add(Action("Edited", old, controller.peopleList[index].copy()))
                                 close()
                             }
                     )
