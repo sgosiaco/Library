@@ -211,15 +211,14 @@ class MainView : View("Library") {
             item("Books/People", showHeader = false) {
                 expanded = true
                 tabpane {
-                    selectionModel.selectedItemProperty().onChange {
-                        controller.focus = selectionModel.selectedItem.text
-                        println(controller.focus)
-                    }
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                     tab("Books") {
                         val data = SortedFilteredList(controller.bookList)
                         data.predicate = { !it.checkedout }
                         tableview(data) {
+                            focusedProperty().onChange {
+                                controller.focus = "Books"
+                            }
                             bindSelected(controller.sBook)
                             vgrow = Priority.ALWAYS
                             readonlyColumn("Title", Book::title)
@@ -262,6 +261,9 @@ class MainView : View("Library") {
                     }
                     tab("People") {
                         tableview(controller.peopleList) {
+                            focusedProperty().onChange {
+                                controller.focus = "People"
+                            }
                             bindSelected(controller.sPerson)
                             vgrow = Priority.ALWAYS
                             readonlyColumn("Name", Person::name)
@@ -306,6 +308,9 @@ class MainView : View("Library") {
                         val data = SortedFilteredList(controller.peopleList)
                         data.predicate = { it.cNum > 0 }
                         tableview(data) {
+                            focusedProperty().onChange {
+                                controller.focus = "People"
+                            }
                             bindSelected(controller.sPerson)
                             vgrow = Priority.ALWAYS
                             readonlyColumn("Name", Person::name)
