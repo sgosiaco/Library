@@ -306,7 +306,11 @@ class MainView : View("Library") {
                                 data.predicate = { it.person == selected && !it.returned }
                                 tableview(data) {
                                     vgrow = Priority.ALWAYS
-                                    readonlyColumn("Book", Checkout::book)
+                                    readonlyColumn("Book", Checkout::book) {
+                                        value {
+                                            it.value.book.title
+                                        }
+                                    }
                                     readonlyColumn("Checked Out", Checkout::cDate)
                                     readonlyColumn("Due", Checkout::dDate).cellFormat {
                                         text = it.toString()
@@ -314,8 +318,9 @@ class MainView : View("Library") {
                                             if (it.isBefore(LocalDate.now())) {
                                                 backgroundColor += c("#8b0000")
                                                 textFill = Color.WHITE
-                                            } else {
-                                                backgroundColor += Color.WHITE
+                                            }
+                                            else if(it.isEqual(LocalDate.now())) {
+                                                backgroundColor += c("#FFFF99")
                                                 textFill = Color.BLACK
                                             }
                                         }
@@ -345,58 +350,59 @@ class MainView : View("Library") {
                         }
                     }
                     tab("Checked Out (Book") {
-                        val data = SortedFilteredList(controller.bookList)
-                        data.predicate = { it.checkedout }
+                        val data = SortedFilteredList(controller.checkedList)
+                        data.predicate = { !it.returned }
                         tableview(data) {
-                            focusedProperty().onChange {
-                                controller.focus = "Books"
-                            }
-                            bindSelected(controller.sBook)
                             vgrow = Priority.ALWAYS
-                            readonlyColumn("Title", Book::title)
-                            readonlyColumn("Author", Book::author)
-                            readonlyColumn("Publisher", Book::pub)
-                            readonlyColumn("Year", Book::year)
-                            columnResizePolicy = SmartResize.POLICY
-                            rowExpander(expandOnDoubleClick = true) { selected ->
-                                paddingLeft = expanderColumn.width
-                                val data = SortedFilteredList(controller.checkedList)
-                                data.predicate = { it.book == selected && !it.returned }
-                                tableview(data) {
-                                    vgrow = Priority.ALWAYS
-                                    readonlyColumn("Person", Checkout::person)
-                                    readonlyColumn("Checked Out", Checkout::cDate)
-                                    readonlyColumn("Due", Checkout::dDate).cellFormat {
-                                        text = it.toString()
-                                        style {
-                                            if (it.isBefore(LocalDate.now())) {
-                                                backgroundColor += c("#8b0000")
-                                                textFill = Color.WHITE
-                                            } else {
-                                                backgroundColor += Color.WHITE
-                                                textFill = Color.BLACK
-                                            }
-                                        }
+                            readonlyColumn("Title", Checkout::book).value {
+                                it.value.book.title
+                            }
+                            readonlyColumn("Author", Checkout::book).value {
+                                it.value.book.author
+                            }
+                            readonlyColumn("Publisher", Checkout::book).value {
+                                it.value.book.pub
+                            }
+                            readonlyColumn("Year", Checkout::book).value {
+                                it.value.book.year
+                            }
+                            readonlyColumn("Person", Checkout::person) {
+                                value {
+                                    "${it.value.person.name} <${it.value.person.email}>"
+                                }
+                            }
+                            readonlyColumn("Checked Out", Checkout::cDate)
+                            readonlyColumn("Due", Checkout::dDate).cellFormat {
+                                text = it.toString()
+                                style {
+                                    if (it.isBefore(LocalDate.now())) {
+                                        backgroundColor += c("#8b0000")
+                                        textFill = Color.WHITE
                                     }
-                                    contextmenu {
-                                        item("Return").action {
-                                            selectedItem?.apply {
-                                                confirm(
-                                                        header = "Return ${book.title}?",
-                                                        content = "Borrowed by ${person.name} <${person.email}>",
-                                                        actionFn = {
-                                                            controller.returnBook(this)
-                                                            controller.undoList.add(Action("Returned", this, "Nothing"))
-                                                        }
-                                                )
-                                            }
-                                        }
-                                        item("Show History").action {
-                                            selectedItem?.apply {
-                                                controller.sBook.item = book
-                                                find<HistoryFragment>().openWindow()
-                                            }
-                                        }
+                                    else if(it.isEqual(LocalDate.now())) {
+                                        backgroundColor += c("#FFFF99")
+                                        textFill = Color.BLACK
+                                    }
+                                }
+                            }
+                            columnResizePolicy = SmartResize.POLICY
+                            contextmenu {
+                                item("Return").action {
+                                    selectedItem?.apply {
+                                        confirm(
+                                                header = "Return ${book.title}?",
+                                                content = "Borrowed by ${person.name} <${person.email}>",
+                                                actionFn = {
+                                                    controller.returnBook(this)
+                                                    controller.undoList.add(Action("Returned", this, "Nothing"))
+                                                }
+                                        )
+                                    }
+                                }
+                                item("Show History").action {
+                                    selectedItem?.apply {
+                                        controller.sBook.item = book
+                                        find<HistoryFragment>().openWindow()
                                     }
                                 }
                             }
