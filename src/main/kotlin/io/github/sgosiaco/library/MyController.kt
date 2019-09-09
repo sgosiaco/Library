@@ -53,7 +53,9 @@ data class Checkout(
         val dDate: LocalDate,
         var rDate: LocalDate?,
         var returned: Boolean
-)
+) {
+    override fun toString(): String = """"${book.title}" checked out to ${person.name}"""
+}
 
 data class Action(var action: String, var obj: Any, var newObj: Any)
 
