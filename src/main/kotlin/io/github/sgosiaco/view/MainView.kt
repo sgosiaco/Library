@@ -40,11 +40,11 @@ class MainView : View("Library") {
             else {
                 when(action) {
                     "Checkout" -> {
-                        returnBook(obj as Checkout)
+                        controller.returnBook(obj as Checkout)
                         controller.checkedList.remove(obj as Checkout)
                     }
                     "Returned" -> {
-                        checkBook(obj as Checkout)
+                        controller.checkBook(obj as Checkout)
                     }
                 }
             }
@@ -74,57 +74,15 @@ class MainView : View("Library") {
             else {
                 when(action) {
                     "Checkout" -> {
-                        checkBook(obj as Checkout)
+                        controller.checkBook(obj as Checkout)
                     }
                     "Returned" -> {
-                        returnBook(obj as Checkout)
+                        controller.returnBook(obj as Checkout)
                     }
                 }
             }
             controller.redoList.remove(act)
             controller.undoList.add(act)
-        }
-    }
-
-    private fun checkBook(checkout: Checkout) {
-        with(checkout) {
-            var index = controller.checkedList.indexOf(this)
-            returned = false
-            rDate = null
-            if(index == -1) {
-                controller.checkedList.add(this)
-            }
-            else {
-                controller.checkedList[index] = this
-            }
-            index = controller.bookList.indexOf(book)
-            book.checkedout = true
-            controller.bookList[index] = book
-
-            index = controller.peopleList.indexOf(person)
-            person.cNum += 1
-            controller.peopleList[index] = person
-
-
-        }
-    }
-
-    private fun returnBook(checkout: Checkout) {
-        with(checkout) {
-            var index = controller.checkedList.indexOf(this)
-            returned = true
-            rDate = LocalDate.now()
-            controller.checkedList[index] = this
-
-            index = controller.bookList.indexOf(book)
-            book.checkedout = false
-            controller.bookList[index] = book
-
-            index = controller.peopleList.indexOf(person)
-            person.cNum -= 1
-            controller.peopleList[index] = person
-
-
         }
     }
 
@@ -180,8 +138,9 @@ class MainView : View("Library") {
             menu("Edit") {
                 item("Duplicate Book").action {
                     if(controller.focus == "Books") {
-                        //val index = controller.bookList.indexOf(controller.sBook.item)
-                        controller.bookList.add(controller.sBook.item.copy())
+                        val book = controller.sBook.item.copy()
+                        controller.checkDupeBook(book)
+                        controller.bookList.add(book)
                     }
                 }
                 item("Modify Selected", "Shortcut+E").action {
@@ -221,7 +180,11 @@ class MainView : View("Library") {
                             }
                             bindSelected(controller.sBook)
                             vgrow = Priority.ALWAYS
-                            readonlyColumn("Title", Book::title)
+                            readonlyColumn("Title", Book::title) {
+                                value {
+                                    if(it.value.dupe > 0) "${it.value.title} (${it.value.dupe})" else it.value.title
+                                }
+                            }
                             readonlyColumn("Author", Book::author)
                             readonlyColumn("Publisher", Book::pub)
                             readonlyColumn("Year", Book::year)
@@ -324,7 +287,7 @@ class MainView : View("Library") {
                                                 header = "Return all books borrowed by $name?",
                                                 actionFn = {
                                                     controller.checkedList.filter { !it.returned && it.person == this }.forEach {
-                                                        returnBook(it)
+                                                        controller.returnBook(it)
                                                         controller.undoList.add(Action("Returned", it, "Nothing"))
                                                     }
                                                 }
@@ -364,7 +327,7 @@ class MainView : View("Library") {
                                                         header = "Return ${book.title}?",
                                                         content = "Borrowed by ${person.name} <${person.email}>",
                                                         actionFn = {
-                                                            returnBook(this)
+                                                            controller.returnBook(this)
                                                             controller.undoList.add(Action("Returned", this, "Nothing"))
                                                         }
                                                 )
@@ -395,28 +358,6 @@ class MainView : View("Library") {
                             readonlyColumn("Publisher", Book::pub)
                             readonlyColumn("Year", Book::year)
                             columnResizePolicy = SmartResize.POLICY
-                            /*
-                            contextmenu {
-                                item("Return All").action {
-                                    selectedItem?.apply {
-                                        confirm(
-                                                header = "Return all books borrowed by $name?",
-                                                actionFn = {
-                                                    controller.checkedList.filter { !it.returned && it.person == this }.forEach {
-                                                        returnBook(it)
-                                                        controller.undoList.add(Action("Returned", it, "Nothing"))
-                                                    }
-                                                }
-                                        )
-                                    }
-                                }
-                                item("Show History").action {
-                                    selectedItem?.apply {
-                                        find<HistoryFragment>().openWindow()
-                                    }
-                                }
-                            }
-                             */
                             rowExpander(expandOnDoubleClick = true) { selected ->
                                 paddingLeft = expanderColumn.width
                                 val data = SortedFilteredList(controller.checkedList)
@@ -444,7 +385,7 @@ class MainView : View("Library") {
                                                         header = "Return ${book.title}?",
                                                         content = "Borrowed by ${person.name} <${person.email}>",
                                                         actionFn = {
-                                                            returnBook(this)
+                                                            controller.returnBook(this)
                                                             controller.undoList.add(Action("Returned", this, "Nothing"))
                                                         }
                                                 )

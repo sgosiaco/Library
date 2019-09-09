@@ -54,13 +54,7 @@ class CheckoutFragment : Fragment() {
                             header = "Checkout book?",
                             content = """Checkout "${book.title}" to ${person.value.name}?""",
                             actionFn = {
-                                var index = controller.bookList.indexOf(book)
-                                book.checkedout = true
-                                controller.bookList[index] = book
-                                index = controller.peopleList.indexOf(person.value)
-                                person.value.cNum += 1
-                                controller.peopleList[index] = person.value
-                                controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
+                                controller.checkBook(Checkout(person.value, book, cDate.value, dDate.value, null,false))
                                 controller.undoList.add(Action("Checkout", controller.checkedList.last(), "Nothing"))
                                 close()
                             }

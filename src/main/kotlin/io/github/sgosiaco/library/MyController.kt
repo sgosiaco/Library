@@ -8,8 +8,10 @@ import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
+import kotlin.system.exitProcess
 
 data class Book (
+        @SerializedName("dupe") var dupe: Int = 0,
         @SerializedName("checkedout") var checkedout: Boolean = false,
         @SerializedName("author") var author : String = "",
         @SerializedName("year") var year : Int = -1,
@@ -47,12 +49,12 @@ class SelectedPerson : ItemViewModel<Person>() {
 }
 
 data class Checkout(
-        val person: Person,
-        val book: Book,
-        val cDate: LocalDate,
-        val dDate: LocalDate,
-        var rDate: LocalDate?,
-        var returned: Boolean
+        val person: Person = Person(),
+        val book: Book = Book(),
+        val cDate: LocalDate = LocalDate.now(),
+        val dDate: LocalDate = LocalDate.now().plusWeeks(2),
+        var rDate: LocalDate? = null,
+        var returned: Boolean = false
 ) {
     override fun toString(): String = """"${book.title}" checked out to ${person.name}"""
 }
@@ -120,6 +122,56 @@ class MyController: Controller() {
                     }
                 }
             }
+        }
+    }
+
+    fun checkBook(checkout: Checkout) {
+        with(checkout) {
+            var index = checkedList.indexOf(this)
+            returned = false
+            rDate = null
+            if(index == -1) {
+                checkedList.add(this)
+            }
+            else {
+                checkedList[index] = this
+            }
+            index = bookList.indexOf(book)
+            book.checkedout = true
+            bookList[index] = book
+
+            index = peopleList.indexOf(person)
+            person.cNum += 1
+            peopleList[index] = person
+        }
+    }
+
+    fun returnBook(checkout: Checkout) {
+        with(checkout) {
+            var index = checkedList.indexOf(this)
+            returned = true
+            rDate = LocalDate.now()
+            checkedList[index] = this
+
+            index = bookList.indexOf(book)
+            book.checkedout = false
+            bookList[index] = book
+
+            index = peopleList.indexOf(person)
+            person.cNum -= 1
+            peopleList[index] = person
+        }
+    }
+
+    fun checkDupeBook(book: Book) {
+        while(book in bookList) {
+            //println("${bookList.indexOf(book)} ${book.title} ${book.dupe}")
+            book.dupe += 1
+            /*
+            if(book.dupe > 5) {
+                exitProcess(1)
+            }
+            */
         }
     }
 }

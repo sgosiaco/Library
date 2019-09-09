@@ -33,7 +33,9 @@ class AddBookFragment : Fragment("Add new book") {
             button("Add book") {
                 disableProperty().bind(bookTitle.isNull or author.isNull or pub.isNull)
                 action {
-                    controller.bookList.add(Book(false, author.value, year.value, pub.value, bookTitle.value))
+                    val book = Book(0, false, author.value, year.value, pub.value, bookTitle.value)
+                    controller.checkDupeBook(book)
+                    controller.bookList.add(book)
                     controller.undoList.add(Action("Added", controller.bookList.last(), "Nothing"))
                     close()
                 }

@@ -1,6 +1,7 @@
 package io.github.sgosiaco.view
 
 import io.github.sgosiaco.library.Action
+import io.github.sgosiaco.library.Book
 import io.github.sgosiaco.library.MyController
 import javafx.util.converter.IntegerStringConverter
 import tornadofx.*
@@ -43,8 +44,12 @@ class EditBookFragment : Fragment() {
                             actionFn = {
                                 val index = controller.bookList.indexOf(controller.sBook.item)
                                 val old = controller.sBook.item.copy()
+                                controller.sBook.item.dupe = 0
                                 controller.sBook.commit()
-                                controller.bookList[index] = controller.sBook.item
+                                val book = controller.sBook.item.copy()
+                                controller.bookList[index] = Book()
+                                controller.checkDupeBook(book)
+                                controller.bookList[index]= book
                                 controller.undoList.add(Action("Edited", old, controller.bookList[index].copy()))
                                 close()
                             }
