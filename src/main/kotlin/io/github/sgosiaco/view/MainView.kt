@@ -28,13 +28,24 @@ class MainView : View("Library") {
                     else -> println("Error with undo")
                 }
             }
-            else {
+            else if(obj is Person) {
                 val index = controller.peopleList.indexOf(newObj)
                 when(action) {
                     "Added" -> controller.peopleList.remove(obj as Person)
                     "Edited" -> controller.peopleList[index] = obj as Person
                     "Deleted" -> controller.peopleList.add(obj as Person)
                     else -> println("Error with undo")
+                }
+            }
+            else {
+                when(action) {
+                    "Checkout" -> {
+                        returnBook(obj as Checkout)
+                        controller.checkedList.remove(obj as Checkout)
+                    }
+                    "Returned" -> {
+                        checkBook(obj as Checkout)
+                    }
                 }
             }
             controller.undoList.remove(act)
@@ -50,20 +61,70 @@ class MainView : View("Library") {
                     "Added" -> controller.bookList.add(obj as Book)
                     "Edited" -> controller.bookList[index] = newObj as Book
                     "Deleted" -> controller.bookList.remove(obj as Book)
-                    else -> println("Error with undo")
                 }
             }
-            else {
+            else if (obj is Person) {
                 val index = controller.peopleList.indexOf(obj as Person)
                 when(action) {
                     "Added" -> controller.peopleList.add(obj as Person)
                     "Edited" -> controller.peopleList[index] = newObj as Person
                     "Deleted" -> controller.peopleList.remove(obj as Person)
-                    else -> println("Error with undo")
+                }
+            }
+            else {
+                when(action) {
+                    "Checkout" -> {
+                        checkBook(obj as Checkout)
+                    }
+                    "Returned" -> {
+                        returnBook(obj as Checkout)
+                    }
                 }
             }
             controller.redoList.remove(act)
             controller.undoList.add(act)
+        }
+    }
+
+    private fun checkBook(checkout: Checkout) {
+        with(checkout) {
+            var index = controller.checkedList.indexOf(this)
+            returned = false
+            rDate = null
+            if(index == -1) {
+                controller.checkedList.add(this)
+            }
+            else {
+                controller.checkedList[index] = this
+            }
+            index = controller.bookList.indexOf(book)
+            book.checkedout = true
+            controller.bookList[index] = book
+
+            index = controller.peopleList.indexOf(person)
+            person.cNum += 1
+            controller.peopleList[index] = person
+
+
+        }
+    }
+
+    private fun returnBook(checkout: Checkout) {
+        with(checkout) {
+            var index = controller.checkedList.indexOf(this)
+            returned = true
+            rDate = LocalDate.now()
+            controller.checkedList[index] = this
+
+            index = controller.bookList.indexOf(book)
+            book.checkedout = false
+            controller.bookList[index] = book
+
+            index = controller.peopleList.indexOf(person)
+            person.cNum -= 1
+            controller.peopleList[index] = person
+
+
         }
     }
 
@@ -257,19 +318,10 @@ class MainView : View("Library") {
                                         confirm(
                                                 header = "Return all books borrowed by $name?",
                                                 actionFn = {
-                                                    var index = controller.peopleList.indexOf(this)
                                                     controller.checkedList.filter { !it.returned && it.person == this }.forEach {
-                                                        index = controller.bookList.indexOf(it.book)
-                                                        it.book.checkedout = false
-                                                        controller.bookList[index] = it.book
-
-                                                        index = controller.checkedList.indexOf(it)
-                                                        it.returned = true
-                                                        it.rDate = LocalDate.now()
-                                                        controller.checkedList[index] = it
+                                                        returnBook(it)
+                                                        controller.undoList.add(Action("Returned", it, "Nothing"))
                                                     }
-                                                    cNum = 0
-                                                    controller.peopleList[index] = this
                                                 }
                                         )
                                     }
@@ -307,18 +359,8 @@ class MainView : View("Library") {
                                                         header = "Return ${book.title}?",
                                                         content = "Borrowed by ${person.name} <${person.email}>",
                                                         actionFn = {
-                                                            var index = controller.bookList.indexOf(book)
-                                                            book.checkedout = false
-                                                            controller.bookList[index] = book
-
-                                                            index = controller.checkedList.indexOf(selectedItem)
-                                                            returned = true
-                                                            rDate = LocalDate.now()
-                                                            controller.checkedList[index] = selectedItem
-
-                                                            index = controller.peopleList.indexOf(selected)
-                                                            selected.cNum -= 1
-                                                            controller.peopleList[index] = selected
+                                                            returnBook(this)
+                                                            controller.undoList.add(Action("Returned", this, "Nothing"))
                                                         }
                                                 )
                                             }

@@ -8,8 +8,8 @@ class MyApp: App(MainView::class, Styles::class) {
 
     override fun stop() {
         //super.stop()
-        controller.saveBooks()
-        controller.saveChecked()
-        controller.savePeople()
+        //controller.saveBooks()
+        //controller.saveChecked()
+        //controller.savePeople()
     }
 }

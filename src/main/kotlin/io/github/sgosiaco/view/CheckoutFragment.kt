@@ -1,5 +1,6 @@
 package io.github.sgosiaco.view
 
+import io.github.sgosiaco.library.Action
 import io.github.sgosiaco.library.Checkout
 import io.github.sgosiaco.library.MyController
 import io.github.sgosiaco.library.Person
@@ -60,6 +61,7 @@ class CheckoutFragment : Fragment() {
                                 person.value.cNum += 1
                                 controller.peopleList[index] = person.value
                                 controller.checkedList.add(Checkout(person.value, book, cDate.value, dDate.value, null,false))
+                                controller.undoList.add(Action("Checkout", controller.checkedList.last(), "Nothing"))
                                 close()
                             }
                     )
