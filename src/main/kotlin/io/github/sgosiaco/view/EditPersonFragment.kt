@@ -2,8 +2,6 @@ package io.github.sgosiaco.view
 
 import io.github.sgosiaco.library.Action
 import io.github.sgosiaco.library.MyController
-import io.github.sgosiaco.library.Person
-import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.util.converter.IntegerStringConverter
 import tornadofx.*
@@ -39,7 +37,7 @@ class EditPersonFragment : Fragment() {
                                 val old = controller.sPerson.item.copy()
                                 controller.sPerson.commit()
                                 controller.peopleList[index] = controller.sPerson.item
-                                controller.actionList.add(Action("Edited", old, controller.peopleList[index].copy()))
+                                controller.undoList.add(Action("Edited", old, controller.peopleList[index].copy()))
                                 close()
                             }
                     )

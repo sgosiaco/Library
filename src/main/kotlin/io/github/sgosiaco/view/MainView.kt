@@ -37,7 +37,33 @@ class MainView : View("Library") {
                     else -> println("Error with undo")
                 }
             }
-            controller.actionList.remove(act)
+            controller.undoList.remove(act)
+            controller.redoList.add(act)
+        }
+    }
+
+    private fun redo(act: Action) {
+        with(act) {
+            if(obj is Book) {
+                val index = controller.bookList.indexOf(obj as Book)
+                when(action) {
+                    "Added" -> controller.bookList.add(obj as Book)
+                    "Edited" -> controller.bookList[index] = newObj as Book
+                    "Deleted" -> controller.bookList.remove(obj as Book)
+                    else -> println("Error with undo")
+                }
+            }
+            else {
+                val index = controller.peopleList.indexOf(obj as Person)
+                when(action) {
+                    "Added" -> controller.peopleList.add(obj as Person)
+                    "Edited" -> controller.peopleList[index] = newObj as Person
+                    "Deleted" -> controller.peopleList.remove(obj as Person)
+                    else -> println("Error with undo")
+                }
+            }
+            controller.redoList.remove(act)
+            controller.undoList.add(act)
         }
     }
 
@@ -93,7 +119,7 @@ class MainView : View("Library") {
             menu("Edit") {
                 item("Duplicate Book").action {
                     if(controller.focus == "Books") {
-                        val index = controller.bookList.indexOf(controller.sBook.item)
+                        //val index = controller.bookList.indexOf(controller.sBook.item)
                         controller.bookList.add(controller.sBook.item.copy())
                     }
                 }
@@ -106,9 +132,14 @@ class MainView : View("Library") {
                     }
                 }
                 item("Show history", "Shortcut+H").action { find<HistoryFragment>().openWindow() }
+                item("Redo", "Shortcut+Shift+Z").action {
+                    if(controller.redoList.isNotEmpty()) {
+                        redo(controller.redoList.last())
+                    }
+                }
                 item("Undo", "Shortcut+Z").action {
-                    if(controller.actionList.isNotEmpty()) {
-                        undo(controller.actionList.last())
+                    if(controller.undoList.isNotEmpty()) {
+                        undo(controller.undoList.last())
                     }
                 }
             }
@@ -148,8 +179,7 @@ class MainView : View("Library") {
                                         confirm(
                                                 header = "Delete $title?",
                                                 actionFn = {
-                                                    val index = controller.bookList.indexOf(selectedItem)
-                                                    controller.actionList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                                    controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
                                                     controller.bookList.remove(selectedItem)
                                                 }
                                         )
@@ -191,8 +221,7 @@ class MainView : View("Library") {
                                         confirm(
                                                 header = "Delete $name?",
                                                 actionFn = {
-                                                    val index = controller.peopleList.indexOf(selectedItem)
-                                                    controller.actionList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                                    controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
                                                     controller.peopleList.remove(selectedItem)
                                                 }
                                         )
@@ -209,7 +238,7 @@ class MainView : View("Library") {
                 }
 
             }
-            item("Checked Out/History", showHeader = false) {
+            item("Checked Out/Actions", showHeader = false) {
                 tabpane {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                     tab("Checked Out") {
@@ -305,16 +334,30 @@ class MainView : View("Library") {
                             }
                         }
                     }
-                    tab<HistoryFragment>()
+                    //tab<HistoryFragment>()
                     tab("Actions") {
-                        tableview(controller.actionList) {
-                            readonlyColumn("Action", Action::action)
-                            readonlyColumn("Object", Action::obj).prefWidth(200.0)
-                            readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
-                            contextmenu {
-                                item("Undo").action {
-                                    selectedItem?.apply {
-                                        undo(this)
+                        hbox {
+                            tableview(controller.undoList) {
+                                readonlyColumn("Action", Action::action)
+                                readonlyColumn("Object", Action::obj).prefWidth(200.0)
+                                readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
+                                contextmenu {
+                                    item("Undo").action {
+                                        selectedItem?.apply {
+                                            undo(this)
+                                        }
+                                    }
+                                }
+                            }
+                            tableview(controller.redoList) {
+                                readonlyColumn("Action", Action::action)
+                                readonlyColumn("Object", Action::obj).prefWidth(200.0)
+                                readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
+                                contextmenu {
+                                    item("Redo").action {
+                                        selectedItem?.apply {
+                                            redo(this)
+                                        }
                                     }
                                 }
                             }

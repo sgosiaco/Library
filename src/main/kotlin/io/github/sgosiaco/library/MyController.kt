@@ -71,7 +71,8 @@ class MyController: Controller() {
     private var checkedjson = File("checked.json").readText(Charsets.UTF_8)
     var checkedList: ObservableList<Checkout> = FXCollections.observableArrayList(Gson().fromJson(checkedjson, Array<Checkout>::class.java).toList())
 
-    var actionList: ObservableList<Action> = FXCollections.observableArrayList()
+    var undoList: ObservableList<Action> = FXCollections.observableArrayList()
+    var redoList: ObservableList<Action> = FXCollections.observableArrayList()
 
     fun savePeople() {
         File("people.json").writeText(Gson().toJson(peopleList))

@@ -34,7 +34,7 @@ class AddBookFragment : Fragment("Add new book") {
                 disableProperty().bind(bookTitle.isNull or author.isNull or pub.isNull)
                 action {
                     controller.bookList.add(Book(false, author.value, year.value, pub.value, bookTitle.value))
-                    controller.actionList.add(Action("Added", controller.bookList.last(), "Nothing"))
+                    controller.undoList.add(Action("Added", controller.bookList.last(), "Nothing"))
                     close()
                 }
             }

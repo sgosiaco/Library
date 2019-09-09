@@ -45,7 +45,7 @@ class EditBookFragment : Fragment() {
                                 val old = controller.sBook.item.copy()
                                 controller.sBook.commit()
                                 controller.bookList[index] = controller.sBook.item
-                                controller.actionList.add(Action("Edited", old, controller.bookList[index].copy()))
+                                controller.undoList.add(Action("Edited", old, controller.bookList[index].copy()))
                                 close()
                             }
                     )
