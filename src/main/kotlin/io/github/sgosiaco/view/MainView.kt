@@ -94,6 +94,26 @@ class MainView : View("Library") {
                     item("Open Person List").action { controller.openDialog("person") }
                     item("Open Checkout List").action { controller.openDialog("checked") }
                 }
+                menu("Export") {
+                    item("Export Book List to CSV").action {
+                        confirm(
+                                header = "Export the book list to CSV?",
+                                actionFn = { controller.exportBookCSV() }
+                        )
+                    }
+                    item("Export People List to CSV").action {
+                        confirm(
+                                header = "Export the people list to CSV?",
+                                actionFn = { controller.exportPeopleCSV() }
+                        )
+                    }
+                    item("Export Checked List to CSV").action {
+                        confirm(
+                                header = "Export the checked list to CSV?",
+                                actionFn = { controller.exportCheckedCSV() }
+                        )
+                    }
+                }
                 menu("Save") {
                     item("Save Book List").action {
                         confirm(

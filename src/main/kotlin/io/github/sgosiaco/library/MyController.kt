@@ -8,7 +8,7 @@ import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
-import kotlin.system.exitProcess
+import java.time.format.DateTimeFormatter
 
 data class Book (
         @SerializedName("dupe") var dupe: Int = 0,
@@ -19,6 +19,8 @@ data class Book (
         @SerializedName("title") var title : String = ""
 ) {
     override fun toString(): String = title
+    fun toCSV(): String = """"$title","$author","$pub","$year""""
+    fun toCSVChecked(): String = """"$title","$author","$pub","$year","$checkedout""""
 }
 
 class SelectedBook : ItemViewModel<Book>() {
@@ -38,6 +40,8 @@ data class Person (
         @SerializedName("cNum") var cNum : Int = 0
 ) {
     override fun toString(): String = "$name <$email>"
+    fun toCSV(): String = "$name <$email>" //no safety quote for comma b/c there should be no commas
+    fun toCSVAll(): String = "$name, $email, $phone, $aff, $cNum"
 }
 
 class SelectedPerson : ItemViewModel<Person>() {
@@ -88,6 +92,31 @@ class MyController: Controller() {
 
     fun saveChecked() {
         File("checked.json").writeText(Gson().toJson(checkedList))
+    }
+
+    fun exportPeopleCSV() {
+        var csv = "Name, Email, Phone Number, Affiliation, cNum\n"
+        peopleList.forEach {
+            csv += "${it.toCSVAll()}\n"
+        }
+        File("people.csv").writeText(csv)
+    }
+
+    fun exportBookCSV() {
+        var csv = "Title, Author(s), Publisher(s), Year, Checked Out\n"
+        bookList.forEach {
+            csv += "${it.toCSVChecked()}\n"
+        }
+        File("books.csv").writeText(csv)
+    }
+
+    fun exportCheckedCSV() {
+        val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+        var csv = "Title, Author(s), Publisher(s), Year, Person, Checked Out, Due\n"
+        checkedList.forEach {
+            csv += "${it.book.toCSV()}, ${it.person.toCSV()}, ${it.cDate.format(dateFormat)}, ${it.dDate.format(dateFormat)}\n"
+        }
+        File("checked.csv").writeText(csv)
     }
 
     fun openDialog(type: String) {
