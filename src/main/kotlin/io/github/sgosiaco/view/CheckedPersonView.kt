@@ -16,7 +16,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
     override val root = vbox {
         textfield(search) {
             controller.sfCheckedPeopleList.filterWhen(textProperty()) { query, item ->
-                item.containsString(query)
+                item.cNum > 0 && item.containsString(query)
             }
             promptText = "Search ${title}"
         }
