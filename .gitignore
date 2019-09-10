@@ -59,3 +59,21 @@ people.json
 books.json
 checked.json
 *.log
+testfiles/books.csv
+bin/main/io/github/sgosiaco/view/MainView.kt
+bin/main/io/github/sgosiaco/view/EditBookFragment.kt
+bin/main/io/github/sgosiaco/library/Styles.kt
+bin/main/io/github/sgosiaco/library/MyController.kt
+Library.jar - Shortcut.lnk
+.project
+.classpath
+bin/main/io/github/sgosiaco/view/HistoryFragment.kt
+bin/main/io/github/sgosiaco/view/EditPersonFragment.kt
+bin/main/io/github/sgosiaco/view/AddPersonFragment.kt
+bin/main/io/github/sgosiaco/view/AddBookFragment.kt
+bin/main/io/github/sgosiaco/library/MyApp.kt
+.settings/org.eclipse.buildship.core.prefs
+testfiles/people.csv
+bin/main/io/github/sgosiaco/view/CheckoutFragment.kt
+Library.jar - Shortcut_2.lnk
+testfiles/checked.csv
