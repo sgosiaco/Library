@@ -14,8 +14,38 @@ class Styles : Stylesheet() {
     init {
         label and heading {
             padding = box(10.px)
-            fontSize = 20.px
+            fontSize = 20.px //20.px
             fontWeight = FontWeight.BOLD
+        }
+        tableView {
+            fontSize = 16.px
+        }
+        tab {
+            fontSize = 14.px
+        }
+        menuBar {
+            fontSize = 14.px
+        }
+        menu {
+            fontSize = 14.px
+        }
+        menuItem {
+            fontSize = 14.px
+        }
+        button {
+            fontSize = 14.px
+        }
+        textField {
+            fontSize = 14.px
+        }
+        field {
+            fontSize = 14.px
+        }
+        confirmation {
+            fontSize = 14.px
+        }
+        toggleButton {
+            fontSize = 14.px
         }
     }
 }

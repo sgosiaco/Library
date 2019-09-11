@@ -119,13 +119,23 @@ class MainView : View("Library") {
                 tabpane {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                     tab(BookView::class)
-                    tab(PeopleView::class)
+                    tab(CheckedBookView::class)
+                    tab("Log") {
+                        tableview(controller.undoList) {
+                            readonlyColumn("Action", Action::action)
+                            readonlyColumn("Object", Action::obj).prefWidth(1000.0)
+                            readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
+                        }
+                    }
                 }
 
             }
             item("Checked Out/Log", showHeader = false) {
                 tabpane {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                    tab(PeopleView::class)
+                    tab(CheckedPersonView::class)
+                    /*
                     tab(CheckedPersonView::class)
                     tab(CheckedBookView::class)
                     tab("Log") {
@@ -135,6 +145,8 @@ class MainView : View("Library") {
                             readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
                         }
                     }
+
+                     */
                 }
             }
         }

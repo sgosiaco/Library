@@ -16,16 +16,16 @@ class AddBookFragment : Fragment("Add new book") {
 
     override val root = form {
         fieldset("Info") {
-            field("Title") {
+            field("Title:") {
                 textfield(bookTitle)
             }
-            field("Author(s)") {
+            field("Author(s):") {
                 textfield(author)
             }
-            field("Publisher(s)") {
+            field("Publisher(s):") {
                 textfield(pub)
             }
-            field("Year") {
+            field("Year:") {
                 textfield(year)
             }
         }

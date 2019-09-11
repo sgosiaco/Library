@@ -13,16 +13,16 @@ class EditPersonFragment : Fragment() {
     override val root = form {
         title = """Editing ${controller.sPerson.name.value}"""
         fieldset("Info") {
-            field("Name") {
+            field("Name:") {
                 textfield(controller.sPerson.name)
             }
-            field("Email") {
+            field("Email:") {
                 textfield(controller.sPerson.email)
             }
-            field("Phone number") {
+            field("Phone number:") {
                 textfield(controller.sPerson.phone, IntegerStringConverter())
             }
-            field("Affiliation") {
+            field("Affiliation:") {
                 combobox(controller.sPerson.aff, affiliations)
             }
         }

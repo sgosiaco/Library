@@ -18,16 +18,16 @@ class AddPersonFragment : Fragment("Add new person") {
 
     override val root = form {
         fieldset("Info") {
-            field("Name") {
+            field("Name:") {
                 textfield(name)
             }
-            field("Email") {
+            field("Email:") {
                 textfield(email)
             }
-            field("Phone number") {
+            field("Phone number:") {
                 textfield(phone)
             }
-            field("Affiliation") {
+            field("Affiliation:") {
                 combobox(aff, affiliations)
             }
         }

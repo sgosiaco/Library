@@ -2,20 +2,59 @@ package io.github.sgosiaco.view
 
 import io.github.sgosiaco.library.Action
 import io.github.sgosiaco.library.Book
+import io.github.sgosiaco.library.Checkout
 import io.github.sgosiaco.library.MyController
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import tornadofx.*
 
 class BookView : View("Books") {
     private val controller: MyController by inject()
-    private var search = ""
+    private var search = SimpleStringProperty()
+    private var filter = SimpleStringProperty()
+    private val allState = booleanBinding(filter) { value == "All"}
+    private val availableState = booleanBinding(filter) { value == "Available"}
+    private val checkedState = booleanBinding(filter) { value == "Checked"}
+
+    init {
+        search.value = ""
+        filter.value = "Available"
+    }
 
     override val root = vbox {
-        textfield(search) {
-            controller.sfBookList.filterWhen(textProperty()) { query, item ->
-                !item.checkedout && item.containsString(query)
+        hbox {
+            textfield(search) {
+                controller.sfBookList.filterWhen(textProperty()) { query, item ->
+                    when(filter.value) {
+                        "All" -> item.containsString(query)
+                        "Available" -> !item.checkedout && item.containsString(query)
+                        "Checked" -> item.checkedout && item.containsString(query)
+                        else -> !item.checkedout && item.containsString(query)
+                    }
+                }
+                promptText = "Search ${title}"
+                vgrow = Priority.ALWAYS
             }
-            promptText = "Search ${title}"
+            togglegroup {
+                togglebutton("All Books") {
+                    action {
+                        filter.value = "All"
+                        controller.sfBookList.predicate = { it.title != "" && (if(search.value != "") it.containsString(search.value) else true) }
+                    }
+                }
+                togglebutton("Available to Checkout") {
+                    action {
+                        filter.value = "Available"
+                        controller.sfBookList.predicate = { !it.checkedout &&  (if(search.value != "") it.containsString(search.value) else true) }
+                    }
+                }
+                togglebutton("Checked Out") {
+                    action {
+                        filter.value = "Checked"
+                        controller.sfBookList.predicate = { it.checkedout && (if(search.value != "") it.containsString(search.value) else true) }
+                    }
+                }
+            }
         }
         tableview(controller.sfBookList) {
             focusedProperty().onChange {
@@ -34,26 +73,46 @@ class BookView : View("Books") {
             columnResizePolicy = SmartResize.POLICY
 
             contextmenu {
-                item("Add book").action { find<AddBookFragment>().openModal() }
-                item("Edit book").action {
-                    selectedItem?.apply {
-                        find<EditBookFragment>().openModal() //use openWindow to allow selecting dif book while window open
+                item("Add book") {
+                    action { find<AddBookFragment>().openModal() }
+                    visibleWhen {
+                        !checkedState
                     }
                 }
-                item("Delete book").action {
-                    selectedItem?.apply {
-                        confirm(
-                                header = "Delete $title?",
-                                actionFn = {
-                                    controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
-                                    controller.bookList.remove(selectedItem)
-                                }
-                        )
+                item("Edit book") {
+                    action {
+                        selectedItem?.apply {
+                            find<EditBookFragment>().openModal() //use openWindow to allow selecting dif book while window open
+                        }
+                    }
+                    visibleWhen {
+                        !checkedState
                     }
                 }
-                item("Checkout").action {
-                    selectedItem?.apply {
-                        find<CheckoutFragment>().openModal()
+                item("Delete book") {
+                    action {
+                        selectedItem?.apply {
+                            confirm(
+                                    header = "Delete $title?",
+                                    actionFn = {
+                                        controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                        controller.bookList.remove(selectedItem)
+                                    }
+                            )
+                        }
+                    }
+                    visibleWhen {
+                        !checkedState
+                    }
+                }
+                item("Checkout") {
+                    action {
+                        selectedItem?.apply {
+                            find<CheckoutFragment>().openModal()
+                        }
+                    }
+                    visibleWhen {
+                        !checkedState
                     }
                 }
                 item("Show History").action {

@@ -17,19 +17,19 @@ class EditBookFragment : Fragment() {
     override val root = form {
         title = """Editing ${controller.sBook.title.value}"""
         fieldset("Info") {
-            field("Title") {
+            field("Title:") {
                 textfield(controller.sBook.title)
                 widthList.add(text.length * 47.0)
             }
-            field("Author(s)") {
+            field("Author(s):") {
                 textfield(controller.sBook.author)
                 widthList.add(text.length * 47.0)
             }
-            field("Publisher(s)") {
+            field("Publisher(s):") {
                 textfield(controller.sBook.pub)
                 widthList.add(text.length * 47.0)
             }
-            field("Year") {
+            field("Year:") {
                 textfield(controller.sBook.year, IntegerStringConverter())
                 widthList.add(text.length * 47.0)
             }
