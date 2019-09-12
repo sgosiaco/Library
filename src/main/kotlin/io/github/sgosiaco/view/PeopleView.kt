@@ -23,11 +23,14 @@ class PeopleView : View("People") {
             }
             bindSelected(controller.sPerson)
             vgrow = Priority.ALWAYS
+            columnResizePolicy = SmartResize.POLICY
+            controller.sfPeopleList.onChange {
+                requestResize()
+            }
             readonlyColumn("Name", Person::name)
             readonlyColumn("Email", Person::email)
             readonlyColumn("Phone number", Person::phone)
             readonlyColumn("Affiliation", Person::aff)
-            columnResizePolicy = SmartResize.POLICY
 
             contextmenu {
                 item("Add person").action { find<AddPersonFragment>().openModal() }
@@ -38,13 +41,20 @@ class PeopleView : View("People") {
                 }
                 item("Delete person").action {
                     selectedItem?.apply {
-                        confirm(
-                                header = "Delete $name?",
-                                actionFn = {
-                                    controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
-                                    controller.peopleList.remove(selectedItem)
-                                }
-                        )
+                        if(cNum > 0) {
+                            error(
+                                    header = "Can't delete a person that has checked out book(s)!"
+                            )
+                        }
+                        else {
+                            confirm(
+                                    header = "Delete $name?",
+                                    actionFn = {
+                                        controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                        controller.peopleList.remove(selectedItem)
+                                    }
+                            )
+                        }
                     }
                 }
                 item("Show History").action {

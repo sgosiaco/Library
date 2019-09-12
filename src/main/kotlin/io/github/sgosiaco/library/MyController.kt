@@ -31,7 +31,7 @@ class MyController: Controller() {
     var redoList: ObservableList<Action> = FXCollections.observableArrayList()
 
     init {
-        sfBookList.predicate = { !it.checkedout }
+        //sfBookList.predicate = { !it.checkedout }
         sfCheckedPeopleList.predicate = { it.cNum > 0 }
         sfCheckedList.predicate = { !it.returned }
     }

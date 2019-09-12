@@ -9,8 +9,8 @@ import tornadofx.*
 
 class HistoryFragment : Fragment() {
     private val controller: MyController by inject()
-    val book: Book? = controller.sBook.item
-    val person: Person? = controller.sPerson.item
+    private val book: Book? = controller.sBook.item
+    private val person: Person? = controller.sPerson.item
     private val data = SortedFilteredList(controller.checkedList)
     init {
         when(controller.focus) {
@@ -24,18 +24,16 @@ class HistoryFragment : Fragment() {
             }
             else -> data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
         }
-        //data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
     }
 
     override val root = vbox {
         tableview(data) {
             vgrow = Priority.ALWAYS
+            columnResizePolicy = SmartResize.POLICY
             readonlyColumn("Book", Checkout::book).isVisible = controller.focus == "People" //controller.sPerson.isNotEmpty
             readonlyColumn("Person", Checkout::person).isVisible = controller.focus == "Books"//controller.sBook.isNotEmpty
             readonlyColumn("Checked Out Date", Checkout::cDate).prefWidth(300.0)
             readonlyColumn("Return Date", Checkout::rDate).prefWidth(300.0)
-            columnResizePolicy = SmartResize.POLICY
-            smartResize()
         }
     }
 }

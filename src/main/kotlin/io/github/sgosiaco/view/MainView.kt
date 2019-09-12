@@ -114,7 +114,7 @@ class MainView : View("Library") {
         }
         drawer(side = Side.LEFT, multiselect = true) {
             vgrow = Priority.ALWAYS
-            item("Books/People", showHeader = false) {
+            item("Books", showHeader = false) {
                 expanded = true
                 tabpane {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
@@ -130,23 +130,11 @@ class MainView : View("Library") {
                 }
 
             }
-            item("Checked Out/Log", showHeader = false) {
+            item("People", showHeader = false) {
                 tabpane {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                     tab(PeopleView::class)
                     tab(CheckedPersonView::class)
-                    /*
-                    tab(CheckedPersonView::class)
-                    tab(CheckedBookView::class)
-                    tab("Log") {
-                        tableview(controller.undoList) {
-                            readonlyColumn("Action", Action::action)
-                            readonlyColumn("Object", Action::obj).prefWidth(1000.0)
-                            readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
-                        }
-                    }
-
-                     */
                 }
             }
         }

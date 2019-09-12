@@ -18,7 +18,7 @@ class BookView : View("Books") {
 
     init {
         search.value = ""
-        filter.value = "Available"
+        filter.value = "All"
     }
 
     override val root = vbox {
@@ -33,7 +33,6 @@ class BookView : View("Books") {
                     }
                 }
                 promptText = "Search ${title}"
-                vgrow = Priority.ALWAYS
             }
             togglegroup {
                 togglebutton("All Books") {
@@ -62,6 +61,10 @@ class BookView : View("Books") {
             }
             bindSelected(controller.sBook)
             vgrow = Priority.ALWAYS
+            columnResizePolicy = SmartResize.POLICY
+            controller.sfBookList.onChange {
+                requestResize()
+            }
             readonlyColumn("Title", Book::title) {
                 value {
                     if(it.value.dupe > 0) "${it.value.title} (${it.value.dupe})" else it.value.title
@@ -70,7 +73,7 @@ class BookView : View("Books") {
             readonlyColumn("Author", Book::author)
             readonlyColumn("Publisher", Book::pub)
             readonlyColumn("Year", Book::year)
-            columnResizePolicy = SmartResize.POLICY
+
 
             contextmenu {
                 item("Add book") {
@@ -92,13 +95,20 @@ class BookView : View("Books") {
                 item("Delete book") {
                     action {
                         selectedItem?.apply {
-                            confirm(
-                                    header = "Delete $title?",
-                                    actionFn = {
-                                        controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
-                                        controller.bookList.remove(selectedItem)
-                                    }
-                            )
+                            if(checkedout) {
+                                error(
+                                        header = "Can't delete a checked out book!"
+                                )
+                            }
+                            else {
+                                confirm(
+                                        header = "Delete $title?",
+                                        actionFn = {
+                                            controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                            controller.bookList.remove(selectedItem)
+                                        }
+                                )
+                            }
                         }
                     }
                     visibleWhen {
@@ -108,7 +118,14 @@ class BookView : View("Books") {
                 item("Checkout") {
                     action {
                         selectedItem?.apply {
-                            find<CheckoutFragment>().openModal()
+                            if(checkedout) {
+                                error(
+                                        header = "Can't checkout an already checked out book!"
+                                )
+                            }
+                            else {
+                                find<CheckoutFragment>().openModal()
+                            }
                         }
                     }
                     visibleWhen {

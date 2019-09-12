@@ -14,7 +14,7 @@ class PeopleConverter: StringConverter<Person>() {
         return Person()
     }
     override fun toString(person: Person): String {
-        return person.name
+        return "${person.name} <${person.email}>"
     }
 }
 
@@ -40,10 +40,24 @@ class CheckoutFragment : Fragment() {
                 }
             }
             field("Checkout Date") {
-                datepicker(cDate).value = LocalDate.now()
+                datepicker(cDate) {
+                    value = LocalDate.now()
+                    cDate.onChange {
+                        if(cDate.value.isAfter(dDate.value)) {
+                            this.value = dDate.value
+                        }
+                    }
+                }
             }
             field("Due Date") {
-                datepicker(dDate).value = LocalDate.now().plusWeeks(2)
+                 datepicker(dDate) {
+                     value = LocalDate.now().plusWeeks(2)
+                     dDate.onChange {
+                         if(dDate.value.isBefore(cDate.value)) {
+                             this.value = cDate.value
+                         }
+                     }
+                }
             }
         }
         hbox(10.0) {

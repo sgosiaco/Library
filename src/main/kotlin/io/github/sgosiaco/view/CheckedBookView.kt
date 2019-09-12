@@ -3,6 +3,7 @@ package io.github.sgosiaco.view
 import io.github.sgosiaco.library.Action
 import io.github.sgosiaco.library.Checkout
 import io.github.sgosiaco.library.MyController
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
@@ -10,18 +11,57 @@ import java.time.LocalDate
 
 class CheckedBookView : View("Checked Out (Books)") {
     private val controller: MyController by inject()
-    private var search = ""
+    private var search = SimpleStringProperty()
+    private var filter = SimpleStringProperty()
+    private val allState = booleanBinding(filter) { value == "All" }
+    private val todayState = booleanBinding(filter) { value == "Today" }
+    private val overdueState = booleanBinding(filter) { value == "Overdue" }
+
+    init {
+        search.value = ""
+        filter.value = "All"
+    }
 
     override val root = vbox {
-        textfield(search) {
-            controller.sfCheckedList.filterWhen(textProperty()) { query, item ->
-                !item.returned && item.containsString(query)
+        hbox {
+            textfield(search) {
+                controller.sfCheckedList.filterWhen(textProperty()) { query, item ->
+                    when(filter.value) {
+                        "All" -> !item.returned && item.containsString(query)
+                        "Today" -> !item.returned && item.dDate.isEqual(LocalDate.now()) && item.containsString(query)
+                        "Overdue" -> !item.returned && item.dDate.isBefore(LocalDate.now()) && item.containsString(query)
+                        else -> !item.returned && item.containsString(query)
+                    }
+                }
+                promptText = "Search ${title}"
             }
-            promptText = "Search ${title}"
+            togglegroup {
+                togglebutton("All Books") {
+                    action {
+                        filter.value = "All"
+                        controller.sfCheckedList.predicate = { !it.returned && (if(search.value != "") it.containsString(search.value) else true) }
+                    }
+                }
+                togglebutton("Due today") {
+                    action {
+                        filter.value = "Today"
+                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isEqual(LocalDate.now()) && (if(search.value != "") it.containsString(search.value) else true) }
+                    }
+                }
+                togglebutton("Overdue") {
+                    action {
+                        filter.value = "Overdue"
+                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isBefore(LocalDate.now()) && (if(search.value != "") it.containsString(search.value) else true) }
+                    }
+                }
+            }
         }
         tableview(controller.sfCheckedList) {
             vgrow = Priority.ALWAYS
             columnResizePolicy = SmartResize.POLICY
+            controller.sfCheckedList.onChange {
+                requestResize()
+            }
             readonlyColumn("Title", Checkout::book).value {
                 it.value.book.title
             }
