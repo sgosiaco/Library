@@ -1,13 +1,13 @@
-package io.github.sgosiaco.view
+package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.Action
-import io.github.sgosiaco.library.MyController
+import io.github.sgosiaco.library.model.Action
+import io.github.sgosiaco.library.controller.MainController
 import javafx.collections.FXCollections
 import javafx.util.converter.IntegerStringConverter
 import tornadofx.*
 
 class EditPersonFragment : Fragment() {
-    private val controller: MyController by inject()
+    private val controller: MainController by inject()
     private val affiliations = FXCollections.observableArrayList<String>("Alumni", "Faculty", "Staff", "Student")
 
     override val root = form {

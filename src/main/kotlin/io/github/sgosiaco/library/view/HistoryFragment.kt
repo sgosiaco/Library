@@ -1,14 +1,14 @@
-package io.github.sgosiaco.view
+package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.Book
-import io.github.sgosiaco.library.Checkout
-import io.github.sgosiaco.library.MyController
-import io.github.sgosiaco.library.Person
+import io.github.sgosiaco.library.model.Book
+import io.github.sgosiaco.library.model.Checkout
+import io.github.sgosiaco.library.controller.MainController
+import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import tornadofx.*
 
 class HistoryFragment : Fragment() {
-    private val controller: MyController by inject()
+    private val controller: MainController by inject()
     private val book: Book? = controller.sBook.item
     private val person: Person? = controller.sPerson.item
     private val data = SortedFilteredList(controller.checkedList)

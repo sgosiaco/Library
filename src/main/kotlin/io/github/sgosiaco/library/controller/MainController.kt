@@ -1,6 +1,7 @@
-package io.github.sgosiaco.library
+package io.github.sgosiaco.library.controller
 
 import com.google.gson.Gson
+import io.github.sgosiaco.library.model.*
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.stage.FileChooser
@@ -9,7 +10,7 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class MyController: Controller() {
+class MainController: Controller() {
     val sBook = SelectedBook()
     val sPerson = SelectedPerson()
     var focus = ""

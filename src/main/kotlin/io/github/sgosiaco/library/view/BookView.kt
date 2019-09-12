@@ -1,15 +1,14 @@
-package io.github.sgosiaco.view
+package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.Action
-import io.github.sgosiaco.library.Book
-import io.github.sgosiaco.library.Checkout
-import io.github.sgosiaco.library.MyController
+import io.github.sgosiaco.library.model.Action
+import io.github.sgosiaco.library.model.Book
+import io.github.sgosiaco.library.controller.MainController
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import tornadofx.*
 
 class BookView : View("Books") {
-    private val controller: MyController by inject()
+    private val controller: MainController by inject()
     private var search = SimpleStringProperty()
     private var filter = SimpleStringProperty()
     private val allState = booleanBinding(filter) { value == "All"}

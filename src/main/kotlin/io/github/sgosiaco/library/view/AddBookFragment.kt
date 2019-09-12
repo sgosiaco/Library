@@ -1,14 +1,14 @@
-package io.github.sgosiaco.view
+package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.Action
-import io.github.sgosiaco.library.Book
-import io.github.sgosiaco.library.MyController
+import io.github.sgosiaco.library.model.Action
+import io.github.sgosiaco.library.model.Book
+import io.github.sgosiaco.library.controller.MainController
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
 class AddBookFragment : Fragment("Add new book") {
-    private val controller: MyController by inject()
+    private val controller: MainController by inject()
     private val bookTitle = SimpleStringProperty()
     private val author = SimpleStringProperty()
     private val pub = SimpleStringProperty()

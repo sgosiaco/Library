@@ -1,16 +1,16 @@
-package io.github.sgosiaco.view
+package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.Action
-import io.github.sgosiaco.library.Checkout
-import io.github.sgosiaco.library.MyController
-import io.github.sgosiaco.library.Person
+import io.github.sgosiaco.library.model.Action
+import io.github.sgosiaco.library.model.Checkout
+import io.github.sgosiaco.library.controller.MainController
+import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
 import java.time.LocalDate
 
 class CheckedPersonView : View("Checked Out (Person)") {
-    private val controller: MyController by inject()
+    private val controller: MainController by inject()
     private var search = ""
 
     override val root = vbox {

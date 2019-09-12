@@ -1,6 +1,7 @@
-package io.github.sgosiaco.view
+package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.*
+import io.github.sgosiaco.library.controller.MainController
+import io.github.sgosiaco.library.model.Action
 import javafx.geometry.Side
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
@@ -8,7 +9,7 @@ import tornadofx.*
 import kotlin.system.exitProcess
 
 class MainView : View("Library") {
-    private val controller: MyController by inject()
+    private val controller: MainController by inject()
 
     override fun onDock() {
         currentStage?.isMaximized = true

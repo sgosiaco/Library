@@ -1,9 +1,9 @@
-package io.github.sgosiaco.view
+package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.Action
-import io.github.sgosiaco.library.Checkout
-import io.github.sgosiaco.library.MyController
-import io.github.sgosiaco.library.Person
+import io.github.sgosiaco.library.model.Action
+import io.github.sgosiaco.library.model.Checkout
+import io.github.sgosiaco.library.controller.MainController
+import io.github.sgosiaco.library.model.Person
 import javafx.beans.property.SimpleObjectProperty
 import javafx.util.StringConverter
 import tornadofx.*
@@ -19,7 +19,7 @@ class PeopleConverter: StringConverter<Person>() {
 }
 
 class CheckoutFragment : Fragment() {
-    private val controller: MyController by inject()
+    private val controller: MainController by inject()
     private val person = SimpleObjectProperty<Person>()
     private val cDate = SimpleObjectProperty<LocalDate>()
     private val dDate = SimpleObjectProperty<LocalDate>()
@@ -68,7 +68,7 @@ class CheckoutFragment : Fragment() {
                             header = "Checkout book?",
                             content = """Checkout "${book.title}" to ${person.value.name}?""",
                             actionFn = {
-                                controller.checkBook(Checkout(person.value, book, cDate.value, dDate.value, null,false))
+                                controller.checkBook(Checkout(person.value, book, cDate.value, dDate.value, null, false))
                                 controller.undoList.add(Action("Checkout", controller.checkedList.last(), "Nothing"))
                                 close()
                             }

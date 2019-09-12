@@ -1,4 +1,4 @@
-package io.github.sgosiaco.library
+package io.github.sgosiaco.library.model
 
 import com.google.gson.annotations.SerializedName
 import tornadofx.*

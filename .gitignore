@@ -63,7 +63,7 @@ testfiles/books.csv
 bin/main/io/github/sgosiaco/view/MainView.kt
 bin/main/io/github/sgosiaco/view/EditBookFragment.kt
 bin/main/io/github/sgosiaco/library/Styles.kt
-bin/main/io/github/sgosiaco/library/MyController.kt
+bin/main/io/github/sgosiaco/library/MainController.kt
 Library.jar - Shortcut.lnk
 .project
 .classpath
