@@ -3,7 +3,7 @@ package io.github.sgosiaco.library.view
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.controller.MainController
 import javafx.collections.FXCollections
-import javafx.util.converter.IntegerStringConverter
+import javafx.util.converter.LongStringConverter
 import tornadofx.*
 
 class EditPersonFragment : Fragment() {
@@ -20,7 +20,7 @@ class EditPersonFragment : Fragment() {
                 textfield(controller.sPerson.email)
             }
             field("Phone number:") {
-                textfield(controller.sPerson.phone, IntegerStringConverter())
+                textfield(controller.sPerson.phone, LongStringConverter())
             }
             field("Affiliation:") {
                 combobox(controller.sPerson.aff, affiliations)

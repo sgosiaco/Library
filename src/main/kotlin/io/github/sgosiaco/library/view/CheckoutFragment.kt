@@ -69,6 +69,7 @@ class CheckoutFragment : Fragment() {
                             content = """Checkout "${book.title}" to ${person.value.name}?""",
                             actionFn = {
                                 controller.checkBook(Checkout(person.value, book, cDate.value, dDate.value, null, false))
+                                //person.value.checked.add(controller.checkedList.last())
                                 controller.undoList.add(Action("Checkout", controller.checkedList.last(), "Nothing"))
                                 close()
                             }

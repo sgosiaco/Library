@@ -33,7 +33,7 @@ class SelectedBook : ItemViewModel<Book>() {
 data class Person (
         @SerializedName("name") var name : String = "",
         @SerializedName("email") var email : String = "",
-        @SerializedName("phone") var phone : Int = -1,
+        @SerializedName("phone") var phone : Long = -1,
         @SerializedName("aff") var aff : String = "",
         @SerializedName("cNum") var cNum : Int = 0
 ) {

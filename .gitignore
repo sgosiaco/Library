@@ -77,3 +77,4 @@ testfiles/people.csv
 bin/main/io/github/sgosiaco/view/CheckoutFragment.kt
 Library.jar - Shortcut_2.lnk
 testfiles/checked.csv
+bin/main/io/github/sgosiaco/library/MyController.kt

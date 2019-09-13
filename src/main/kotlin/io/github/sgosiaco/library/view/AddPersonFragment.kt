@@ -3,7 +3,7 @@ package io.github.sgosiaco.library.view
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Person
-import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleLongProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import tornadofx.*
@@ -12,7 +12,7 @@ class AddPersonFragment : Fragment("Add new person") {
     private val controller: MainController by inject()
     private val name = SimpleStringProperty()
     private val email = SimpleStringProperty()
-    private val phone = SimpleIntegerProperty()
+    private val phone = SimpleLongProperty()
     private val aff = SimpleStringProperty()
     private val affiliations = FXCollections.observableArrayList<String>("Alumni", "Faculty", "Staff", "Student")
 
