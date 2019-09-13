@@ -43,9 +43,7 @@ class CheckoutFragment : Fragment() {
                 datepicker(cDate) {
                     value = LocalDate.now()
                     cDate.onChange {
-                        if(cDate.value.isAfter(dDate.value)) {
-                            this.value = dDate.value
-                        }
+                        dDate.value = cDate.value.plusWeeks(2)
                     }
                 }
             }
