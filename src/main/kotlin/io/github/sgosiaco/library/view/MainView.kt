@@ -3,13 +3,20 @@ package io.github.sgosiaco.library.view
 import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import javafx.geometry.Side
+import javafx.print.PageOrientation
+import javafx.print.Paper
+import javafx.print.Printer
+import javafx.print.PrinterJob
 import javafx.scene.control.TabPane
+import javafx.scene.image.ImageView
 import javafx.scene.layout.Priority
+import javafx.scene.transform.Scale
 import tornadofx.*
 import kotlin.system.exitProcess
 
 class MainView : View("Library") {
     private val controller: MainController by inject()
+    private lateinit var drawer: Drawer
 
     override fun onDock() {
         currentStage?.isMaximized = true
@@ -41,6 +48,21 @@ class MainView : View("Library") {
                                 header = "Export the checked list to CSV?",
                                 actionFn = { controller.exportCheckedCSV() }
                         )
+                    }
+                }
+                item("Print", "Shortcut+P").action {
+                    val printer = Printer.getDefaultPrinter()
+                    val layout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT)
+                    var scaleX = layout.printableWidth / drawer.boundsInParent.width
+                    var scaleY = layout.printableHeight / drawer.boundsInParent.height
+                    val snap = drawer.snapshot(null, null)
+                    val image = ImageView(snap)
+                    if(scaleY > scaleX) scaleY = scaleX else scaleX = scaleY
+                    image.transforms.add(Scale(scaleX, scaleY))
+
+                    val printerJob = PrinterJob.createPrinterJob(printer)
+                    if(printerJob.showPrintDialog(primaryStage.owner) && printerJob.printPage(layout, image)) {
+                        printerJob.endJob()
                     }
                 }
                 menu("Save") {
@@ -113,7 +135,7 @@ class MainView : View("Library") {
                 }
             }
         }
-        drawer(side = Side.LEFT, multiselect = true) {
+        drawer = drawer(side = Side.LEFT, multiselect = true) {
             vgrow = Priority.ALWAYS
             item("Books", showHeader = false) {
                 expanded = true
