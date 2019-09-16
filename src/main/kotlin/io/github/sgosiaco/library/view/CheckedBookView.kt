@@ -13,9 +13,10 @@ class CheckedBookView : View("Checked Out (Books)") {
     private val controller: MainController by inject()
     private var search = SimpleStringProperty()
     private var filter = SimpleStringProperty()
-    private val allState = booleanBinding(filter) { value == "All" }
-    private val todayState = booleanBinding(filter) { value == "Today" }
-    private val overdueState = booleanBinding(filter) { value == "Overdue" }
+    //private val allState = booleanBinding(filter) { value == "All" }
+    //private val todayState = booleanBinding(filter) { value == "Today" }
+    //private val overdueState = booleanBinding(filter) { value == "Overdue" }
+    //TODO maybe add extend due date?
 
     init {
         search.value = ""

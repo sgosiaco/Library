@@ -58,7 +58,7 @@ class MainController: Controller() {
     }
 
     fun exportBookCSV() {
-        var csv = "Title, Author(s), Publisher(s), Year, Checked Out\n"
+        var csv = "Title, Author, Publisher, Year, Checked Out\n"
         bookList.forEach {
             csv += "${it.toCSVChecked()}\n"
         }
@@ -67,7 +67,7 @@ class MainController: Controller() {
 
     fun exportCheckedCSV() {
         val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-        var csv = "Title, Author(s), Publisher(s), Year, Person, Checked Out, Due\n"
+        var csv = "Title, Author, Publisher, Year, Person, Checked Out, Due\n"
         checkedList.forEach {
             csv += "${it.book.toCSV()}, ${it.person.toCSV()}, ${it.cDate.format(dateFormat)}, ${it.dDate.format(dateFormat)}\n"
         }
