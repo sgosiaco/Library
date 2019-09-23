@@ -55,10 +55,10 @@ class SelectedPerson : ItemViewModel<Person>() {
 }
 
 data class Checkout(
-        val person: Person = Person(),
-        val book: Book = Book(),
-        val cDate: LocalDate = LocalDate.now(),
-        val dDate: LocalDate = LocalDate.now().plusWeeks(2),
+        var person: Person = Person(),
+        var book: Book = Book(),
+        var cDate: LocalDate = LocalDate.now(),
+        var dDate: LocalDate = LocalDate.now().plusWeeks(2),
         var rDate: LocalDate? = null,
         var returned: Boolean = false
 ) {
@@ -67,6 +67,15 @@ data class Checkout(
             book.containsString(query) ||
             cDate.toString().contains(query) ||
             dDate.toString().contains(query)
+}
+
+class SelectedCheckout : ItemViewModel<Checkout>() {
+    val person = bind(Checkout::person)
+    val book = bind(Checkout::book)
+    val cDate = bind(Checkout::cDate)
+    val dDate = bind(Checkout::dDate)
+    var rDate = bind(Checkout::rDate)
+    var returned = bind(Checkout::returned)
 }
 
 data class Action(var action: String, var obj: Any, var newObj: Any)

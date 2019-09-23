@@ -62,6 +62,7 @@ class CheckedBookView : View("Checked Out (Books)") {
             controller.sfCheckedList.onChange {
                 requestResize()
             }
+            bindSelected(controller.sCheckout)
             readonlyColumn("Title", Checkout::book).value {
                 it.value.book.title
             }
@@ -96,6 +97,11 @@ class CheckedBookView : View("Checked Out (Books)") {
                 }
             }
             contextmenu {
+                item("Edit Checkout").action {
+                    selectedItem?.apply {
+                        find<EditCheckoutFragment>().openModal()
+                    }
+                }
                 item("Return").action {
                     selectedItem?.apply {
                         confirm(

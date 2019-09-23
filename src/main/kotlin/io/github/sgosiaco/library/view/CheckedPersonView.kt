@@ -57,6 +57,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
                 tableview(data) {
                     vgrow = Priority.ALWAYS
                     columnResizePolicy = SmartResize.POLICY
+                    bindSelected(controller.sCheckout)
                     readonlyColumn("Book", Checkout::book) {
                         value {
                             it.value.book.title
@@ -79,6 +80,11 @@ class CheckedPersonView : View("Checked Out (Person)") {
                         }
                     }
                     contextmenu {
+                        item("Edit Checkout").action {
+                            selectedItem?.apply {
+                                find<EditCheckoutFragment>().openModal()
+                            }
+                        }
                         item("Return").action {
                             selectedItem?.apply {
                                 confirm(

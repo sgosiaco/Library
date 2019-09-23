@@ -19,8 +19,9 @@ class PeopleConverter: StringConverter<Person>() {
 class MainController: Controller() {
     val sBook = SelectedBook()
     val sPerson = SelectedPerson()
+    val sCheckout = SelectedCheckout()
     var focus = ""
-    val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+    val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
 
     private var bookjson = File("books.json").readText(Charsets.UTF_8)
     var bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
@@ -170,15 +171,28 @@ class MainController: Controller() {
                         else -> println("Error with undo")
                     }
                 }
-                else -> when(action) {
-                    "Checkout" -> {
-                        returnBook(obj as Checkout)
-                        checkedList.remove(obj as Checkout)
-                    }
-                    "Returned" -> {
-                        checkBook(obj as Checkout)
+                else -> {
+                    val index = checkedList.indexOf(newObj)
+                    when(action) {
+                        "Edited" -> {
+                            var personIndex = peopleList.indexOf((newObj as Checkout).person)
+                            (newObj as Checkout).person.cNum -= 1
+                            peopleList[personIndex] = (newObj as Checkout).person
+                            personIndex = peopleList.indexOf((obj as Checkout).person)
+                            (obj as Checkout).person.cNum += 1
+                            peopleList[personIndex] = (obj as Checkout).person
+                            checkedList[index] = obj as Checkout
+                        }
+                        "Checkout" -> {
+                            returnBook(obj as Checkout)
+                            checkedList.remove(obj as Checkout)
+                        }
+                        "Returned" -> {
+                            checkBook(obj as Checkout)
+                        }
                     }
                 }
+
             }
             undoList.remove(act)
             redoList.add(act)
@@ -204,12 +218,24 @@ class MainController: Controller() {
                         "Deleted" -> peopleList.remove(obj as Person)
                     }
                 }
-                else -> when(action) {
-                    "Checkout" -> {
-                        checkBook(obj as Checkout)
-                    }
-                    "Returned" -> {
-                        returnBook(obj as Checkout)
+                else -> {
+                    val index = checkedList.indexOf(obj as Checkout)
+                    when(action) {
+                        "Edited" -> {
+                            var personIndex = peopleList.indexOf((obj as Checkout).person)
+                            (obj as Checkout).person.cNum -= 1
+                            peopleList[personIndex] = (obj as Checkout).person
+                            personIndex = peopleList.indexOf((newObj as Checkout).person)
+                            (newObj as Checkout).person.cNum += 1
+                            peopleList[personIndex] = (newObj as Checkout).person
+                            checkedList[index] = newObj as Checkout
+                        }
+                        "Checkout" -> {
+                            checkBook(obj as Checkout)
+                        }
+                        "Returned" -> {
+                            returnBook(obj as Checkout)
+                        }
                     }
                 }
             }
