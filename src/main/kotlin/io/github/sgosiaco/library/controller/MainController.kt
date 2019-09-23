@@ -5,10 +5,20 @@ import io.github.sgosiaco.library.model.*
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.stage.FileChooser
+import javafx.util.StringConverter
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+class PeopleConverter: StringConverter<Person>() {
+    override fun fromString(string: String): Person {
+        return Person()
+    }
+    override fun toString(person: Person): String {
+        return "${person.name} <${person.email}>"
+    }
+}
 
 class MainController: Controller() {
     val sBook = SelectedBook()

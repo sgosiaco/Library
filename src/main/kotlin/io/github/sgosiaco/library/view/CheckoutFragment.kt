@@ -3,20 +3,11 @@ package io.github.sgosiaco.library.view
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Checkout
 import io.github.sgosiaco.library.controller.MainController
+import io.github.sgosiaco.library.controller.PeopleConverter
 import io.github.sgosiaco.library.model.Person
 import javafx.beans.property.SimpleObjectProperty
-import javafx.util.StringConverter
 import tornadofx.*
 import java.time.LocalDate
-
-class PeopleConverter: StringConverter<Person>() {
-    override fun fromString(string: String): Person {
-        return Person()
-    }
-    override fun toString(person: Person): String {
-        return "${person.name} <${person.email}>"
-    }
-}
 
 class CheckoutFragment : Fragment() {
     private val controller: MainController by inject()
@@ -26,7 +17,7 @@ class CheckoutFragment : Fragment() {
     private val book = controller.sBook.item
 
     override fun onDock() {
-        currentStage?.height = currentStage?.height?.plus(5.0) ?: 0.0
+        currentStage?.height = currentStage?.height?.plus(10.0) ?: 0.0
         currentStage?.isResizable = false
     }
 

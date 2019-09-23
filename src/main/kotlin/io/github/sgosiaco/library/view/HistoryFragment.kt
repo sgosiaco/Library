@@ -6,6 +6,7 @@ import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import tornadofx.*
+import java.time.format.DateTimeFormatter
 
 class HistoryFragment : Fragment() {
     private val controller: MainController by inject()
@@ -32,8 +33,20 @@ class HistoryFragment : Fragment() {
             columnResizePolicy = SmartResize.POLICY
             readonlyColumn("Book", Checkout::book).isVisible = controller.focus == "People" //controller.sPerson.isNotEmpty
             readonlyColumn("Person", Checkout::person).isVisible = controller.focus == "Books"//controller.sBook.isNotEmpty
-            readonlyColumn("Checked Out Date", Checkout::cDate).prefWidth(300.0)
-            readonlyColumn("Return Date", Checkout::rDate).prefWidth(300.0)
+            readonlyColumn("Checked Out Date", Checkout::cDate) {
+                cellFormat {
+                    val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+                    text = it.format(dateFormat)
+                }
+                prefWidth(300.0)
+            }
+            readonlyColumn("Return Date", Checkout::rDate) {
+                cellFormat {
+                    val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+                    text = it?.format(dateFormat)
+                }
+                prefWidth(300.0)
+            }
         }
     }
 }
