@@ -15,7 +15,7 @@ class PeopleView : View("People") {
             controller.sfPeopleList.filterWhen(textProperty()) { query, item ->
                 item.containsString(query)
             }
-            promptText = "Search ${title}"
+            promptText = "Search title"
         }
         tableview(controller.sfPeopleList) {
             focusedProperty().onChange {
@@ -42,9 +42,7 @@ class PeopleView : View("People") {
                 item("Delete person").action {
                     selectedItem?.apply {
                         if(cNum > 0) {
-                            error(
-                                    header = "Can't delete a person that has checked out book(s)!"
-                            )
+                            error(header = "Can't delete a person that has checked out book(s)!")
                         }
                         else {
                             confirm(

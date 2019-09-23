@@ -12,18 +12,15 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class PeopleConverter: StringConverter<Person>() {
-    override fun fromString(string: String): Person {
-        return Person()
-    }
-    override fun toString(person: Person): String {
-        return "${person.name} <${person.email}>"
-    }
+    override fun fromString(string: String) = Person()
+    override fun toString(person: Person) = "${person.name} <${person.email}>"
 }
 
 class MainController: Controller() {
     val sBook = SelectedBook()
     val sPerson = SelectedPerson()
     var focus = ""
+    val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
 
     private var bookjson = File("books.json").readText(Charsets.UTF_8)
     var bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
@@ -42,7 +39,6 @@ class MainController: Controller() {
     var redoList: ObservableList<Action> = FXCollections.observableArrayList()
 
     init {
-        //sfBookList.predicate = { !it.checkedout }
         sfCheckedPeopleList.predicate = { it.cNum > 0 }
         sfCheckedList.predicate = { !it.returned }
     }
@@ -61,22 +57,17 @@ class MainController: Controller() {
 
     fun exportPeopleCSV() {
         var csv = "Name, Email, Phone Number, Affiliation, cNum\n"
-        peopleList.forEach {
-            csv += "${it.toCSVAll()}\n"
-        }
+        peopleList.forEach { csv += "${it.toCSVAll()}\n" }
         File("people.csv").writeText(csv)
     }
 
     fun exportBookCSV() {
         var csv = "Title, Author, Publisher, Year, Checked Out\n"
-        bookList.forEach {
-            csv += "${it.toCSVChecked()}\n"
-        }
+        bookList.forEach { csv += "${it.toCSVChecked()}\n" }
         File("books.csv").writeText(csv)
     }
 
     fun exportCheckedCSV() {
-        val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
         var csv = "Title, Author, Publisher, Year, Person, Checked Out, Due\n"
         checkedList.forEach {
             csv += "${it.book.toCSV()}, ${it.person.toCSV()}, ${it.cDate.format(dateFormat)}, ${it.dDate.format(dateFormat)}\n"
@@ -124,12 +115,7 @@ class MainController: Controller() {
             var index = checkedList.indexOf(this)
             returned = false
             rDate = null
-            if(index == -1) {
-                checkedList.add(this)
-            }
-            else {
-                checkedList[index] = this
-            }
+            if(index == -1) checkedList.add(this) else checkedList[index] = this
             index = bookList.indexOf(book)
             book.checkedout = true
             bookList[index] = book
@@ -165,26 +151,26 @@ class MainController: Controller() {
 
     fun undo(act: Action) {
         with(act) {
-            if(obj is Book) {
-                val index = bookList.indexOf(newObj)
-                when(action) {
-                    "Added" -> bookList.remove(obj as Book)
-                    "Edited" -> bookList[index] = obj as Book
-                    "Deleted" -> bookList.add(obj as Book)
-                    else -> println("Error with undo")
+            when (obj) {
+                is Book -> {
+                    val index = bookList.indexOf(newObj)
+                    when(action) {
+                        "Added" -> bookList.remove(obj as Book)
+                        "Edited" -> bookList[index] = obj as Book
+                        "Deleted" -> bookList.add(obj as Book)
+                        else -> println("Error with undo")
+                    }
                 }
-            }
-            else if(obj is Person) {
-                val index = peopleList.indexOf(newObj)
-                when(action) {
-                    "Added" -> peopleList.remove(obj as Person)
-                    "Edited" -> peopleList[index] = obj as Person
-                    "Deleted" -> peopleList.add(obj as Person)
-                    else -> println("Error with undo")
+                is Person -> {
+                    val index = peopleList.indexOf(newObj)
+                    when(action) {
+                        "Added" -> peopleList.remove(obj as Person)
+                        "Edited" -> peopleList[index] = obj as Person
+                        "Deleted" -> peopleList.add(obj as Person)
+                        else -> println("Error with undo")
+                    }
                 }
-            }
-            else {
-                when(action) {
+                else -> when(action) {
                     "Checkout" -> {
                         returnBook(obj as Checkout)
                         checkedList.remove(obj as Checkout)
@@ -201,24 +187,24 @@ class MainController: Controller() {
 
     fun redo(act: Action) {
         with(act) {
-            if(obj is Book) {
-                val index = bookList.indexOf(obj as Book)
-                when(action) {
-                    "Added" -> bookList.add(obj as Book)
-                    "Edited" -> bookList[index] = newObj as Book
-                    "Deleted" -> bookList.remove(obj as Book)
+            when (obj) {
+                is Book -> {
+                    val index = bookList.indexOf(obj as Book)
+                    when(action) {
+                        "Added" -> bookList.add(obj as Book)
+                        "Edited" -> bookList[index] = newObj as Book
+                        "Deleted" -> bookList.remove(obj as Book)
+                    }
                 }
-            }
-            else if (obj is Person) {
-                val index = peopleList.indexOf(obj as Person)
-                when(action) {
-                    "Added" -> peopleList.add(obj as Person)
-                    "Edited" -> peopleList[index] = newObj as Person
-                    "Deleted" -> peopleList.remove(obj as Person)
+                is Person -> {
+                    val index = peopleList.indexOf(obj as Person)
+                    when(action) {
+                        "Added" -> peopleList.add(obj as Person)
+                        "Edited" -> peopleList[index] = newObj as Person
+                        "Deleted" -> peopleList.remove(obj as Person)
+                    }
                 }
-            }
-            else {
-                when(action) {
+                else -> when(action) {
                     "Checkout" -> {
                         checkBook(obj as Checkout)
                     }

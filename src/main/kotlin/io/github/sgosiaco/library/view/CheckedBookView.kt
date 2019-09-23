@@ -8,7 +8,6 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class CheckedBookView : View("Checked Out (Books)") {
     private val controller: MainController by inject()
@@ -17,7 +16,6 @@ class CheckedBookView : View("Checked Out (Books)") {
     //private val allState = booleanBinding(filter) { value == "All" }
     //private val todayState = booleanBinding(filter) { value == "Today" }
     //private val overdueState = booleanBinding(filter) { value == "Overdue" }
-    //TODO maybe add extend due date?
 
     init {
         search.value = ""
@@ -35,7 +33,7 @@ class CheckedBookView : View("Checked Out (Books)") {
                         else -> !item.returned && item.containsString(query)
                     }
                 }
-                promptText = "Search ${title}"
+                promptText = "Search $title"
             }
             togglegroup {
                 togglebutton("All Books") {
@@ -82,12 +80,10 @@ class CheckedBookView : View("Checked Out (Books)") {
                 }
             }
             readonlyColumn("Checked Out", Checkout::cDate).cellFormat {
-                val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-                text = it.format(dateFormat)
+                text = it.format(controller.dateFormat)
             }
             readonlyColumn("Due", Checkout::dDate).cellFormat {
-                val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-                text = it.format(dateFormat)
+                text = it.format(controller.dateFormat)
                 style {
                     if (it.isBefore(LocalDate.now())) {
                         backgroundColor += c("#8b0000")

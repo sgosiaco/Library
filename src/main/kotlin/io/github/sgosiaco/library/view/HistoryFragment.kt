@@ -6,7 +6,6 @@ import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import tornadofx.*
-import java.time.format.DateTimeFormatter
 
 class HistoryFragment : Fragment() {
     private val controller: MainController by inject()
@@ -35,15 +34,13 @@ class HistoryFragment : Fragment() {
             readonlyColumn("Person", Checkout::person).isVisible = controller.focus == "Books"//controller.sBook.isNotEmpty
             readonlyColumn("Checked Out Date", Checkout::cDate) {
                 cellFormat {
-                    val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-                    text = it.format(dateFormat)
+                    text = it.format(controller.dateFormat)
                 }
                 prefWidth(300.0)
             }
             readonlyColumn("Return Date", Checkout::rDate) {
                 cellFormat {
-                    val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-                    text = it?.format(dateFormat)
+                    text = it?.format(controller.dateFormat)
                 }
                 prefWidth(300.0)
             }

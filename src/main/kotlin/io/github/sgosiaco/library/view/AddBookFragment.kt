@@ -31,7 +31,7 @@ class AddBookFragment : Fragment("Add new book") {
         }
         hbox(10.0) {
             button("Add book") {
-                disableProperty().bind(bookTitle.isNull or author.isNull or pub.isNull)
+                disableWhen(bookTitle.isNull or author.isNull or pub.isNull)
                 action {
                     val book = Book(0, false, author.value, year.value, pub.value, bookTitle.value)
                     controller.checkDupeBook(book)

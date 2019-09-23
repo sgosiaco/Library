@@ -8,7 +8,6 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class CheckedPersonView : View("Checked Out (Person)") {
     private val controller: MainController by inject()
@@ -19,7 +18,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
             controller.sfCheckedPeopleList.filterWhen(textProperty()) { query, item ->
                 item.cNum > 0 && item.containsString(query)
             }
-            promptText = "Search ${title}"
+            promptText = "Search $title"
         }
         tableview(controller.sfCheckedPeopleList) {
             focusedProperty().onChange {
@@ -64,12 +63,10 @@ class CheckedPersonView : View("Checked Out (Person)") {
                         }
                     }
                     readonlyColumn("Checked Out", Checkout::cDate).cellFormat {
-                        val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-                        text = it.format(dateFormat)
+                        text = it.format(controller.dateFormat)
                     }
                     readonlyColumn("Due", Checkout::dDate).cellFormat {
-                        val dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-                        text = it.format(dateFormat)
+                        text = it.format(controller.dateFormat)
                         style {
                             if (it.isBefore(LocalDate.now())) {
                                 backgroundColor += c("#8b0000")

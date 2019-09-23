@@ -51,14 +51,13 @@ class CheckoutFragment : Fragment() {
         }
         hbox(10.0) {
             button ("Checkout") {
-                enableWhen( person.isNotNull)
+                enableWhen(person.isNotNull)
                 action {
                     confirm(
                             header = "Checkout book?",
                             content = """Checkout "${book.title}" to ${person.value.name}?""",
                             actionFn = {
                                 controller.checkBook(Checkout(person.value, book, cDate.value, dDate.value, null, false))
-                                //person.value.checked.add(controller.checkedList.last())
                                 controller.undoList.add(Action("Checkout", controller.checkedList.last(), "Nothing"))
                                 close()
                             }

@@ -77,27 +77,21 @@ class BookView : View("Books") {
             contextmenu {
                 item("Add book") {
                     action { find<AddBookFragment>().openModal() }
-                    visibleWhen {
-                        !checkedState
-                    }
+                    visibleWhen(!checkedState)
                 }
                 item("Edit book") {
                     action {
                         selectedItem?.apply {
-                            find<EditBookFragment>().openModal() //use openWindow to allow selecting dif book while window open
+                            find<EditBookFragment>().openModal()
                         }
                     }
-                    visibleWhen {
-                        !checkedState
-                    }
+                    visibleWhen(!checkedState)
                 }
                 item("Delete book") {
                     action {
                         selectedItem?.apply {
                             if(checkedout) {
-                                error(
-                                        header = "Can't delete a checked out book!"
-                                )
+                                error(header = "Can't delete a checked out book!")
                             }
                             else {
                                 confirm(
@@ -110,31 +104,23 @@ class BookView : View("Books") {
                             }
                         }
                     }
-                    visibleWhen {
-                        !checkedState
-                    }
+                    visibleWhen(!checkedState)
                 }
                 item("Checkout") {
                     action {
                         selectedItem?.apply {
                             if(checkedout) {
-                                error(
-                                        header = "Can't checkout an already checked out book!"
-                                )
+                                error(header = "Can't checkout an already checked out book!")
                             }
                             else {
                                 find<CheckoutFragment>().openModal()
                             }
                         }
                     }
-                    visibleWhen {
-                        !checkedState
-                    }
+                    visibleWhen(!checkedState)
                 }
                 item("Show History").action {
-                    selectedItem?.apply {
-                        find<HistoryFragment>().openWindow()
-                    }
+                    selectedItem?.apply { find<HistoryFragment>().openWindow() }
                 }
             }
 
