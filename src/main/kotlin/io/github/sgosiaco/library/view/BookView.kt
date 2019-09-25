@@ -22,7 +22,7 @@ class BookView : View("Books") {
 
     override val root = vbox {
         hbox {
-            textfield(search) {
+            val searchBox = textfield(search) {
                 controller.sfBookList.filterWhen(textProperty()) { query, item ->
                     when(filter.value) {
                         "All" -> item.containsString(query)
@@ -31,7 +31,10 @@ class BookView : View("Books") {
                         else -> !item.checkedout && item.containsString(query)
                     }
                 }
-                promptText = "Search ${title}"
+                promptText = "Search $title"
+            }
+            button("x").action {
+                searchBox.clear()
             }
             togglegroup {
                 togglebutton("All Books") {

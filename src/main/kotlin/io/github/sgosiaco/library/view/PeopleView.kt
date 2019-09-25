@@ -11,11 +11,14 @@ class PeopleView : View("People") {
     private var search = ""
 
     override val root = vbox {
-        textfield(search) {
+        val searchBox = textfield(search) {
             controller.sfPeopleList.filterWhen(textProperty()) { query, item ->
                 item.containsString(query)
             }
             promptText = "Search title"
+        }
+        button("x").action {
+            searchBox.clear()
         }
         tableview(controller.sfPeopleList) {
             focusedProperty().onChange {
