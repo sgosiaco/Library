@@ -45,7 +45,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
                                 data += "Title: ${it.book.title}\n" +
                                         "Author: ${it.book.author}\n" +
                                         "Checkout Date: ${it.cDate.format(controller.dateFormat)}\n" +
-                                        "Due Date: ${if(it.dDate.isBefore(LocalDate.now())) "Overdue, return immediately. (Original due date was ${it.dDate.format(controller.dateFormat)})" else it.dDate.format(controller.dateFormat)}\n" + //
+                                        "Due Date: ${if(it.dDate.isBefore(LocalDate.now())) "Overdue, please return immediately. (Original due date was ${it.dDate.format(controller.dateFormat)})" else it.dDate.format(controller.dateFormat)}\n" + //
                                         "\n"
                             }
                             clipboard.putString(body + data + footer)

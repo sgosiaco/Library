@@ -8,9 +8,9 @@ class MyApp: App(MainView::class, Styles::class) {
     private val controller: MainController by inject()
 
     override fun stop() {
-        //super.stop()
-        //controller.saveBooks()
-        //controller.saveChecked()
-        //controller.savePeople()
+        super.stop()
+        controller.saveBooks()
+        controller.saveChecked()
+        controller.savePeople()
     }
 }

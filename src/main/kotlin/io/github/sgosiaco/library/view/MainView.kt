@@ -144,16 +144,15 @@ class MainView : View("Library") {
                     tab(BookView::class)
                     tab(CheckedBookView::class)
                     tab("Log") {
-                        hbox {
-                            tableview(controller.undoList) {
-                                columnResizePolicy = SmartResize.POLICY
-                                controller.undoList.onChange {
-                                    requestResize()
-                                }
-                                readonlyColumn("Action", Action::action)
-                                readonlyColumn("Object", Action::obj).prefWidth(1000.0)
-                                readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
+                        tableview(controller.undoList) {
+                            vgrow = Priority.ALWAYS
+                            columnResizePolicy = SmartResize.POLICY
+                            controller.undoList.onChange {
+                                requestResize()
                             }
+                            readonlyColumn("Action", Action::action)
+                            readonlyColumn("Object", Action::obj).prefWidth(1000.0)
+                            readonlyColumn("New Object", Action::newObj).prefWidth(200.0)
                         }
                     }
                 }
