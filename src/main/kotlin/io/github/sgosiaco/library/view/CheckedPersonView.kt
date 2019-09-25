@@ -14,11 +14,16 @@ class CheckedPersonView : View("Checked Out (Person)") {
     private var search = ""
 
     override val root = vbox {
-        textfield(search) {
-            controller.sfCheckedPeopleList.filterWhen(textProperty()) { query, item ->
-                item.cNum > 0 && item.containsString(query)
+        hbox {
+            val searchBox = textfield(search) {
+                controller.sfCheckedPeopleList.filterWhen(textProperty()) { query, item ->
+                    item.cNum > 0 && item.containsString(query)
+                }
+                promptText = "Search $title"
             }
-            promptText = "Search $title"
+            button("x").action {
+                searchBox.clear()
+            }
         }
         tableview(controller.sfCheckedPeopleList) {
             focusedProperty().onChange {
