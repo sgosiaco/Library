@@ -145,7 +145,7 @@ class MainController: Controller() {
     private fun editCheckout(old: Checkout, new: Checkout) {
         val index = checkedList.indexOf(new)
         var personIndex = peopleList.indexOf(new.person)
-        peopleList[personIndex] = new.person.copy(cNum = new.person.cNum - 1)//new.person.apply { cNum -= 1 }.copy()
+        peopleList[personIndex] = new.person.copy(cNum = new.person.cNum - 1)
 
         personIndex = peopleList.indexOf(old.person.apply { if(cNum > 0) cNum -= 1 })
         peopleList[personIndex] = old.person.apply { cNum += 1 }.copy()
