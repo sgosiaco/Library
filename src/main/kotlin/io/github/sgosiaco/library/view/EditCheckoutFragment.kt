@@ -3,11 +3,7 @@ package io.github.sgosiaco.library.view
 import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.controller.PeopleConverter
 import io.github.sgosiaco.library.model.Action
-import io.github.sgosiaco.library.model.Checkout
-import io.github.sgosiaco.library.model.Person
-import javafx.beans.property.SimpleObjectProperty
 import tornadofx.*
-import java.time.LocalDate
 
 class EditCheckoutFragment : Fragment() {
     private val controller: MainController by inject()
@@ -54,13 +50,22 @@ class EditCheckoutFragment : Fragment() {
                     confirm (
                             header = "Apply Changes?",
                             actionFn = {
-                                val old = controller.sCheckout.item.copy()
-                                controller.sCheckout.item.person.cNum -= 1
+                                val old = controller.sCheckout.item.deepCopy()
                                 controller.sCheckout.commit()
-                                val new = controller.sCheckout.item.copy()
-                                controller.checkedList.remove(old)
-                                controller.checkBook(new)
-                                controller.undoList.add(Action("Edited", old, new))
+                                val new = controller.sCheckout.item.deepCopy()
+                                val oldIndex = controller.peopleList.indexOf(old.person)
+                                val newIndex = controller.peopleList.indexOf(new.person)
+
+                                if(oldIndex != newIndex) {
+                                    controller.peopleList[oldIndex] = old.person.copy(cNum = old.person.cNum - 1) //.apply { cNum -= 1 }
+                                    controller.peopleList[newIndex] = new.person.apply { cNum += 1}.copy()
+                                }
+
+                                controller.checkedList.remove(new)
+                                controller.checkedList.add(new)
+                                controller.undoList.add(Action("Edited", old.deepCopy(), new.deepCopy()))
+                                controller.redoList.setAll()
+                                println("""${old.person} ${old.person.cNum} ${new.person} ${new.person.cNum}""")
                                 close()
                             }
                     )

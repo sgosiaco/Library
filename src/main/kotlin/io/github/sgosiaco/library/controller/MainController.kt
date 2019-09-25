@@ -113,35 +113,44 @@ class MainController: Controller() {
 
     fun checkBook(checkout: Checkout) {
         with(checkout) {
-            var index = checkedList.indexOf(this)
-            returned = false
-            rDate = null
-            if(index == -1) checkedList.add(this) else checkedList[index] = this
-            index = bookList.indexOf(book)
-            book.checkedout = true
-            bookList[index] = book
+            var index = bookList.indexOf(book)
+            bookList[index] = book.apply { checkedout = true }.copy()
 
             index = peopleList.indexOf(person)
-            person.cNum += 1
-            peopleList[index] = person
+            peopleList[index] = person.apply { cNum += 1}.copy()
+
+            index = checkedList.indexOf(this)
+            returned = false
+            rDate = null
+            if(index == -1) checkedList.add(this.deepCopy()) else checkedList[index] = this.deepCopy()
         }
     }
 
     fun returnBook(checkout: Checkout) {
         with(checkout) {
-            var index = checkedList.indexOf(this)
-            returned = true
-            rDate = LocalDate.now()
-            checkedList[index] = this
+            var checkoutIndex = checkedList.indexOf(this)
 
-            index = bookList.indexOf(book)
-            book.checkedout = false
-            bookList[index] = book
+            var index = bookList.indexOf(book)
+            bookList[index] = book.apply { checkedout = false }.copy()
 
             index = peopleList.indexOf(person)
-            person.cNum -= 1
-            peopleList[index] = person
+            peopleList[index] = person.apply { cNum -= 1 }.copy()
+
+            returned = true
+            rDate = LocalDate.now()
+            checkedList[checkoutIndex] = this.deepCopy()
         }
+    }
+
+    private fun editCheckout(old: Checkout, new: Checkout) {
+        val index = checkedList.indexOf(new)
+        var personIndex = peopleList.indexOf(new.person)
+        peopleList[personIndex] = new.person.copy(cNum = new.person.cNum - 1)//new.person.apply { cNum -= 1 }.copy()
+
+        personIndex = peopleList.indexOf(old.person.apply { if(cNum > 0) cNum -= 1 })
+        peopleList[personIndex] = old.person.apply { cNum += 1 }.copy()
+
+        checkedList[index] = old.deepCopy()
     }
 
     fun checkDupeBook(book: Book) {
@@ -175,13 +184,7 @@ class MainController: Controller() {
                     val index = checkedList.indexOf(newObj)
                     when(action) {
                         "Edited" -> {
-                            var personIndex = peopleList.indexOf((newObj as Checkout).person)
-                            (newObj as Checkout).person.cNum -= 1
-                            peopleList[personIndex] = (newObj as Checkout).person
-                            personIndex = peopleList.indexOf((obj as Checkout).person)
-                            (obj as Checkout).person.cNum += 1
-                            peopleList[personIndex] = (obj as Checkout).person
-                            checkedList[index] = obj as Checkout
+                            editCheckout(obj as Checkout, newObj as Checkout)
                         }
                         "Checkout" -> {
                             returnBook(obj as Checkout)
@@ -219,16 +222,9 @@ class MainController: Controller() {
                     }
                 }
                 else -> {
-                    val index = checkedList.indexOf(obj as Checkout)
                     when(action) {
                         "Edited" -> {
-                            var personIndex = peopleList.indexOf((obj as Checkout).person)
-                            (obj as Checkout).person.cNum -= 1
-                            peopleList[personIndex] = (obj as Checkout).person
-                            personIndex = peopleList.indexOf((newObj as Checkout).person)
-                            (newObj as Checkout).person.cNum += 1
-                            peopleList[personIndex] = (newObj as Checkout).person
-                            checkedList[index] = newObj as Checkout
+                            editCheckout(newObj as Checkout, obj as Checkout)
                         }
                         "Checkout" -> {
                             checkBook(obj as Checkout)

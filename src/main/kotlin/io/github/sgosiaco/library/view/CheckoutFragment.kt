@@ -57,8 +57,9 @@ class CheckoutFragment : Fragment() {
                             header = "Checkout book?",
                             content = """Checkout "${book.title}" to ${person.value.name}?""",
                             actionFn = {
-                                controller.checkBook(Checkout(person.value, book, cDate.value, dDate.value, null, false))
-                                controller.undoList.add(Action("Checkout", controller.checkedList.last().copy(), "Nothing"))
+                                val new = Checkout(person.value.copy(), book.copy(), cDate.value, dDate.value, null, false)
+                                controller.checkBook(new)
+                                controller.undoList.add(Action("Checkout", controller.checkedList.last().copy(), "Nothing")) //
                                 controller.redoList.setAll()
                                 close()
                             }
