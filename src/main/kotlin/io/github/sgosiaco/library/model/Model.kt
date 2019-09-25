@@ -62,6 +62,7 @@ data class Checkout(
         var rDate: LocalDate? = null,
         var returned: Boolean = false
 ) {
+    fun deepCopy(person: Person = this.person.copy(), book: Book = this.book.copy(), cDate: LocalDate = this.cDate, dDate: LocalDate = this.dDate, rDate: LocalDate? = this.rDate, returned: Boolean = this.returned) = Checkout(person, book, cDate, dDate, rDate, returned)
     override fun toString(): String = """"${book.title}" checked out to ${person.name}"""
     fun containsString(query: String) = person.containsString(query) ||
             book.containsString(query) ||

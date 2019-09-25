@@ -49,8 +49,9 @@ class EditBookFragment : Fragment() {
                                 val book = controller.sBook.item.copy()
                                 controller.bookList[index] = Book()
                                 controller.checkDupeBook(book)
-                                controller.bookList[index]= book
+                                controller.bookList[index] = book
                                 controller.undoList.add(Action("Edited", old, controller.bookList[index].copy()))
+                                controller.redoList.setAll()
                                 close()
                             }
                     )

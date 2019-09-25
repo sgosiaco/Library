@@ -97,7 +97,8 @@ class BookView : View("Books") {
                                 confirm(
                                         header = "Delete $title?",
                                         actionFn = {
-                                            controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                            controller.undoList.add(Action("Deleted", (selectedItem as Book).copy(), "Nothing"))
+                                            controller.redoList.setAll()
                                             controller.bookList.remove(selectedItem)
                                         }
                                 )

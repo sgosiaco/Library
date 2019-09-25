@@ -38,6 +38,7 @@ class EditPersonFragment : Fragment() {
                                 controller.sPerson.commit()
                                 controller.peopleList[index] = controller.sPerson.item
                                 controller.undoList.add(Action("Edited", old, controller.peopleList[index].copy()))
+                                controller.redoList.setAll()
                                 close()
                             }
                     )

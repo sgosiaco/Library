@@ -36,7 +36,8 @@ class AddBookFragment : Fragment("Add new book") {
                     val book = Book(0, false, author.value, year.value, pub.value, bookTitle.value)
                     controller.checkDupeBook(book)
                     controller.bookList.add(book)
-                    controller.undoList.add(Action("Added", controller.bookList.last(), "Nothing"))
+                    controller.undoList.add(Action("Added", controller.bookList.last().copy(), "Nothing"))
+                    controller.redoList.setAll()
                     close()
                 }
             }

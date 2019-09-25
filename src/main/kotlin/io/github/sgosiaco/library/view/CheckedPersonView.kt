@@ -38,8 +38,9 @@ class CheckedPersonView : View("Checked Out (Person)") {
                                 actionFn = {
                                     controller.checkedList.filter { !it.returned && it.person == this }.forEach {
                                         controller.returnBook(it)
-                                        controller.undoList.add(Action("Returned", it, "Nothing"))
+                                        controller.undoList.add(Action("Returned", it.copy(), "Nothing"))
                                     }
+                                    controller.redoList.setAll()
                                 }
                         )
                     }
@@ -92,7 +93,8 @@ class CheckedPersonView : View("Checked Out (Person)") {
                                         content = "Borrowed by ${person.name} <${person.email}>",
                                         actionFn = {
                                             controller.returnBook(this)
-                                            controller.undoList.add(Action("Returned", this, "Nothing"))
+                                            controller.undoList.add(Action("Returned", this.copy(), "Nothing"))
+                                            controller.redoList.setAll()
                                         }
                                 )
                             }

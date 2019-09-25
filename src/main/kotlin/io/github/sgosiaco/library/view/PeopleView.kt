@@ -50,6 +50,7 @@ class PeopleView : View("People") {
                                     header = "Delete $name?",
                                     actionFn = {
                                         controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                        controller.redoList.setAll()
                                         controller.peopleList.remove(selectedItem)
                                     }
                             )

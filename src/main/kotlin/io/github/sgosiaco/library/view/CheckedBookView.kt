@@ -109,7 +109,8 @@ class CheckedBookView : View("Checked Out (Books)") {
                                 content = "Borrowed by ${person.name} <${person.email}>",
                                 actionFn = {
                                     controller.returnBook(this)
-                                    controller.undoList.add(Action("Returned", this, "Nothing"))
+                                    controller.undoList.add(Action("Returned", this.copy(), "Nothing"))
+                                    controller.redoList.setAll()
                                 }
                         )
                     }
