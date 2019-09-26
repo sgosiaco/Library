@@ -19,10 +19,10 @@ class HistoryFragment : Fragment() {
                 title = """History of "${book?.title}" """
             }
             "People" -> {
-                data.predicate = { it.returned && (person?.equals(it.person) ?: false) }
+                data.predicate = { it.returned && person?.email.equals(it.person.email) }
                 title = """History of "${person?.name}" """
             }
-            else -> data.predicate = { it.returned && (book?.equals(it.book) ?: person?.equals(it.person) ?: false) }
+            else -> data.predicate = { it.returned && (book?.equals(it.book) ?: person?.email.equals(it.person.email) ?: false) }
         }
     }
 

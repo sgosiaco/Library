@@ -38,7 +38,7 @@ data class Person (
         @SerializedName("cNum") var cNum : Int = 0
 ) {
     override fun toString(): String = "$name <$email>"
-    fun toCSV(): String = "$name <$email>" //no safety quote for comma b/c there should be no commas
+    fun toCSV(): String = "$name <$email>"
     fun toCSVAll(): String = "$name, $email, $phone, $aff, $cNum"
     fun containsString(query: String) = name.contains(query, true) ||
             email.contains(query, true) ||

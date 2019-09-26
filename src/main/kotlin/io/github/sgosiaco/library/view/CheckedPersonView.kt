@@ -45,7 +45,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
                 }
                 item("Draft Due Tomorrow") {
                     visibleWhen {
-                        booleanBinding(controller.checkedList) { any { !it.returned && it.person == selectedItem && it.dDate.isEqual(LocalDate.now().plusDays(1)) } }
+                        booleanBinding(controller.checkedList) { any { !it.returned && it.person.email == selectedItem?.email && it.dDate.isEqual(LocalDate.now().plusDays(1)) } }
                     }
                     action {
                         selectedItem?.apply {
@@ -58,7 +58,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
                         confirm(
                                 header = "Return all books borrowed by $name?",
                                 actionFn = {
-                                    controller.checkedList.filter { !it.returned && it.person == this }.forEach {
+                                    controller.checkedList.filter { !it.returned && it.person.email == this.email }.forEach {
                                         controller.returnBook(it)
                                         controller.undoList.add(Action("Returned", it.copy(), "Nothing"))
                                     }
@@ -76,19 +76,13 @@ class CheckedPersonView : View("Checked Out (Person)") {
             rowExpander(expandOnDoubleClick = true) { selected ->
                 paddingLeft = expanderColumn.width
                 val data = SortedFilteredList(controller.checkedList)
-                data.predicate = { it.person == selected && !it.returned }
+                data.predicate = { it.person.email == selected.email && !it.returned }
                 tableview(data) {
                     vgrow = Priority.ALWAYS
                     columnResizePolicy = SmartResize.POLICY
                     bindSelected(controller.sCheckout)
-                    readonlyColumn("Book", Checkout::book) {
-                        value {
-                            it.value.book.title
-                        }
-                    }
-                    readonlyColumn("Checked Out", Checkout::cDate).cellFormat {
-                        text = it.format(controller.dateFormat)
-                    }
+                    readonlyColumn("Book", Checkout::book).value { it.value.book.title }
+                    readonlyColumn("Checked Out", Checkout::cDate).value { it.value.cDate.format(controller.dateFormat) }
                     readonlyColumn("Due", Checkout::dDate).cellFormat {
                         text = it.format(controller.dateFormat)
                         style {

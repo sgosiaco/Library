@@ -73,26 +73,12 @@ class CheckedBookView : View("Checked Out (Books)") {
                 requestResize()
             }
             bindSelected(controller.sCheckout)
-            readonlyColumn("Title", Checkout::book).value {
-                it.value.book.title
-            }
-            readonlyColumn("Author", Checkout::book).value {
-                it.value.book.author
-            }
-            readonlyColumn("Publisher", Checkout::book).value {
-                it.value.book.pub
-            }
-            readonlyColumn("Year", Checkout::book).value {
-                it.value.book.year
-            }
-            readonlyColumn("Person", Checkout::person) {
-                value {
-                    "${it.value.person.name} <${it.value.person.email}>"
-                }
-            }
-            readonlyColumn("Checked Out", Checkout::cDate).cellFormat {
-                text = it.format(controller.dateFormat)
-            }
+            readonlyColumn("Title", Checkout::book).value { it.value.book.title }
+            readonlyColumn("Author", Checkout::book).value { it.value.book.author }
+            readonlyColumn("Publisher", Checkout::book).value { it.value.book.pub }
+            readonlyColumn("Year", Checkout::book).value { it.value.book.year }
+            readonlyColumn("Person", Checkout::person).value { "${it.value.person.name} <${it.value.person.email}>" }
+            readonlyColumn("Checked Out", Checkout::cDate).value { it.value.cDate.format(controller.dateFormat) }
             readonlyColumn("Due", Checkout::dDate).cellFormat {
                 text = it.format(controller.dateFormat)
                 style {

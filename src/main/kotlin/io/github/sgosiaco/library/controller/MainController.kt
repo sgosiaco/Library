@@ -116,8 +116,8 @@ class MainController: Controller() {
             var index = bookList.indexOf(book)
             bookList[index] = book.apply { checkedout = true }.copy()
 
-            index = peopleList.indexOf(person)
-            peopleList[index] = person.apply { cNum += 1}.copy()
+            index = findPerson(person)
+            peopleList[index] = peopleList[index].apply { cNum += 1 }
 
             index = checkedList.indexOf(this)
             returned = false
@@ -128,13 +128,13 @@ class MainController: Controller() {
 
     fun returnBook(checkout: Checkout) {
         with(checkout) {
-            var checkoutIndex = checkedList.indexOf(this)
+            val checkoutIndex = checkedList.indexOf(this)
 
             var index = bookList.indexOf(book)
             bookList[index] = book.apply { checkedout = false }.copy()
 
-            index = peopleList.indexOf(person)
-            peopleList[index] = person.apply { cNum -= 1 }.copy()
+            index = findPerson(person)
+            peopleList[index] = peopleList[index].apply { cNum -= 1 }
 
             returned = true
             rDate = LocalDate.now()
@@ -144,11 +144,11 @@ class MainController: Controller() {
 
     private fun editCheckout(old: Checkout, new: Checkout) {
         val index = checkedList.indexOf(new)
-        var personIndex = peopleList.indexOf(new.person)
-        peopleList[personIndex] = new.person.copy(cNum = new.person.cNum - 1)
+        var personIndex = findPerson(new.person)
+        peopleList[personIndex] = peopleList[personIndex].apply { cNum -= 1 }
 
-        personIndex = peopleList.indexOf(old.person.apply { if(cNum > 0) cNum -= 1 })
-        peopleList[personIndex] = old.person.apply { cNum += 1 }.copy()
+        personIndex = findPerson(old.person)
+        peopleList[personIndex] = peopleList[personIndex].apply { cNum += 1}
 
         checkedList[index] = old.deepCopy()
     }
@@ -160,6 +160,8 @@ class MainController: Controller() {
     }
 
     fun checkDupeEmail(email: String, person: Person?) = peopleList.any { it != person && it.email == email }
+
+    fun findPerson(person: Person) = peopleList.indexOf(peopleList.find { it.email == person.email })
 
     fun undo(act: Action) {
         with(act) {
@@ -174,7 +176,7 @@ class MainController: Controller() {
                     }
                 }
                 is Person -> {
-                    val index = peopleList.indexOf(newObj)
+                    val index = findPerson(newObj as Person)
                     when(action) {
                         "Added" -> peopleList.remove(obj as Person)
                         "Edited" -> peopleList[index] = obj as Person
@@ -183,18 +185,13 @@ class MainController: Controller() {
                     }
                 }
                 else -> {
-                    val index = checkedList.indexOf(newObj)
                     when(action) {
-                        "Edited" -> {
-                            editCheckout(obj as Checkout, newObj as Checkout)
-                        }
+                        "Edited" -> editCheckout(obj as Checkout, newObj as Checkout)
                         "Checkout" -> {
                             returnBook(obj as Checkout)
                             checkedList.remove(obj as Checkout)
                         }
-                        "Returned" -> {
-                            checkBook(obj as Checkout)
-                        }
+                        "Returned" -> checkBook(obj as Checkout)
                     }
                 }
 
@@ -216,7 +213,7 @@ class MainController: Controller() {
                     }
                 }
                 is Person -> {
-                    val index = peopleList.indexOf(obj as Person)
+                    val index = findPerson(obj as Person)
                     when(action) {
                         "Added" -> peopleList.add(obj as Person)
                         "Edited" -> peopleList[index] = newObj as Person
@@ -225,15 +222,9 @@ class MainController: Controller() {
                 }
                 else -> {
                     when(action) {
-                        "Edited" -> {
-                            editCheckout(newObj as Checkout, obj as Checkout)
-                        }
-                        "Checkout" -> {
-                            checkBook(obj as Checkout)
-                        }
-                        "Returned" -> {
-                            returnBook(obj as Checkout)
-                        }
+                        "Edited" -> editCheckout(newObj as Checkout, obj as Checkout)
+                        "Checkout" -> checkBook(obj as Checkout)
+                        "Returned" -> returnBook(obj as Checkout)
                     }
                 }
             }
@@ -254,7 +245,7 @@ class MainController: Controller() {
             data += "Title: ${it.book.title}\n" +
                     "Author: ${it.book.author}\n" +
                     "Checkout Date: ${it.cDate.format(dateFormat)}\n" +
-                    "Due Date: ${if(it.dDate.isBefore(LocalDate.now())) "Overdue, please return immediately. (Original due date was ${it.dDate.format(dateFormat)})" else it.dDate.format(dateFormat)}\n" + //
+                    "Due Date: ${if(it.dDate.isBefore(LocalDate.now())) "Overdue, please return immediately. (Original due date was ${it.dDate.format(dateFormat)})" else it.dDate.format(dateFormat)}\n" +
                     "\n"
         }
         clipboard.putString(body + data + footer)

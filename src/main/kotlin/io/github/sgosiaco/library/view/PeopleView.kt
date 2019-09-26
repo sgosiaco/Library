@@ -82,7 +82,7 @@ class PeopleView : View("People") {
                 }
                 item("Draft Due Tomorrow") {
                     visibleWhen {
-                        booleanBinding(controller.checkedList) { any { !it.returned && it.person == selectedItem && it.dDate.isEqual(LocalDate.now().plusDays(1)) } }
+                        booleanBinding(controller.checkedList) { any { !it.returned && it.person.email == selectedItem?.email && it.dDate.isEqual(LocalDate.now().plusDays(1)) } }
                     }
                     action {
                         selectedItem?.apply {

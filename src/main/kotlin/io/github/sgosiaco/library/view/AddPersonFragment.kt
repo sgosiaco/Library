@@ -50,7 +50,6 @@ class AddPersonFragment : Fragment("Add new person") {
         }
         hbox(10.0) {
             button("Add person") {
-                //disableWhen(name.isNull or email.isNull or aff.isNull)
                 enableWhen(model.valid)
                 action {
                     model.commit()

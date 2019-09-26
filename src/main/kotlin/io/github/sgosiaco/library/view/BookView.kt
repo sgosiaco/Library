@@ -11,8 +11,8 @@ class BookView : View("Books") {
     private val controller: MainController by inject()
     private var search = SimpleStringProperty()
     private var filter = SimpleStringProperty()
-    private val allState = booleanBinding(filter) { value == "All"}
-    private val availableState = booleanBinding(filter) { value == "Available"}
+    //private val allState = booleanBinding(filter) { value == "All"}
+    //private val availableState = booleanBinding(filter) { value == "Available"}
     private val checkedState = booleanBinding(filter) { value == "Checked"}
 
     init {
@@ -46,7 +46,7 @@ class BookView : View("Books") {
                 togglebutton("Available to Checkout") {
                     action {
                         filter.value = "Available"
-                        controller.sfBookList.predicate = { !it.checkedout &&  (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfBookList.predicate = { !it.checkedout && (if(search.value != "") it.containsString(search.value) else true) }
                     }
                 }
                 togglebutton("Checked Out") {

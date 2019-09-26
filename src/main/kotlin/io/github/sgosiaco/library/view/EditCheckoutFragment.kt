@@ -54,16 +54,13 @@ class EditCheckoutFragment : Fragment() {
                                 val index = controller.checkedList.indexOf(old)
                                 controller.sCheckout.commit()
                                 val new = controller.sCheckout.item.deepCopy()
-                                val oldIndex = controller.peopleList.indexOf(old.person)
-                                val newIndex = controller.peopleList.indexOf(new.person)
+                                val oldIndex = controller.findPerson(old.person)
+                                val newIndex = controller.findPerson(new.person)
 
                                 if(oldIndex != newIndex) {
-                                    controller.peopleList[oldIndex] = old.person.copy(cNum = old.person.cNum - 1)
-                                    controller.peopleList[newIndex] = new.person.apply { cNum += 1}.copy()
+                                    controller.peopleList[oldIndex] = controller.peopleList[oldIndex].apply { cNum -= 1 }
+                                    controller.peopleList[newIndex] = controller.peopleList[newIndex].apply { cNum += 1}
                                 }
-
-                                //controller.checkedList.remove(new)
-                                //controller.checkedList.add(new)
                                 controller.checkedList[index] = new
                                 controller.undoList.add(Action("Edited", old.deepCopy(), new.deepCopy()))
                                 controller.redoList.setAll()
