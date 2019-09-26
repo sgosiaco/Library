@@ -119,13 +119,16 @@ class CheckedBookView : View("Checked Out (Books)") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.EXCHANGE)
                     action {
                         selectedItem?.apply {
+                            val checkout = this
                             confirm(
                                     header = "Return ${book.title}?",
                                     content = "Borrowed by ${person.name} <${person.email}>",
                                     actionFn = {
-                                        controller.returnBook(this)
-                                        controller.undoList.add(Action("Returned", this.copy(), "Nothing"))
-                                        controller.redoList.setAll()
+                                        runAsync {
+                                            controller.returnBook(checkout)
+                                            controller.undoList.add(Action("Returned", checkout.deepCopy(), "Nothing"))
+                                            controller.redoList.setAll()
+                                        }
                                     }
                             )
                         }

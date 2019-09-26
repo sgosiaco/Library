@@ -82,9 +82,11 @@ class PeopleView : View("People") {
                                 confirm(
                                         header = "Delete $name?",
                                         actionFn = {
-                                            controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
-                                            controller.redoList.setAll()
-                                            controller.peopleList.remove(selectedItem)
+                                            runAsync {
+                                                controller.peopleList.remove(selectedItem)
+                                                controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                                controller.redoList.setAll()
+                                            }
                                         }
                                 )
                             }

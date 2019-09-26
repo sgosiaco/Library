@@ -46,12 +46,14 @@ class EditPersonFragment : Fragment() {
                     confirm(
                             header = "Apply Changes?",
                             actionFn = {
-                                val index = controller.peopleList.indexOf(controller.sPerson.item)
-                                val old = controller.sPerson.item.copy()
-                                controller.sPerson.commit()
-                                controller.peopleList[index] = controller.sPerson.item
-                                controller.undoList.add(Action("Edited", old, controller.peopleList[index].copy()))
-                                controller.redoList.setAll()
+                                runAsync {
+                                    val index = controller.peopleList.indexOf(controller.sPerson.item)
+                                    val old = controller.sPerson.item.copy()
+                                    controller.sPerson.commit()
+                                    controller.peopleList[index] = controller.sPerson.item
+                                    controller.undoList.add(Action("Edited", old, controller.peopleList[index].copy()))
+                                    controller.redoList.setAll()
+                                }
                                 close()
                             }
                     )

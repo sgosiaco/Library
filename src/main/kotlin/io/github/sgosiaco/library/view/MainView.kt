@@ -148,9 +148,11 @@ class MainView : View("Library") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.COPY) //clone is another choice
                     action {
                         if (controller.focus == "Books") {
-                            val book = controller.sBook.item.copy()
-                            controller.checkDupeBook(book)
-                            controller.bookList.add(book)
+                            runAsync {
+                                val book = controller.sBook.item.copy()
+                                controller.checkDupeBook(book)
+                                controller.bookList.add(book)
+                            }
                         }
                     }
                 }

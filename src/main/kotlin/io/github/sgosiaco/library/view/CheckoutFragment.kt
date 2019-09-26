@@ -58,7 +58,7 @@ class CheckoutFragment : Fragment() {
                             content = """Checkout "${book.title}" to ${person.value.name}?""",
                             actionFn = {
                                 controller.checkBook(Checkout(person.value.copy(), book.copy(), cDate.value, dDate.value, null, false))
-                                controller.undoList.add(Action("Checkout", controller.checkedList.last().copy(), "Nothing"))
+                                controller.undoList.add(Action("Checkout", controller.checkedList.last().deepCopy(), "Nothing"))
                                 controller.redoList.setAll()
                                 close()
                             }

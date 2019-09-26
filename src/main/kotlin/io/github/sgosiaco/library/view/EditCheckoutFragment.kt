@@ -50,20 +50,22 @@ class EditCheckoutFragment : Fragment() {
                     confirm(
                             header = "Apply Changes?",
                             actionFn = {
-                                val old = controller.sCheckout.item.deepCopy()
-                                val index = controller.checkedList.indexOf(old)
-                                controller.sCheckout.commit()
-                                val new = controller.sCheckout.item.deepCopy()
-                                val oldIndex = controller.findPerson(old.person)
-                                val newIndex = controller.findPerson(new.person)
+                                runAsync {
+                                    val old = controller.sCheckout.item.deepCopy()
+                                    val index = controller.checkedList.indexOf(old)
+                                    controller.sCheckout.commit()
+                                    val new = controller.sCheckout.item.deepCopy()
+                                    val oldIndex = controller.findPerson(old.person)
+                                    val newIndex = controller.findPerson(new.person)
 
-                                if (oldIndex != newIndex) {
-                                    controller.peopleList[oldIndex] = controller.peopleList[oldIndex].apply { cNum -= 1 }
-                                    controller.peopleList[newIndex] = controller.peopleList[newIndex].apply { cNum += 1 }
+                                    if (oldIndex != newIndex) {
+                                        controller.peopleList[oldIndex] = controller.peopleList[oldIndex].apply { cNum -= 1 }
+                                        controller.peopleList[newIndex] = controller.peopleList[newIndex].apply { cNum += 1 }
+                                    }
+                                    controller.checkedList[index] = new
+                                    controller.undoList.add(Action("Edited", old.deepCopy(), new.deepCopy()))
+                                    controller.redoList.setAll()
                                 }
-                                controller.checkedList[index] = new
-                                controller.undoList.add(Action("Edited", old.deepCopy(), new.deepCopy()))
-                                controller.redoList.setAll()
                                 close()
                             }
                     )

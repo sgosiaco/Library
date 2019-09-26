@@ -42,16 +42,18 @@ class EditBookFragment : Fragment() {
                     confirm(
                             header = "Apply Changes?",
                             actionFn = {
-                                val index = controller.bookList.indexOf(controller.sBook.item)
-                                val old = controller.sBook.item.copy()
-                                controller.sBook.item.dupe = 0
-                                controller.sBook.commit()
-                                val book = controller.sBook.item.copy()
-                                controller.bookList[index] = Book()
-                                controller.checkDupeBook(book)
-                                controller.bookList[index] = book
-                                controller.undoList.add(Action("Edited", old, controller.bookList[index].copy()))
-                                controller.redoList.setAll()
+                                runAsync {
+                                    val index = controller.bookList.indexOf(controller.sBook.item)
+                                    val old = controller.sBook.item.copy()
+                                    controller.sBook.item.dupe = 0
+                                    controller.sBook.commit()
+                                    val book = controller.sBook.item.copy()
+                                    controller.bookList[index] = Book()
+                                    controller.checkDupeBook(book)
+                                    controller.bookList[index] = book
+                                    controller.undoList.add(Action("Edited", old, controller.bookList[index].copy()))
+                                    controller.redoList.setAll()
+                                }
                                 close()
                             }
                     )

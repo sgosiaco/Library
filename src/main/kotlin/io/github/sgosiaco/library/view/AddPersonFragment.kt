@@ -52,10 +52,12 @@ class AddPersonFragment : Fragment("Add new person") {
             button("Add person") {
                 enableWhen(model.valid)
                 action {
-                    model.commit()
-                    controller.peopleList.add(Person(name.value, email.value, phone.value as Long, aff.value, 0))
-                    controller.undoList.add(Action("Added", controller.peopleList.last().copy(), "Nothing"))
-                    controller.redoList.setAll()
+                    runAsync {
+                        model.commit()
+                        controller.peopleList.add(Person(name.value, email.value, phone.value as Long, aff.value, 0))
+                        controller.undoList.add(Action("Added", controller.peopleList.last().copy(), "Nothing"))
+                        controller.redoList.setAll()
+                    }
                     close()
                 }
             }

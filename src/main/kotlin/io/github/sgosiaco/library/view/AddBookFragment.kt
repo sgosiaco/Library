@@ -33,11 +33,13 @@ class AddBookFragment : Fragment("Add new book") {
             button("Add book") {
                 disableWhen(bookTitle.isNull or author.isNull or pub.isNull)
                 action {
-                    val book = Book(0, false, author.value, year.value, pub.value, bookTitle.value)
-                    controller.checkDupeBook(book)
-                    controller.bookList.add(book)
-                    controller.undoList.add(Action("Added", controller.bookList.last().copy(), "Nothing"))
-                    controller.redoList.setAll()
+                    runAsync {
+                        val book = Book(0, false, author.value, year.value, pub.value, bookTitle.value)
+                        controller.checkDupeBook(book)
+                        controller.bookList.add(book)
+                        controller.undoList.add(Action("Added", controller.bookList.last().copy(), "Nothing"))
+                        controller.redoList.setAll()
+                    }
                     close()
                 }
             }
