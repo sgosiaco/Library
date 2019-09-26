@@ -6,6 +6,8 @@ import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import tornadofx.*
 import java.time.LocalDate
 
@@ -15,14 +17,26 @@ class PeopleView : View("People") {
 
     override val root = vbox {
         hbox {
-            val searchBox = textfield(search) {
-                controller.sfPeopleList.filterWhen(textProperty()) { query, item ->
-                    item.containsString(query)
+            stackpane {
+                val searchBox = textfield(search) {
+                    controller.sfPeopleList.filterWhen(textProperty()) { query, item ->
+                        item.containsString(query)
+                    }
+                    promptText = "Search title"
                 }
-                promptText = "Search title"
-            }
-            button("x").action {
-                searchBox.clear()
+                button("X") {
+                    visibleWhen { searchBox.textProperty().isNotEmpty }
+                    action {
+                        searchBox.clear()
+                    }
+                    style {
+                        fontWeight = FontWeight.BOLD
+                        backgroundRadius += box(0.px)
+                        backgroundColor += Color.TRANSPARENT
+                        borderColor += box(Color.TRANSPARENT)
+                        paddingLeft = 140
+                    }
+                }
             }
         }
         tableview(controller.sfPeopleList) {

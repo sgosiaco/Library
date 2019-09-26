@@ -7,6 +7,8 @@ import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Book
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import tornadofx.*
 
 class BookView : View("Books") {
@@ -24,19 +26,31 @@ class BookView : View("Books") {
 
     override val root = vbox {
         hbox {
-            val searchBox = textfield(search) {
-                controller.sfBookList.filterWhen(textProperty()) { query, item ->
-                    when (filter.value) {
-                        "All" -> item.containsString(query)
-                        "Available" -> !item.checkedout && item.containsString(query)
-                        "Checked" -> item.checkedout && item.containsString(query)
-                        else -> !item.checkedout && item.containsString(query)
+            stackpane {
+                val searchBox = textfield(search) {
+                    controller.sfBookList.filterWhen(textProperty()) { query, item ->
+                        when (filter.value) {
+                            "All" -> item.containsString(query)
+                            "Available" -> !item.checkedout && item.containsString(query)
+                            "Checked" -> item.checkedout && item.containsString(query)
+                            else -> !item.checkedout && item.containsString(query)
+                        }
+                    }
+                    promptText = "Search $title"
+                }
+                button("X") {
+                    visibleWhen { searchBox.textProperty().isNotEmpty }
+                    action {
+                        searchBox.clear()
+                    }
+                    style {
+                        fontWeight = FontWeight.BOLD
+                        backgroundRadius += box(0.px)
+                        backgroundColor += Color.TRANSPARENT
+                        borderColor += box(Color.TRANSPARENT)
+                        paddingLeft = 140
                     }
                 }
-                promptText = "Search $title"
-            }
-            button("x").action {
-                searchBox.clear()
             }
             togglegroup {
                 togglebutton("All Books") {

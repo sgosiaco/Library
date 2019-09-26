@@ -9,7 +9,9 @@ import javafx.util.StringConverter
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.log10
 
 class PeopleConverter : StringConverter<Person>() {
     override fun fromString(string: String) = Person()
@@ -22,6 +24,8 @@ class MainController : Controller() {
     val sCheckout = SelectedCheckout()
     var focus = ""
     val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+    val logFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a")
+    val saveFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy_HH-mm-ssa")
 
     private var bookjson = File("books.json").readText(Charsets.UTF_8)
     var bookList: ObservableList<Book> = FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList())
@@ -74,6 +78,14 @@ class MainController : Controller() {
             csv += "${it.book.toCSV()}, ${it.person.toCSV()}, ${it.cDate.format(dateFormat)}, ${it.dDate.format(dateFormat)}\n"
         }
         File("checked.csv").writeText(csv)
+    }
+
+    fun exportLog() {
+        var log = "Timestamp, Action, Old Object, New Object\n"
+        undoList.forEach {
+            log += "${it.timestamp.format(logFormat)}, ${it.action}, ${it.obj}, ${it.newObj}\n"
+        }
+        File("Library_${LocalDateTime.now().format(saveFormat)}.log").writeText(log)
     }
 
     fun openDialog(type: String) {

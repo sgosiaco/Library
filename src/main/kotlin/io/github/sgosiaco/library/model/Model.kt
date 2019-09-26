@@ -3,6 +3,7 @@ package io.github.sgosiaco.library.model
 import com.google.gson.annotations.SerializedName
 import tornadofx.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class Book(
         @SerializedName("dupe") var dupe: Int = 0,
@@ -79,4 +80,4 @@ class SelectedCheckout : ItemViewModel<Checkout>() {
     var returned = bind(Checkout::returned)
 }
 
-data class Action(var action: String, var obj: Any, var newObj: Any)
+data class Action(var action: String, var obj: Any, var newObj: Any, val timestamp: LocalDateTime = LocalDateTime.now())

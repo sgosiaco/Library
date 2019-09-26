@@ -8,6 +8,7 @@ import io.github.sgosiaco.library.model.Checkout
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import tornadofx.*
 import java.time.LocalDate
 
@@ -17,14 +18,26 @@ class CheckedPersonView : View("Checked Out (Person)") {
 
     override val root = vbox {
         hbox {
-            val searchBox = textfield(search) {
-                controller.sfCheckedPeopleList.filterWhen(textProperty()) { query, item ->
-                    item.cNum > 0 && item.containsString(query)
+            stackpane {
+                val searchBox = textfield(search) {
+                    controller.sfCheckedPeopleList.filterWhen(textProperty()) { query, item ->
+                        item.cNum > 0 && item.containsString(query)
+                    }
+                    promptText = "Search $title"
                 }
-                promptText = "Search $title"
-            }
-            button("x").action {
-                searchBox.clear()
+                button("X") {
+                    visibleWhen { searchBox.textProperty().isNotEmpty }
+                    action {
+                        searchBox.clear()
+                    }
+                    style {
+                        fontWeight = FontWeight.BOLD
+                        backgroundRadius += box(0.px)
+                        backgroundColor += Color.TRANSPARENT
+                        borderColor += box(Color.TRANSPARENT)
+                        paddingLeft = 140
+                    }
+                }
             }
         }
         tableview(controller.sfCheckedPeopleList) {

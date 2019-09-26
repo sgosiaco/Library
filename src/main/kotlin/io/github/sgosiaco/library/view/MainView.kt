@@ -14,6 +14,7 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.Priority
 import javafx.scene.transform.Scale
 import tornadofx.*
+import java.time.format.DateTimeFormatter
 import kotlin.system.exitProcess
 
 class MainView : View("Library") {
@@ -51,6 +52,23 @@ class MainView : View("Library") {
                         confirm(
                                 header = "Export the checked list to CSV?",
                                 actionFn = { controller.exportCheckedCSV() }
+                        )
+                    }
+                    item("Export All CSV").action {
+                        confirm(
+                                header = "Export all lists to CSV?",
+                                actionFn = {
+                                    controller.exportBookCSV()
+                                    controller.exportPeopleCSV()
+                                    controller.exportCheckedCSV()
+                                    controller.exportLog()
+                                }
+                        )
+                    }
+                    item("Export Log").action {
+                        confirm(
+                                header = "Export log?",
+                                actionFn = { controller.exportLog() }
                         )
                     }
                 }
@@ -146,16 +164,36 @@ class MainView : View("Library") {
                 item("Show history", "Shortcut+H", FontAwesomeIconView(FontAwesomeIcon.HISTORY)).action { find<HistoryFragment>().openWindow() }
             }
             menu("Help") {
-                item("Access Import Steps").action {
-                    dialog {
-                        text("""Make sure you select: "Delimited".
-                            | And then on the next prompt **first** select "Text Qualifier" as " (quotes) and then select "First Rows contains field names".
-                            | Finally, you can change the data type of the year field to "Integer" and the data type of checkedout to "Yes/No." """.trimMargin())
+                item("Access Import Steps") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.QUESTION)
+                    action {
+                        dialog("Access (Office 365 Version) Import Steps") {
+                            text("""1. External Data->New Data Source->From File->Text File
+                            |2. Find and select the "books.csv" file and make sure "Import the source data into a new table in the current database." option is selected.
+                            |3. Make sure "Delimited" is selected.
+                            |4. Make sure "Comma" is selected as the delimiter. Then, make sure to change the text qualifier to " (quote) and then check the box "First Row Contains Field Names"
+                            |5. Use the bottom scroll bar to move to the "Year" column and change the data type to "Integer". Then move to the "Checked Out" column and changed the data type to "Yes/No".
+                            |6. Choose "Let Access add primary key."
+                            |7. Finally, enter the name of the table to import the data into.
+                            |**If you plan on reimporting often, check the box "Save import steps" after importing and this will remember all the settings used and the file location for the "books.csv" file
+                            |**To run the saved import again go to External Data->Saved Imports and select the import you saved previously. (Warning: this will only write/overwite the same table so be careful!)""".trimMargin()) {
+                                style {
+                                    fontSize = 16.px
+                                }
+                            }
+                        }
                     }
                 }
-                item("About").action {
-                    dialog {
-                        text("Built and developed by Sean Gosiaco")
+                item("About") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.INFO)
+                    action {
+                        dialog("About") {
+                            text("Built and developed by Sean Gosiaco") {
+                                style {
+                                    fontSize = 16.px
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -174,6 +212,9 @@ class MainView : View("Library") {
                             columnResizePolicy = SmartResize.POLICY
                             controller.undoList.onChange {
                                 requestResize()
+                            }
+                            readonlyColumn("Timestamp", Action::timestamp).cellFormat {
+                                text = it.format(controller.logFormat)
                             }
                             readonlyColumn("Action", Action::action)
                             readonlyColumn("Object", Action::obj).prefWidth(1000.0)

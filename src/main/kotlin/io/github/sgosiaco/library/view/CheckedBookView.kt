@@ -8,6 +8,7 @@ import io.github.sgosiaco.library.model.Checkout
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import tornadofx.*
 import java.time.LocalDate
 
@@ -26,20 +27,32 @@ class CheckedBookView : View("Checked Out (Books)") {
 
     override val root = vbox {
         hbox {
-            val searchBox = textfield(search) {
-                controller.sfCheckedList.filterWhen(textProperty()) { query, item ->
-                    when (filter.value) {
-                        "All" -> !item.returned && item.containsString(query)
-                        "Today" -> !item.returned && item.dDate.isEqual(LocalDate.now()) && item.containsString(query)
-                        "Tomorrow" -> !item.returned && item.dDate.isEqual(LocalDate.now().plusDays(1)) && item.containsString(query)
-                        "Overdue" -> !item.returned && item.dDate.isBefore(LocalDate.now()) && item.containsString(query)
-                        else -> !item.returned && item.containsString(query)
+            stackpane {
+                val searchBox = textfield(search) {
+                    controller.sfCheckedList.filterWhen(textProperty()) { query, item ->
+                        when (filter.value) {
+                            "All" -> !item.returned && item.containsString(query)
+                            "Today" -> !item.returned && item.dDate.isEqual(LocalDate.now()) && item.containsString(query)
+                            "Tomorrow" -> !item.returned && item.dDate.isEqual(LocalDate.now().plusDays(1)) && item.containsString(query)
+                            "Overdue" -> !item.returned && item.dDate.isBefore(LocalDate.now()) && item.containsString(query)
+                            else -> !item.returned && item.containsString(query)
+                        }
+                    }
+                    promptText = "Search $title"
+                }
+                button("X") {
+                    visibleWhen { searchBox.textProperty().isNotEmpty }
+                    action {
+                        searchBox.clear()
+                    }
+                    style {
+                        fontWeight = FontWeight.BOLD
+                        backgroundRadius += box(0.px)
+                        backgroundColor += Color.TRANSPARENT
+                        borderColor += box(Color.TRANSPARENT)
+                        paddingLeft = 140
                     }
                 }
-                promptText = "Search $title"
-            }
-            button("x").action {
-                searchBox.clear()
             }
             togglegroup {
                 togglebutton("All Books") {
