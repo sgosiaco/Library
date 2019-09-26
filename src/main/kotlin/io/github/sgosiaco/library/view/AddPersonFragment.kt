@@ -10,32 +10,51 @@ import tornadofx.*
 
 class AddPersonFragment : Fragment("Add new person") {
     private val controller: MainController by inject()
-    private val name = SimpleStringProperty()
-    private val email = SimpleStringProperty()
-    private val phone = SimpleLongProperty()
-    private val aff = SimpleStringProperty()
+    private val model = ViewModel()
+    private val name = model.bind { SimpleStringProperty() }
+    private val email = model.bind { SimpleStringProperty() }
+    private val phone = model.bind { SimpleLongProperty() }
+    private val aff = model.bind { SimpleStringProperty() }
     private val affiliations = FXCollections.observableArrayList<String>("Alumni", "Faculty", "Staff", "Student")
 
     override val root = form {
         fieldset("Info") {
             field("Name:") {
-                textfield(name)
+                textfield(name) {
+                    required()
+                    whenDocked { requestFocus() }
+                }
             }
             field("Email:") {
-                textfield(email)
+                textfield(email).validator {
+                    if(controller.checkDupeEmail(it ?: "", controller.sPerson.item)) {
+                        error("This email is a duplicate")
+                    }
+                    else { null }
+                }
             }
             field("Phone number:") {
-                textfield(phone)
+                textfield(phone).validator {
+                    val text = it ?: ""
+                    if(text.matches("^[2-9]\\d{2}\\d{3}\\d{4}\$".toRegex())) {
+                        null
+                    }
+                    else {
+                        error("Not a valid phone number")
+                    }
+                }
             }
             field("Affiliation:") {
-                combobox(aff, affiliations)
+                combobox(aff, affiliations).required()
             }
         }
         hbox(10.0) {
             button("Add person") {
-                disableWhen(name.isNull or email.isNull or aff.isNull)
+                //disableWhen(name.isNull or email.isNull or aff.isNull)
+                enableWhen(model.valid)
                 action {
-                    controller.peopleList.add(Person(name.value, email.value, phone.value, aff.value, 0))
+                    model.commit()
+                    controller.peopleList.add(Person(name.value, email.value, phone.value as Long, aff.value, 0))
                     controller.undoList.add(Action("Added", controller.peopleList.last().copy(), "Nothing"))
                     controller.redoList.setAll()
                     close()
@@ -45,5 +64,3 @@ class AddPersonFragment : Fragment("Add new person") {
         }
     }
 }
-
-//TODO add input validation to fields. Also need to add checking to make sure fields are filled out before adding works

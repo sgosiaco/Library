@@ -14,13 +14,26 @@ class EditPersonFragment : Fragment() {
         title = """Editing ${controller.sPerson.name.value}"""
         fieldset("Info") {
             field("Name:") {
-                textfield(controller.sPerson.name)
+                textfield(controller.sPerson.name).required()
             }
             field("Email:") {
-                textfield(controller.sPerson.email)
+                textfield(controller.sPerson.email).validator {
+                    if(controller.checkDupeEmail(it ?: "", controller.sPerson.item)) {
+                        error("This email is a duplicate")
+                    }
+                    else { null }
+                }
             }
             field("Phone number:") {
-                textfield(controller.sPerson.phone, LongStringConverter())
+                textfield(controller.sPerson.phone, LongStringConverter()).validator {
+                    val text = it ?: ""
+                    if(text.matches("^[2-9]\\d{2}\\d{3}\\d{4}\$".toRegex())) {
+                        null
+                    }
+                    else {
+                        error("Not a valid phone number")
+                    }
+                }
             }
             field("Affiliation:") {
                 combobox(controller.sPerson.aff, affiliations)
@@ -28,7 +41,7 @@ class EditPersonFragment : Fragment() {
         }
         hbox(10.0) {
             button("Save") {
-                enableWhen(controller.sPerson.dirty)
+                enableWhen { controller.sPerson.valid }
                 action {
                     confirm(
                             header = "Apply Changes?",

@@ -159,6 +159,8 @@ class MainController: Controller() {
         }
     }
 
+    fun checkDupeEmail(email: String, person: Person?) = peopleList.any { it != person && it.email == email }
+
     fun undo(act: Action) {
         with(act) {
             when (obj) {

@@ -29,6 +29,7 @@ class CheckedBookView : View("Checked Out (Books)") {
                     when(filter.value) {
                         "All" -> !item.returned && item.containsString(query)
                         "Today" -> !item.returned && item.dDate.isEqual(LocalDate.now()) && item.containsString(query)
+                        "Tomorrow" -> !item.returned && item.dDate.isEqual(LocalDate.now().plusDays(1)) && item.containsString(query)
                         "Overdue" -> !item.returned && item.dDate.isBefore(LocalDate.now()) && item.containsString(query)
                         else -> !item.returned && item.containsString(query)
                     }
@@ -45,10 +46,16 @@ class CheckedBookView : View("Checked Out (Books)") {
                         controller.sfCheckedList.predicate = { !it.returned && (if(search.value != "") it.containsString(search.value) else true) }
                     }
                 }
-                togglebutton("Due today") {
+                togglebutton("Due Today") {
                     action {
                         filter.value = "Today"
                         controller.sfCheckedList.predicate = { !it.returned && it.dDate.isEqual(LocalDate.now()) && (if(search.value != "") it.containsString(search.value) else true) }
+                    }
+                }
+                togglebutton("Due Tomorrow") {
+                    action {
+                        filter.value = "Tomorrow"
+                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isEqual(LocalDate.now().plusDays(1)) && (if(search.value != "") it.containsString(search.value) else true) }
                     }
                 }
                 togglebutton("Overdue") {
