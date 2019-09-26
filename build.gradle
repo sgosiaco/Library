@@ -6,6 +6,7 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -27,6 +28,7 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    jcenter()
 }
 
 dependencies {
@@ -35,7 +37,8 @@ dependencies {
 
 
     compile "no.tornado:tornadofx:$tornadofx_version"
-    compile group: 'org.jfxtras', name: 'jmetro', version: '5.3'
+    compile "de.jensd:fontawesomefx-commons:8.15"
+    compile "de.jensd:fontawesomefx-fontawesome:4.7.0-5"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_version"

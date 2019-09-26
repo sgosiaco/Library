@@ -1,5 +1,7 @@
 package io.github.sgosiaco.library.view
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import javafx.geometry.Side
@@ -26,11 +28,13 @@ class MainView : View("Library") {
         menubar {
             menu("File") {
                 menu("Open") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.FOLDER_OPEN)
                     item("Open Book List").action { controller.openDialog("book") }
                     item("Open Person List").action { controller.openDialog("person") }
                     item("Open Checkout List").action { controller.openDialog("checked") }
                 }
                 menu("Export") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD)
                     item("Export Book List to CSV").action {
                         confirm(
                                 header = "Export the book list to CSV?",
@@ -50,7 +54,7 @@ class MainView : View("Library") {
                         )
                     }
                 }
-                item("Print", "Shortcut+P").action {
+                item("Print", "Shortcut+P", FontAwesomeIconView(FontAwesomeIcon.PRINT)).action {
                     val printer = Printer.getDefaultPrinter()
                     val layout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT)
                     var scaleX = layout.printableWidth / drawer.boundsInParent.width
@@ -66,6 +70,7 @@ class MainView : View("Library") {
                     }
                 }
                 menu("Save") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.SAVE)
                     item("Save Book List").action {
                         confirm(
                                 header = "Save the book list?",
@@ -95,7 +100,7 @@ class MainView : View("Library") {
                         )
                     }
                 }
-                item("Quit", "Shortcut+Q").action {
+                item("Quit", "Shortcut+Q", FontAwesomeIconView(FontAwesomeIcon.SIGN_OUT)).action {
                     confirm(
                             header = "Are you sure you want to quit?",
                             actionFn = { exitProcess(1) }
@@ -103,18 +108,35 @@ class MainView : View("Library") {
                 }
             }
             menu("Add") {
-                item("Add New Book").action { find<AddBookFragment>().openModal() }
-                item("Add New Person").action { find<AddPersonFragment>().openModal() }
+                item("Add New Book") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.PLUS_SQUARE)
+                    action { find<AddBookFragment>().openModal() }
+                }
+                item("Add New Person") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.USER_PLUS)
+                    action { find<AddPersonFragment>().openModal() }
+                }
             }
             menu("Edit") {
-                item("Duplicate Book").action {
-                    if(controller.focus == "Books") {
-                        val book = controller.sBook.item.copy()
-                        controller.checkDupeBook(book)
-                        controller.bookList.add(book)
+                item("Undo", "Shortcut+Z", FontAwesomeIconView(FontAwesomeIcon.UNDO)) {
+                    action { controller.undo(controller.undoList.last()) }
+                    enableWhen { booleanBinding(controller.undoList) { isNotEmpty() } }
+                }
+                item("Redo", "Shortcut+Shift+Z", FontAwesomeIconView(FontAwesomeIcon.REPEAT)) {
+                    action { controller.redo(controller.redoList.last()) }
+                    enableWhen { booleanBinding(controller.redoList) { isNotEmpty() } }
+                }
+                item("Duplicate Book") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.COPY) //clone is another choice
+                    action {
+                        if(controller.focus == "Books") {
+                            val book = controller.sBook.item.copy()
+                            controller.checkDupeBook(book)
+                            controller.bookList.add(book)
+                        }
                     }
                 }
-                item("Modify Selected", "Shortcut+E").action {
+                item("Modify Selected", "Shortcut+E", FontAwesomeIconView(FontAwesomeIcon.EDIT)).action {
                     if(controller.focus == "Books") {
                         find<EditBookFragment>().openModal()
                     }
@@ -122,15 +144,19 @@ class MainView : View("Library") {
                         find<EditPersonFragment>().openModal()
                     }
                 }
-                item("Show history", "Shortcut+H").action { find<HistoryFragment>().openWindow() }
-                item("Redo", "Shortcut+Shift+Z").action {
-                    if(controller.redoList.isNotEmpty()) {
-                        controller.redo(controller.redoList.last())
+                item("Show history", "Shortcut+H", FontAwesomeIconView(FontAwesomeIcon.HISTORY)).action { find<HistoryFragment>().openWindow() }
+            }
+            menu("Help") {
+                item("Access Import Steps").action {
+                    dialog{
+                        text("""Make sure you select: "Delimited".
+                            | And then on the next prompt **first** select "Text Qualifier" as " (quotes) and then select "First Rows contains field names".
+                            | Finally, you can change the data type of the year field to "Integer" and the data type of checkedout to "Yes/No." """.trimMargin())
                     }
                 }
-                item("Undo", "Shortcut+Z").action {
-                    if(controller.undoList.isNotEmpty()) {
-                        controller.undo(controller.undoList.last())
+                item("About").action {
+                    dialog {
+                        text("Built and developed by Sean Gosiaco")
                     }
                 }
             }

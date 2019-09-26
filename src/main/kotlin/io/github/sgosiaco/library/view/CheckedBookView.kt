@@ -1,5 +1,7 @@
 package io.github.sgosiaco.library.view
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Checkout
 import io.github.sgosiaco.library.controller.MainController
@@ -93,28 +95,37 @@ class CheckedBookView : View("Checked Out (Books)") {
                 }
             }
             contextmenu {
-                item("Edit Checkout").action {
-                    selectedItem?.apply {
-                        find<EditCheckoutFragment>().openModal()
+                item("Edit Checkout") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.EDIT)
+                    action {
+                        selectedItem?.apply {
+                            find<EditCheckoutFragment>().openModal()
+                        }
                     }
                 }
-                item("Return").action {
-                    selectedItem?.apply {
-                        confirm(
-                                header = "Return ${book.title}?",
-                                content = "Borrowed by ${person.name} <${person.email}>",
-                                actionFn = {
-                                    controller.returnBook(this)
-                                    controller.undoList.add(Action("Returned", this.copy(), "Nothing"))
-                                    controller.redoList.setAll()
-                                }
-                        )
+                item("Return") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.EXCHANGE)
+                    action {
+                        selectedItem?.apply {
+                            confirm(
+                                    header = "Return ${book.title}?",
+                                    content = "Borrowed by ${person.name} <${person.email}>",
+                                    actionFn = {
+                                        controller.returnBook(this)
+                                        controller.undoList.add(Action("Returned", this.copy(), "Nothing"))
+                                        controller.redoList.setAll()
+                                    }
+                            )
+                        }
                     }
                 }
-                item("Show History").action {
-                    selectedItem?.apply {
-                        controller.sBook.item = book
-                        find<HistoryFragment>().openWindow()
+                item("Show History") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.HISTORY)
+                    action {
+                        selectedItem?.apply {
+                            controller.sBook.item = book
+                            find<HistoryFragment>().openWindow()
+                        }
                     }
                 }
             }

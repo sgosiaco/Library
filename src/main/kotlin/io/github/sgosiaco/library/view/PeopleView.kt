@@ -1,5 +1,7 @@
 package io.github.sgosiaco.library.view
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Person
@@ -40,35 +42,45 @@ class PeopleView : View("People") {
             readonlyColumn("Number of books checked out", Person::cNum)
 
             contextmenu {
-                item("Add person").action { find<AddPersonFragment>().openModal() }
-                item("Edit person").action {
-                    selectedItem?.apply {
-                        if(cNum > 0) {
-                            error("Can't edit a person that has checked out book(s)!")
-                        }
-                        else {
-                            find<EditPersonFragment>().openModal()
+                item("Add person") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.USER_PLUS)
+                    action { find<AddPersonFragment>().openModal() }
+                }
+                item("Edit person") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.EDIT)
+                    action {
+                        selectedItem?.apply {
+                            if(cNum > 0) {
+                                error("Can't edit a person that has checked out book(s)!")
+                            }
+                            else {
+                                find<EditPersonFragment>().openModal()
+                            }
                         }
                     }
                 }
-                item("Delete person").action {
-                    selectedItem?.apply {
-                        if(cNum > 0) {
-                            error(header = "Can't delete a person that has checked out book(s)!")
-                        }
-                        else {
-                            confirm(
-                                    header = "Delete $name?",
-                                    actionFn = {
-                                        controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
-                                        controller.redoList.setAll()
-                                        controller.peopleList.remove(selectedItem)
-                                    }
-                            )
+                item("Delete person") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.TRASH)
+                    action {
+                        selectedItem?.apply {
+                            if(cNum > 0) {
+                                error(header = "Can't delete a person that has checked out book(s)!")
+                            }
+                            else {
+                                confirm(
+                                        header = "Delete $name?",
+                                        actionFn = {
+                                            controller.undoList.add(Action("Deleted", selectedItem as Any, "Nothing"))
+                                            controller.redoList.setAll()
+                                            controller.peopleList.remove(selectedItem)
+                                        }
+                                )
+                            }
                         }
                     }
                 }
                 item("Draft All Checked Out") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.ENVELOPE_OPEN)
                     action {
                         selectedItem?.apply {
                             if(cNum == 0) {
@@ -84,15 +96,19 @@ class PeopleView : View("People") {
                     visibleWhen {
                         booleanBinding(controller.checkedList) { any { !it.returned && it.person.email == selectedItem?.email && it.dDate.isEqual(LocalDate.now().plusDays(1)) } }
                     }
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.ENVELOPE_OPEN)
                     action {
                         selectedItem?.apply {
                             controller.draftTomorrow(this)
                         }
                     }
                 }
-                item("Show History").action {
-                    selectedItem?.apply {
-                        find<HistoryFragment>().openWindow()
+                item("Show History") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.HISTORY)
+                    action {
+                        selectedItem?.apply {
+                            find<HistoryFragment>().openWindow()
+                        }
                     }
                 }
             }

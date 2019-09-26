@@ -1,5 +1,7 @@
 package io.github.sgosiaco.library.view
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Checkout
 import io.github.sgosiaco.library.controller.MainController
@@ -37,6 +39,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
             readonlyColumn("Phone number", Person::phone)
             contextmenu {
                 item("Draft All Checked Out") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.ENVELOPE_OPEN)
                     action {
                         selectedItem?.apply {
                             controller.draftAll(this)
@@ -47,29 +50,36 @@ class CheckedPersonView : View("Checked Out (Person)") {
                     visibleWhen {
                         booleanBinding(controller.checkedList) { any { !it.returned && it.person.email == selectedItem?.email && it.dDate.isEqual(LocalDate.now().plusDays(1)) } }
                     }
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.ENVELOPE_OPEN)
                     action {
                         selectedItem?.apply {
                             controller.draftTomorrow(this)
                         }
                     }
                 }
-                item("Return All").action {
-                    selectedItem?.apply {
-                        confirm(
-                                header = "Return all books borrowed by $name?",
-                                actionFn = {
-                                    controller.checkedList.filter { !it.returned && it.person.email == this.email }.forEach {
-                                        controller.returnBook(it)
-                                        controller.undoList.add(Action("Returned", it.copy(), "Nothing"))
+                item("Return All") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.EXCHANGE)
+                    action {
+                        selectedItem?.apply {
+                            confirm(
+                                    header = "Return all books borrowed by $name?",
+                                    actionFn = {
+                                        controller.checkedList.filter { !it.returned && it.person.email == this.email }.forEach {
+                                            controller.returnBook(it)
+                                            controller.undoList.add(Action("Returned", it.copy(), "Nothing"))
+                                        }
+                                        controller.redoList.setAll()
                                     }
-                                    controller.redoList.setAll()
-                                }
-                        )
+                            )
+                        }
                     }
                 }
-                item("Show History").action {
-                    selectedItem?.apply {
-                        find<HistoryFragment>().openWindow()
+                item("Show History") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.HISTORY)
+                    action {
+                        selectedItem?.apply {
+                            find<HistoryFragment>().openWindow()
+                        }
                     }
                 }
             }
@@ -97,28 +107,37 @@ class CheckedPersonView : View("Checked Out (Person)") {
                         }
                     }
                     contextmenu {
-                        item("Edit Checkout").action {
-                            selectedItem?.apply {
-                                find<EditCheckoutFragment>().openModal()
+                        item("Edit Checkout") {
+                            graphic = FontAwesomeIconView(FontAwesomeIcon.EDIT)
+                            action {
+                                selectedItem?.apply {
+                                    find<EditCheckoutFragment>().openModal()
+                                }
                             }
                         }
-                        item("Return").action {
-                            selectedItem?.apply {
-                                confirm(
-                                        header = "Return ${book.title}?",
-                                        content = "Borrowed by ${person.name} <${person.email}>",
-                                        actionFn = {
-                                            controller.returnBook(this)
-                                            controller.undoList.add(Action("Returned", this.copy(), "Nothing"))
-                                            controller.redoList.setAll()
-                                        }
-                                )
+                        item("Return") {
+                            graphic = FontAwesomeIconView(FontAwesomeIcon.EXCHANGE)
+                            action {
+                                selectedItem?.apply {
+                                    confirm(
+                                            header = "Return ${book.title}?",
+                                            content = "Borrowed by ${person.name} <${person.email}>",
+                                            actionFn = {
+                                                controller.returnBook(this)
+                                                controller.undoList.add(Action("Returned", this.copy(), "Nothing"))
+                                                controller.redoList.setAll()
+                                            }
+                                    )
+                                }
                             }
                         }
-                        item("Show History").action {
-                            selectedItem?.apply {
-                                controller.sBook.item = book
-                                find<HistoryFragment>().openWindow()
+                        item("Show History") {
+                            graphic = FontAwesomeIconView(FontAwesomeIcon.HISTORY)
+                            action {
+                                selectedItem?.apply {
+                                    controller.sBook.item = book
+                                    find<HistoryFragment>().openWindow()
+                                }
                             }
                         }
                     }

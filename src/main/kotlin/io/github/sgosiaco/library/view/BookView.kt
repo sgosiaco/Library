@@ -1,5 +1,7 @@
 package io.github.sgosiaco.library.view
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Book
 import io.github.sgosiaco.library.controller.MainController
@@ -79,10 +81,12 @@ class BookView : View("Books") {
 
             contextmenu {
                 item("Add book") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.PLUS_SQUARE)
                     action { find<AddBookFragment>().openModal() }
                     visibleWhen(!checkedState)
                 }
                 item("Edit book") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.EDIT)
                     action {
                         selectedItem?.apply {
                             if(checkedout) {
@@ -96,6 +100,7 @@ class BookView : View("Books") {
                     visibleWhen(!checkedState)
                 }
                 item("Delete book") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.TRASH)
                     action {
                         selectedItem?.apply {
                             if(checkedout) {
@@ -116,6 +121,7 @@ class BookView : View("Books") {
                     visibleWhen(!checkedState)
                 }
                 item("Checkout") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.BOOK)
                     action {
                         selectedItem?.apply {
                             if(checkedout) {
@@ -128,8 +134,9 @@ class BookView : View("Books") {
                     }
                     visibleWhen(!checkedState)
                 }
-                item("Show History").action {
-                    selectedItem?.apply { find<HistoryFragment>().openWindow() }
+                item("Show History") {
+                    graphic = FontAwesomeIconView(FontAwesomeIcon.HISTORY)
+                    action { selectedItem?.apply { find<HistoryFragment>().openWindow() } }
                 }
             }
 
