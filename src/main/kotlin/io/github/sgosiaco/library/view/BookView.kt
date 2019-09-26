@@ -85,7 +85,12 @@ class BookView : View("Books") {
                 item("Edit book") {
                     action {
                         selectedItem?.apply {
-                            find<EditBookFragment>().openModal()
+                            if(checkedout) {
+                                error("Can't edit a checked out book!")
+                            }
+                            else {
+                                find<EditBookFragment>().openModal()
+                            }
                         }
                     }
                     visibleWhen(!checkedState)

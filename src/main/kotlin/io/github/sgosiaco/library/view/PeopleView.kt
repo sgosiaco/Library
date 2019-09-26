@@ -5,6 +5,7 @@ import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import tornadofx.*
+import java.time.LocalDate
 
 class PeopleView : View("People") {
     private val controller: MainController by inject()
@@ -42,7 +43,12 @@ class PeopleView : View("People") {
                 item("Add person").action { find<AddPersonFragment>().openModal() }
                 item("Edit person").action {
                     selectedItem?.apply {
-                        find<EditPersonFragment>().openModal()
+                        if(cNum > 0) {
+                            error("Can't edit a person that has checked out book(s)!")
+                        }
+                        else {
+                            find<EditPersonFragment>().openModal()
+                        }
                     }
                 }
                 item("Delete person").action {
@@ -59,6 +65,28 @@ class PeopleView : View("People") {
                                         controller.peopleList.remove(selectedItem)
                                     }
                             )
+                        }
+                    }
+                }
+                item("Draft All Checked Out") {
+                    action {
+                        selectedItem?.apply {
+                            if(cNum == 0) {
+                                error("No books checked out to this person!")
+                            }
+                            else {
+                                controller.draftAll(this)
+                            }
+                        }
+                    }
+                }
+                item("Draft Due Tomorrow") {
+                    visibleWhen {
+                        booleanBinding(controller.checkedList) { any { !it.returned && it.person == selectedItem && it.dDate.isEqual(LocalDate.now().plusDays(1)) } }
+                    }
+                    action {
+                        selectedItem?.apply {
+                            controller.draftTomorrow(this)
                         }
                     }
                 }

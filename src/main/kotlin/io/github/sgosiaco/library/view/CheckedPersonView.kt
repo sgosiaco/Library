@@ -39,21 +39,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
                 item("Draft All Checked Out") {
                     action {
                         selectedItem?.apply {
-                            val body = "Hello. The following library items are checked out in your name.\n\n"
-                            var data = ""
-                            val footer = "Please contact us with any questions by emailing idaas@pomona.edu. " +
-                                    "Library hours are Mondays-Fridays from 8:00am-2:30pm, with a lunch break during the noon hour.\n" +
-                                    "\nThanks!\n" +
-                                    "Madeline"
-
-                            controller.checkedList.filter { !it.returned && it.person == this }.forEach {
-                                data += "Title: ${it.book.title}\n" +
-                                        "Author: ${it.book.author}\n" +
-                                        "Checkout Date: ${it.cDate.format(controller.dateFormat)}\n" +
-                                        "Due Date: ${if(it.dDate.isBefore(LocalDate.now())) "Overdue, please return immediately. (Original due date was ${it.dDate.format(controller.dateFormat)})" else it.dDate.format(controller.dateFormat)}\n" + //
-                                        "\n"
-                            }
-                            clipboard.putString(body + data + footer)
+                            controller.draftAll(this)
                         }
                     }
                 }
@@ -63,19 +49,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
                     }
                     action {
                         selectedItem?.apply {
-                            val body = "Hello. The following library items are due tomorrow. " +
-                                    "Please return these materials to the IDAAS library in Lincoln 1119, Pomona.\n\n"
-                            var data = ""
-                            val footer = "Please contact us with any questions by emailing idaas@pomona.edu. " +
-                                    "Library hours are Mondays-Fridays from 8:00am-2:30pm, with a lunch break during the noon hour.\n" +
-                                    "\nThanks!\n" +
-                                    "Madeline"
-
-                            controller.checkedList.filter { !it.returned && it.person == this && it.dDate.isEqual(LocalDate.now().plusDays(1)) }.forEach {
-                                data += "Title: ${it.book.title}\n" +
-                                        "Author: ${it.book.author}\n\n"
-                            }
-                            clipboard.putString(body + data + footer)
+                            controller.draftTomorrow(this)
                         }
                     }
                 }
