@@ -1,8 +1,8 @@
 package io.github.sgosiaco.library.view
 
+import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Book
-import io.github.sgosiaco.library.controller.MainController
 import javafx.util.converter.IntegerStringConverter
 import tornadofx.*
 

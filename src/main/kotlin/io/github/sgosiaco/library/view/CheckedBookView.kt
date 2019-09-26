@@ -2,9 +2,9 @@ package io.github.sgosiaco.library.view
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
+import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Checkout
-import io.github.sgosiaco.library.controller.MainController
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
@@ -28,7 +28,7 @@ class CheckedBookView : View("Checked Out (Books)") {
         hbox {
             val searchBox = textfield(search) {
                 controller.sfCheckedList.filterWhen(textProperty()) { query, item ->
-                    when(filter.value) {
+                    when (filter.value) {
                         "All" -> !item.returned && item.containsString(query)
                         "Today" -> !item.returned && item.dDate.isEqual(LocalDate.now()) && item.containsString(query)
                         "Tomorrow" -> !item.returned && item.dDate.isEqual(LocalDate.now().plusDays(1)) && item.containsString(query)
@@ -45,25 +45,25 @@ class CheckedBookView : View("Checked Out (Books)") {
                 togglebutton("All Books") {
                     action {
                         filter.value = "All"
-                        controller.sfCheckedList.predicate = { !it.returned && (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfCheckedList.predicate = { !it.returned && (if (search.value != "") it.containsString(search.value) else true) }
                     }
                 }
                 togglebutton("Due Today") {
                     action {
                         filter.value = "Today"
-                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isEqual(LocalDate.now()) && (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isEqual(LocalDate.now()) && (if (search.value != "") it.containsString(search.value) else true) }
                     }
                 }
                 togglebutton("Due Tomorrow") {
                     action {
                         filter.value = "Tomorrow"
-                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isEqual(LocalDate.now().plusDays(1)) && (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isEqual(LocalDate.now().plusDays(1)) && (if (search.value != "") it.containsString(search.value) else true) }
                     }
                 }
                 togglebutton("Overdue") {
                     action {
                         filter.value = "Overdue"
-                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isBefore(LocalDate.now()) && (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfCheckedList.predicate = { !it.returned && it.dDate.isBefore(LocalDate.now()) && (if (search.value != "") it.containsString(search.value) else true) }
                     }
                 }
             }
@@ -87,8 +87,7 @@ class CheckedBookView : View("Checked Out (Books)") {
                     if (it.isBefore(LocalDate.now())) {
                         backgroundColor += c("#8b0000")
                         textFill = Color.WHITE
-                    }
-                    else if(it.isEqual(LocalDate.now())) {
+                    } else if (it.isEqual(LocalDate.now())) {
                         backgroundColor += c("#FFFF99")
                         textFill = Color.BLACK
                     }

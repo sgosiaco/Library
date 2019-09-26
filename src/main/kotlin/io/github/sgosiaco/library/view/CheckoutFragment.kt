@@ -1,9 +1,9 @@
 package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.model.Action
-import io.github.sgosiaco.library.model.Checkout
 import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.controller.PeopleConverter
+import io.github.sgosiaco.library.model.Action
+import io.github.sgosiaco.library.model.Checkout
 import io.github.sgosiaco.library.model.Person
 import javafx.beans.property.SimpleObjectProperty
 import tornadofx.*
@@ -39,18 +39,18 @@ class CheckoutFragment : Fragment() {
                 }
             }
             field("Due Date") {
-                 datepicker(dDate) {
-                     value = LocalDate.now().plusWeeks(2)
-                     dDate.onChange {
-                         if(dDate.value.isBefore(cDate.value)) {
-                             this.value = cDate.value
-                         }
-                     }
+                datepicker(dDate) {
+                    value = LocalDate.now().plusWeeks(2)
+                    dDate.onChange {
+                        if (dDate.value.isBefore(cDate.value)) {
+                            this.value = cDate.value
+                        }
+                    }
                 }
             }
         }
         hbox(10.0) {
-            button ("Checkout") {
+            button("Checkout") {
                 enableWhen(person.isNotNull)
                 action {
                     confirm(

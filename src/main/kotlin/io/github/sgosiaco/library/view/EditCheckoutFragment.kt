@@ -25,7 +25,7 @@ class EditCheckoutFragment : Fragment() {
             field("Checkout Date") {
                 datepicker(controller.sCheckout.cDate) {
                     controller.sCheckout.cDate.onChange {
-                        if(controller.sCheckout.cDate.value != null) {
+                        if (controller.sCheckout.cDate.value != null) {
                             controller.sCheckout.dDate.value = controller.sCheckout.cDate.value.plusWeeks(2)
                         }
                     }
@@ -34,8 +34,8 @@ class EditCheckoutFragment : Fragment() {
             field("Due Date") {
                 datepicker(controller.sCheckout.dDate) {
                     controller.sCheckout.dDate.onChange {
-                        if(controller.sCheckout.cDate.value != null && controller.sCheckout.dDate.value != null) {
-                            if(controller.sCheckout.dDate.value.isBefore(controller.sCheckout.cDate.value)) {
+                        if (controller.sCheckout.cDate.value != null && controller.sCheckout.dDate.value != null) {
+                            if (controller.sCheckout.dDate.value.isBefore(controller.sCheckout.cDate.value)) {
                                 this.value = controller.sCheckout.cDate.value
                             }
                         }
@@ -47,7 +47,7 @@ class EditCheckoutFragment : Fragment() {
             button("Save") {
                 enableWhen(controller.sCheckout.dirty)
                 action {
-                    confirm (
+                    confirm(
                             header = "Apply Changes?",
                             actionFn = {
                                 val old = controller.sCheckout.item.deepCopy()
@@ -57,9 +57,9 @@ class EditCheckoutFragment : Fragment() {
                                 val oldIndex = controller.findPerson(old.person)
                                 val newIndex = controller.findPerson(new.person)
 
-                                if(oldIndex != newIndex) {
+                                if (oldIndex != newIndex) {
                                     controller.peopleList[oldIndex] = controller.peopleList[oldIndex].apply { cNum -= 1 }
-                                    controller.peopleList[newIndex] = controller.peopleList[newIndex].apply { cNum += 1}
+                                    controller.peopleList[newIndex] = controller.peopleList[newIndex].apply { cNum += 1 }
                                 }
                                 controller.checkedList[index] = new
                                 controller.undoList.add(Action("Edited", old.deepCopy(), new.deepCopy()))

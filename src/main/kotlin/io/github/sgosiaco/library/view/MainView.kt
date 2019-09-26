@@ -61,11 +61,11 @@ class MainView : View("Library") {
                     var scaleY = layout.printableHeight / drawer.boundsInParent.height
                     val snap = drawer.snapshot(null, null)
                     val image = ImageView(snap)
-                    if(scaleY > scaleX) scaleY = scaleX else scaleX = scaleY
+                    if (scaleY > scaleX) scaleY = scaleX else scaleX = scaleY
                     image.transforms.add(Scale(scaleX, scaleY))
 
                     val printerJob = PrinterJob.createPrinterJob(printer)
-                    if(printerJob.showPrintDialog(primaryStage.owner) && printerJob.printPage(layout, image)) {
+                    if (printerJob.showPrintDialog(primaryStage.owner) && printerJob.printPage(layout, image)) {
                         printerJob.endJob()
                     }
                 }
@@ -129,7 +129,7 @@ class MainView : View("Library") {
                 item("Duplicate Book") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.COPY) //clone is another choice
                     action {
-                        if(controller.focus == "Books") {
+                        if (controller.focus == "Books") {
                             val book = controller.sBook.item.copy()
                             controller.checkDupeBook(book)
                             controller.bookList.add(book)
@@ -137,10 +137,9 @@ class MainView : View("Library") {
                     }
                 }
                 item("Modify Selected", "Shortcut+E", FontAwesomeIconView(FontAwesomeIcon.EDIT)).action {
-                    if(controller.focus == "Books") {
+                    if (controller.focus == "Books") {
                         find<EditBookFragment>().openModal()
-                    }
-                    else {
+                    } else {
                         find<EditPersonFragment>().openModal()
                     }
                 }
@@ -148,7 +147,7 @@ class MainView : View("Library") {
             }
             menu("Help") {
                 item("Access Import Steps").action {
-                    dialog{
+                    dialog {
                         text("""Make sure you select: "Delimited".
                             | And then on the next prompt **first** select "Text Qualifier" as " (quotes) and then select "First Rows contains field names".
                             | Finally, you can change the data type of the year field to "Integer" and the data type of checkedout to "Yes/No." """.trimMargin())

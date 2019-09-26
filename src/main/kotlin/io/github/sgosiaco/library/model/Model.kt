@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName
 import tornadofx.*
 import java.time.LocalDate
 
-data class Book (
+data class Book(
         @SerializedName("dupe") var dupe: Int = 0,
         @SerializedName("checkedout") var checkedout: Boolean = false,
-        @SerializedName("author") var author : String = "",
-        @SerializedName("year") var year : Int = -1,
-        @SerializedName("pub") var pub : String = "",
-        @SerializedName("title") var title : String = ""
+        @SerializedName("author") var author: String = "",
+        @SerializedName("year") var year: Int = -1,
+        @SerializedName("pub") var pub: String = "",
+        @SerializedName("title") var title: String = ""
 ) {
     override fun toString(): String = title
     fun toCSV(): String = """"$title","$author","$pub","$year""""
@@ -30,12 +30,12 @@ class SelectedBook : ItemViewModel<Book>() {
 
 }
 
-data class Person (
-        @SerializedName("name") var name : String = "",
-        @SerializedName("email") var email : String = "",
-        @SerializedName("phone") var phone : Long = -1,
-        @SerializedName("aff") var aff : String = "",
-        @SerializedName("cNum") var cNum : Int = 0
+data class Person(
+        @SerializedName("name") var name: String = "",
+        @SerializedName("email") var email: String = "",
+        @SerializedName("phone") var phone: Long = -1,
+        @SerializedName("aff") var aff: String = "",
+        @SerializedName("cNum") var cNum: Int = 0
 ) {
     override fun toString(): String = "$name <$email>"
     fun toCSV(): String = "$name <$email>"

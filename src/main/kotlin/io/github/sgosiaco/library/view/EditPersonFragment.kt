@@ -1,7 +1,7 @@
 package io.github.sgosiaco.library.view
 
-import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.controller.MainController
+import io.github.sgosiaco.library.model.Action
 import javafx.collections.FXCollections
 import javafx.util.converter.LongStringConverter
 import tornadofx.*
@@ -18,19 +18,19 @@ class EditPersonFragment : Fragment() {
             }
             field("Email:") {
                 textfield(controller.sPerson.email).validator {
-                    if(controller.checkDupeEmail(it ?: "", controller.sPerson.item)) {
+                    if (controller.checkDupeEmail(it ?: "", controller.sPerson.item)) {
                         error("This email is a duplicate")
+                    } else {
+                        null
                     }
-                    else { null }
                 }
             }
             field("Phone number:") {
                 textfield(controller.sPerson.phone, LongStringConverter()).validator {
                     val text = it ?: ""
-                    if(text.matches("^[2-9]\\d{2}\\d{3}\\d{4}\$".toRegex())) {
+                    if (text.matches("^[2-9]\\d{2}\\d{3}\\d{4}\$".toRegex())) {
                         null
-                    }
-                    else {
+                    } else {
                         error("Not a valid phone number")
                     }
                 }

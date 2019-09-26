@@ -2,9 +2,9 @@ package io.github.sgosiaco.library.view
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
+import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Checkout
-import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
@@ -99,8 +99,7 @@ class CheckedPersonView : View("Checked Out (Person)") {
                             if (it.isBefore(LocalDate.now())) {
                                 backgroundColor += c("#8b0000")
                                 textFill = Color.WHITE
-                            }
-                            else if(it.isEqual(LocalDate.now())) {
+                            } else if (it.isEqual(LocalDate.now())) {
                                 backgroundColor += c("#FFFF99")
                                 textFill = Color.BLACK
                             }

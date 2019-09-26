@@ -2,8 +2,8 @@ package io.github.sgosiaco.library.view
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
-import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.controller.MainController
+import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import tornadofx.*
@@ -50,10 +50,9 @@ class PeopleView : View("People") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.EDIT)
                     action {
                         selectedItem?.apply {
-                            if(cNum > 0) {
+                            if (cNum > 0) {
                                 error("Can't edit a person that has checked out book(s)!")
-                            }
-                            else {
+                            } else {
                                 find<EditPersonFragment>().openModal()
                             }
                         }
@@ -63,10 +62,9 @@ class PeopleView : View("People") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.TRASH)
                     action {
                         selectedItem?.apply {
-                            if(cNum > 0) {
+                            if (cNum > 0) {
                                 error(header = "Can't delete a person that has checked out book(s)!")
-                            }
-                            else {
+                            } else {
                                 confirm(
                                         header = "Delete $name?",
                                         actionFn = {
@@ -83,10 +81,9 @@ class PeopleView : View("People") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.ENVELOPE_OPEN)
                     action {
                         selectedItem?.apply {
-                            if(cNum == 0) {
+                            if (cNum == 0) {
                                 error("No books checked out to this person!")
-                            }
-                            else {
+                            } else {
                                 controller.draftAll(this)
                             }
                         }

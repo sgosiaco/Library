@@ -2,9 +2,9 @@ package io.github.sgosiaco.library.view
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
+import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Book
-import io.github.sgosiaco.library.controller.MainController
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import tornadofx.*
@@ -15,7 +15,7 @@ class BookView : View("Books") {
     private var filter = SimpleStringProperty()
     //private val allState = booleanBinding(filter) { value == "All"}
     //private val availableState = booleanBinding(filter) { value == "Available"}
-    private val checkedState = booleanBinding(filter) { value == "Checked"}
+    private val checkedState = booleanBinding(filter) { value == "Checked" }
 
     init {
         search.value = ""
@@ -26,7 +26,7 @@ class BookView : View("Books") {
         hbox {
             val searchBox = textfield(search) {
                 controller.sfBookList.filterWhen(textProperty()) { query, item ->
-                    when(filter.value) {
+                    when (filter.value) {
                         "All" -> item.containsString(query)
                         "Available" -> !item.checkedout && item.containsString(query)
                         "Checked" -> item.checkedout && item.containsString(query)
@@ -42,19 +42,19 @@ class BookView : View("Books") {
                 togglebutton("All Books") {
                     action {
                         filter.value = "All"
-                        controller.sfBookList.predicate = { it.title != "" && (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfBookList.predicate = { it.title != "" && (if (search.value != "") it.containsString(search.value) else true) }
                     }
                 }
                 togglebutton("Available to Checkout") {
                     action {
                         filter.value = "Available"
-                        controller.sfBookList.predicate = { !it.checkedout && (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfBookList.predicate = { !it.checkedout && (if (search.value != "") it.containsString(search.value) else true) }
                     }
                 }
                 togglebutton("Checked Out") {
                     action {
                         filter.value = "Checked"
-                        controller.sfBookList.predicate = { it.checkedout && (if(search.value != "") it.containsString(search.value) else true) }
+                        controller.sfBookList.predicate = { it.checkedout && (if (search.value != "") it.containsString(search.value) else true) }
                     }
                 }
             }
@@ -71,7 +71,7 @@ class BookView : View("Books") {
             }
             readonlyColumn("Title", Book::title) {
                 value {
-                    if(it.value.dupe > 0) "${it.value.title} (${it.value.dupe})" else it.value.title
+                    if (it.value.dupe > 0) "${it.value.title} (${it.value.dupe})" else it.value.title
                 }
             }
             readonlyColumn("Author", Book::author)
@@ -89,10 +89,9 @@ class BookView : View("Books") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.EDIT)
                     action {
                         selectedItem?.apply {
-                            if(checkedout) {
+                            if (checkedout) {
                                 error("Can't edit a checked out book!")
-                            }
-                            else {
+                            } else {
                                 find<EditBookFragment>().openModal()
                             }
                         }
@@ -103,10 +102,9 @@ class BookView : View("Books") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.TRASH)
                     action {
                         selectedItem?.apply {
-                            if(checkedout) {
+                            if (checkedout) {
                                 error(header = "Can't delete a checked out book!")
-                            }
-                            else {
+                            } else {
                                 confirm(
                                         header = "Delete $title?",
                                         actionFn = {
@@ -124,10 +122,9 @@ class BookView : View("Books") {
                     graphic = FontAwesomeIconView(FontAwesomeIcon.BOOK)
                     action {
                         selectedItem?.apply {
-                            if(checkedout) {
+                            if (checkedout) {
                                 error(header = "Can't checkout an already checked out book!")
-                            }
-                            else {
+                            } else {
                                 find<CheckoutFragment>().openModal()
                             }
                         }

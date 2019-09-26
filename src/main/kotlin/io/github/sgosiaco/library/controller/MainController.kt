@@ -11,12 +11,12 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class PeopleConverter: StringConverter<Person>() {
+class PeopleConverter : StringConverter<Person>() {
     override fun fromString(string: String) = Person()
     override fun toString(person: Person) = "${person.name} <${person.email}>"
 }
 
-class MainController: Controller() {
+class MainController : Controller() {
     val sBook = SelectedBook()
     val sPerson = SelectedPerson()
     val sCheckout = SelectedCheckout()
@@ -77,7 +77,7 @@ class MainController: Controller() {
     }
 
     fun openDialog(type: String) {
-        val title = when(type) {
+        val title = when (type) {
             "book" -> "Open book list"
             "person" -> "Open person list"
             "checked" -> "Open checked list"
@@ -87,10 +87,10 @@ class MainController: Controller() {
                 title = title,
                 filters = arrayOf(FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"))
         )
-        if(chosenFile.size == 1) {
+        if (chosenFile.size == 1) {
             with(chosenFile[0]) {
                 val file = File(path)
-                when(type) {
+                when (type) {
                     "book" -> {
                         bookjson = file.readText(Charsets.UTF_8)
                         bookList.setAll(FXCollections.observableArrayList(Gson().fromJson(bookjson, Array<Book>::class.java).toList()))
@@ -122,7 +122,7 @@ class MainController: Controller() {
             index = checkedList.indexOf(this)
             returned = false
             rDate = null
-            if(index == -1) checkedList.add(this.deepCopy()) else checkedList[index] = this.deepCopy()
+            if (index == -1) checkedList.add(this.deepCopy()) else checkedList[index] = this.deepCopy()
         }
     }
 
@@ -148,13 +148,13 @@ class MainController: Controller() {
         peopleList[personIndex] = peopleList[personIndex].apply { cNum -= 1 }
 
         personIndex = findPerson(old.person)
-        peopleList[personIndex] = peopleList[personIndex].apply { cNum += 1}
+        peopleList[personIndex] = peopleList[personIndex].apply { cNum += 1 }
 
         checkedList[index] = old.deepCopy()
     }
 
     fun checkDupeBook(book: Book) {
-        while(book in bookList) {
+        while (book in bookList) {
             book.dupe += 1
         }
     }
@@ -168,7 +168,7 @@ class MainController: Controller() {
             when (obj) {
                 is Book -> {
                     val index = bookList.indexOf(newObj)
-                    when(action) {
+                    when (action) {
                         "Added" -> bookList.remove(obj as Book)
                         "Edited" -> bookList[index] = obj as Book
                         "Deleted" -> bookList.add(obj as Book)
@@ -177,7 +177,7 @@ class MainController: Controller() {
                 }
                 is Person -> {
                     val index = findPerson(newObj as Person)
-                    when(action) {
+                    when (action) {
                         "Added" -> peopleList.remove(obj as Person)
                         "Edited" -> peopleList[index] = obj as Person
                         "Deleted" -> peopleList.add(obj as Person)
@@ -185,7 +185,7 @@ class MainController: Controller() {
                     }
                 }
                 else -> {
-                    when(action) {
+                    when (action) {
                         "Edited" -> editCheckout(obj as Checkout, newObj as Checkout)
                         "Checkout" -> {
                             returnBook(obj as Checkout)
@@ -206,7 +206,7 @@ class MainController: Controller() {
             when (obj) {
                 is Book -> {
                     val index = bookList.indexOf(obj as Book)
-                    when(action) {
+                    when (action) {
                         "Added" -> bookList.add(obj as Book)
                         "Edited" -> bookList[index] = newObj as Book
                         "Deleted" -> bookList.remove(obj as Book)
@@ -214,14 +214,14 @@ class MainController: Controller() {
                 }
                 is Person -> {
                     val index = findPerson(obj as Person)
-                    when(action) {
+                    when (action) {
                         "Added" -> peopleList.add(obj as Person)
                         "Edited" -> peopleList[index] = newObj as Person
                         "Deleted" -> peopleList.remove(obj as Person)
                     }
                 }
                 else -> {
-                    when(action) {
+                    when (action) {
                         "Edited" -> editCheckout(newObj as Checkout, obj as Checkout)
                         "Checkout" -> checkBook(obj as Checkout)
                         "Returned" -> returnBook(obj as Checkout)
@@ -245,13 +245,13 @@ class MainController: Controller() {
             data += "Title: ${it.book.title}\n" +
                     "Author: ${it.book.author}\n" +
                     "Checkout Date: ${it.cDate.format(dateFormat)}\n" +
-                    "Due Date: ${if(it.dDate.isBefore(LocalDate.now())) "Overdue, please return immediately. (Original due date was ${it.dDate.format(dateFormat)})" else it.dDate.format(dateFormat)}\n" +
+                    "Due Date: ${if (it.dDate.isBefore(LocalDate.now())) "Overdue, please return immediately. (Original due date was ${it.dDate.format(dateFormat)})" else it.dDate.format(dateFormat)}\n" +
                     "\n"
         }
         clipboard.putString(body + data + footer)
     }
 
-    fun draftTomorrow(person:  Person) {
+    fun draftTomorrow(person: Person) {
         val body = "Hello. The following library items are due tomorrow. " +
                 "Please return these materials to the IDAAS library in Lincoln 1119, Pomona.\n\n"
         var data = ""

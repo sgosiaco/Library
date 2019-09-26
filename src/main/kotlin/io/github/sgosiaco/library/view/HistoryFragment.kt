@@ -1,8 +1,8 @@
 package io.github.sgosiaco.library.view
 
+import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Book
 import io.github.sgosiaco.library.model.Checkout
-import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Person
 import javafx.scene.layout.Priority
 import tornadofx.*
@@ -12,8 +12,9 @@ class HistoryFragment : Fragment() {
     private val book: Book? = controller.sBook.item
     private val person: Person? = controller.sPerson.item
     private val data = SortedFilteredList(controller.checkedList)
+
     init {
-        when(controller.focus) {
+        when (controller.focus) {
             "Books" -> {
                 data.predicate = { it.returned && (book?.equals(it.book) ?: false) }
                 title = """History of "${book?.title}" """
@@ -22,7 +23,9 @@ class HistoryFragment : Fragment() {
                 data.predicate = { it.returned && person?.email.equals(it.person.email) }
                 title = """History of "${person?.name}" """
             }
-            else -> data.predicate = { it.returned && (book?.equals(it.book) ?: person?.email.equals(it.person.email) ?: false) }
+            else -> data.predicate = {
+                it.returned && (book?.equals(it.book) ?: person?.email.equals(it.person.email) ?: false)
+            }
         }
     }
 
