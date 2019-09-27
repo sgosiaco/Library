@@ -27,7 +27,7 @@ class AddPersonFragment : Fragment("Add new person") {
             }
             field("Email:") {
                 textfield(email).validator {
-                    if (controller.checkDupeEmail(it ?: "", controller.sPerson.item)) {
+                    if (controller.checkDupeEmail(it ?: "", Person())) {
                         error("This email is a duplicate")
                     } else {
                         null

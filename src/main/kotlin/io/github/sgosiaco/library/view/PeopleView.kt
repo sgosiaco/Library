@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import io.github.sgosiaco.library.controller.MainController
 import io.github.sgosiaco.library.model.Action
 import io.github.sgosiaco.library.model.Person
+import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
@@ -29,12 +30,14 @@ class PeopleView : View("People") {
                     action {
                         searchBox.clear()
                     }
+                    stackpaneConstraints {
+                        alignment = Pos.CENTER_RIGHT
+                    }
                     style {
                         fontWeight = FontWeight.BOLD
                         backgroundRadius += box(0.px)
                         backgroundColor += Color.TRANSPARENT
                         borderColor += box(Color.TRANSPARENT)
-                        paddingLeft = 140
                     }
                 }
             }
