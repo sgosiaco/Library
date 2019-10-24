@@ -56,7 +56,13 @@ class PeopleView : View("People") {
             readonlyColumn("Email", Person::email)
             readonlyColumn("Phone number", Person::phone)
             readonlyColumn("Affiliation", Person::aff)
-            readonlyColumn("Number of books checked out", Person::cNum)
+            readonlyColumn("Number of books checked out", Person::cNum) {
+                style {
+                    label {
+                        alignment = Pos.CENTER_LEFT
+                    }
+                }
+            }
 
             contextmenu {
                 item("Add person") {
